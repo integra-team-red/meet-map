@@ -14,10 +14,10 @@ class VerticalSliceArchitectureTest {
 
     private static final String BASE_PACKAGE = "cloudflight.integra.backend";
 
-    @Test
-    void controllersShouldOnlyDependOnServices() {
-        JavaClasses imported = new ClassFileImporter().importPackages(BASE_PACKAGE);
+    private final JavaClasses imported = new ClassFileImporter().importPackages(BASE_PACKAGE);
 
+    @Test
+    void controllersShouldNotDependOnRepositories() {
         ArchRuleDefinition.noClasses()
             .that().areAnnotatedWith(RestController.class)
             .should().dependOnClassesThat()
@@ -27,8 +27,6 @@ class VerticalSliceArchitectureTest {
 
     @Test
     void servicesShouldNotDependOnControllersOrDtos() {
-        JavaClasses imported = new ClassFileImporter().importPackages(BASE_PACKAGE);
-
         ArchRuleDefinition.noClasses()
             .that().areAnnotatedWith(Service.class)
             .should().dependOnClassesThat()
@@ -40,8 +38,6 @@ class VerticalSliceArchitectureTest {
 
     @Test
     void repositoriesShouldNotDependOnServicesOrControllersOrDtos() {
-        JavaClasses imported = new ClassFileImporter().importPackages(BASE_PACKAGE);
-
         ArchRuleDefinition.noClasses()
             .that().areAnnotatedWith(Repository.class)
             .should().dependOnClassesThat()
@@ -50,6 +46,42 @@ class VerticalSliceArchitectureTest {
             .areAnnotatedWith(RestController.class)
             .orShould().dependOnClassesThat()
             .haveSimpleNameEndingWith("Dto")
+            .check(imported);
+    }
+
+    @Test
+    void controllersShouldNotDependOnOtherSlicesControllers() {
+        ArchRuleDefinition.noClasses()
+            .that().areAnnotatedWith(RestController.class)
+            .should().dependOnClassesThat()
+            .areAnnotatedWith(RestController.class)
+            .check(imported);
+    }
+
+    @Test
+    void repositoriesShouldNotDependOnOtherSlicesRepositories() {
+        ArchRuleDefinition.noClasses()
+            .that().areAnnotatedWith(Repository.class)
+            .should().dependOnClassesThat()
+            .areAnnotatedWith(Repository.class)
+            .check(imported);
+    }
+
+    @Test
+    void mappersShouldNotDependOnRepositories() {
+        ArchRuleDefinition.noClasses()
+            .that().haveSimpleNameEndingWith("Mapper")
+            .should().dependOnClassesThat()
+            .areAnnotatedWith(Repository.class)
+            .check(imported);
+    }
+
+    @Test
+    void mappersShouldNotDependOnServices() {
+        ArchRuleDefinition.noClasses()
+            .that().haveSimpleNameEndingWith("Mapper")
+            .should().dependOnClassesThat()
+            .areAnnotatedWith(Service.class)
             .check(imported);
     }
 }
