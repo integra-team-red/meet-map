@@ -1,4 +1,4 @@
-rootProject.name = 'student-skeleton-project'
+rootProject.name = 'meet-map'
 
 include 'backend'
 include 'frontend'
