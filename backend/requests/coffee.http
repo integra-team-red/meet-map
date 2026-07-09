@@ -9,8 +9,8 @@ POST http://localhost:8080/api/coffees
 Content-Type: application/json
 
 {
-  "origin": "Ethiopia",
-  "brewMethod": "FILTER"
+    "origin": "Ethiopia",
+    "brewMethod": "FILTER"
 }
 
 ### Update coffee
@@ -18,8 +18,8 @@ PUT http://localhost:8080/api/coffees/1
 Content-Type: application/json
 
 {
-  "origin": "Colombia",
-  "brewMethod": "ESPRESSO"
+    "origin": "Colombia",
+    "brewMethod": "ESPRESSO"
 }
 
 ### Delete coffee

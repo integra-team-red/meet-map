@@ -1,0 +1,15 @@
+### Get all flags
+GET http://localhost:8080/api/admin/flags
+
+### Creates a flag with a free-text reason
+
+POST http://localhost:8080/api/events/1/flags?userId=1
+Content-Type: application/json
+
+{
+    "reason": "I don't like pizza :("
+}
+
+### Delete flag
+
+DELETE http://localhost:8080/api/admin/flags/1

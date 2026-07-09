@@ -9,14 +9,14 @@ POST http://localhost:8080/api/coffeemugs
 Content-Type: application/json
 
 {
-  "color": "blue",
-  "capacityMl": 350,
-  "clean": true,
-  "coffee": {
-    "id": 1,
-    "origin": "Ethiopia",
-    "brewMethod": "FILTER"
-  }
+    "color": "blue",
+    "capacityMl": 350,
+    "clean": true,
+    "coffee": {
+        "id": 1,
+        "origin": "Ethiopia",
+        "brewMethod": "FILTER"
+    }
 }
 
 ### Create coffee mug (without coffee)
@@ -24,10 +24,10 @@ POST http://localhost:8080/api/coffeemugs
 Content-Type: application/json
 
 {
-  "color": "red",
-  "capacityMl": 250,
-  "clean": false,
-  "coffee": null
+    "color": "red",
+    "capacityMl": 250,
+    "clean": false,
+    "coffee": null
 }
 
 ### Update coffee mug
@@ -35,14 +35,14 @@ PUT http://localhost:8080/api/coffeemugs/1
 Content-Type: application/json
 
 {
-  "color": "green",
-  "capacityMl": 400,
-  "clean": true,
-  "coffee": {
-    "id": 1,
-    "origin": "Ethiopia",
-    "brewMethod": "FILTER"
-  }
+    "color": "green",
+    "capacityMl": 400,
+    "clean": true,
+    "coffee": {
+        "id": 1,
+        "origin": "Ethiopia",
+        "brewMethod": "FILTER"
+    }
 }
 
 ### Delete coffee mug
