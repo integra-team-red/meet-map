@@ -1,0 +1,20 @@
+### GET all tags
+GET http://localhost:8080/api/tags
+
+### GET with category filter: PERSONALITY, HOBBY, EVENT_TYPE
+@ctgName = PERSONALITY
+GET http://localhost:8080/api/tags?
+    category={{ctgName}}
+
+### Create tag
+POST http://localhost:8080/api/tags
+Content-Type: application/json
+
+{
+    "name": " TagName1 ",
+    "category": "PERSONALITY"
+}
+
+### Delete tag
+@id = 1
+DELETE http://localhost:8080/api/tags/{{id}}
