@@ -1,0 +1,46 @@
+###
+GET http://localhost:8080/api/events/1/reviews
+
+
+###
+GET http://localhost:8080/api/reviews/1
+
+###
+POST http://localhost:8080/api/events/1/reviews
+Content-Type: application/json
+
+{
+    "userId": 0,
+    "rating": 2,
+    "comment": ""
+}
+
+###
+POST http://localhost:8080/api/events/1/reviews
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "rating": 3,
+    "comment": ""
+}
+
+###
+POST http://localhost:8080/api/events/1/reviews
+Content-Type: application/json
+
+{
+    "userId": 0,
+    "rating": 5,
+    "comment": ""
+}
+
+###
+POST http://localhost:8080/api/events/1/reviews
+Content-Type: application/json
+
+{
+    "userId": 0,
+    "rating": 9,
+    "comment": ""
+}
