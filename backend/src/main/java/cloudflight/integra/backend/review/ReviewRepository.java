@@ -16,18 +16,19 @@ public class ReviewRepository {
     }
 
     public List<Review> findByEventId(Long eventId) {
-        return reviews.values().stream().filter(review -> review.getEventId().equals(eventId)).toList();
+        return reviews.values().stream()
+            .filter(review -> review.getEventId().equals(eventId)).toList();
     }
 
     public Optional<Review> findByUserIdAndEventId(Long eventId, Long userId) {
-        return reviews.values().stream().filter(review -> review.getEventId().equals(eventId) &&
-            review.getUserId().equals(userId)).findFirst();
+        return reviews.values().stream()
+            .filter(review -> review.getEventId().equals(eventId) && review.getUserId().equals(userId))
+            .findFirst();
     }
 
     public Optional<Review> findById(Long id) {
         return Optional.ofNullable(reviews.get(id));
     }
-
 
     public Review save(Review review) {
         if (review.getId() == null) {
