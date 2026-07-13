@@ -11,7 +11,6 @@ public class Review {
     private LocalDateTime createdAt;
 
     public Review() {
-
     }
 
     public Review(Long id, Long userId, Long eventId, Integer rating, String comment, LocalDateTime createdAt) {
@@ -21,7 +20,6 @@ public class Review {
         this.rating = rating;
         this.comment = comment;
         this.createdAt = createdAt;
-
     }
 
     public Long getId() {

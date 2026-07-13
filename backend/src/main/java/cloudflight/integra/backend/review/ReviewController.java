@@ -18,7 +18,6 @@ public class ReviewController {
     public ReviewController(ReviewService service, ReviewMapper mapper) {
         this.service = service;
         this.mapper = mapper;
-
     }
 
     @GetMapping("/events/{eventId}/reviews")
@@ -37,6 +36,4 @@ public class ReviewController {
         Review review = mapper.toEntity(dto).setEventId(eventId);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(review)));
     }
-
-
 }
