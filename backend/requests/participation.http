@@ -1,0 +1,10 @@
+### GET request to example server
+@id =1
+GET http://localhost:8080/api/events/{{id}}/participants
+
+###
+@userId =100
+POST http://localhost:8080/api/events/{{id}}/join/{{userId}}
+
+###
+DELETE http://localhost:8080/api/events/{{id}}/leave/{{userId}}
