@@ -1,0 +1,41 @@
+POST http://localhost:8080/api/events
+Content-Type: application/json
+
+{
+    "title":  "New Event",
+    "description":  "New event description",
+    "address":  "123 Main St",
+    "city":  "New York",
+    "dateTime": "2026-07-09T18:48:18",
+    "maxParticipants": 50,
+    "minAge": 18,
+    "maxAge": null
+}
+
+### Update event
+PUT http://localhost:8080/api/events/1
+Content-Type: application/json
+
+{
+    "title":  "Updated Event",
+    "description":  "Updated event description",
+    "address":  "456 Elm St",
+    "city":  "Los Angeles",
+    "dateTime": "2026-07-09T18:48:18",
+    "maxParticipants": 100,
+    "minAge": 21,
+    "maxAge": null,
+    "status": "COMPLETED"
+}
+
+
+### Get all events
+GET http://localhost:8080/api/events
+
+### Get event by id
+GET http://localhost:8080/api/events/1
+
+### Delete coffee
+DELETE http://localhost:8080/api/events/1
+
+<> 2026-07-09T184818.200.json
