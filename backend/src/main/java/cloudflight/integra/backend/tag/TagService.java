@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.tag;
 
+import cloudflight.integra.backend.tag.model.Category;
 import cloudflight.integra.backend.tag.model.Tag;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 @Service
 public class TagService {
-    private TagRepository repository;
+    private final TagRepository repository;
 
     public TagService(TagRepository repository){
         this.repository = repository;
@@ -27,7 +28,7 @@ public class TagService {
         return repository.findAll();
     }
 
-    public List<Tag> getByCategory(String category) {
+    public List<Tag> getByCategory(Category category) {
         return repository.findAllByCategory(category);
     }
 
