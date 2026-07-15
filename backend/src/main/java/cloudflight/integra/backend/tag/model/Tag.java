@@ -1,8 +1,24 @@
 package cloudflight.integra.backend.tag.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(
+    name = "tags",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"name"})
+)
 public class Tag {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category")
     private Category category;
 
     public Tag() {}

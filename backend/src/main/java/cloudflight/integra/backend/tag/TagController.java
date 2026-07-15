@@ -23,7 +23,7 @@ public class TagController {
     @GetMapping
     public List<TagDto> getAll(@RequestParam(required = false) String category) {
         if(category != null)
-            return service.getByCategory(category).stream().map(mapper::toDto).toList();
+            return service.getByCategory(Category.valueOf(category)).stream().map(mapper::toDto).toList();
         return service.getAll().stream().map(mapper::toDto).toList();
     }
 
