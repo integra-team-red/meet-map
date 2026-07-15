@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.review;
 
+import cloudflight.integra.backend.review.model.CreateReviewDto;
 import cloudflight.integra.backend.review.model.Review;
 import cloudflight.integra.backend.review.model.ReviewDto;
 import org.springframework.http.HttpStatus;
@@ -31,9 +32,9 @@ public class ReviewController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/events/{eventId}/reviews")
-    public ResponseEntity<ReviewDto> create(@PathVariable Long eventId, @RequestBody ReviewDto dto) {
-        Review review = mapper.toEntity(dto).setEventId(eventId);
+    @PostMapping("/events/reviews")
+    public ResponseEntity<ReviewDto> create(@RequestBody CreateReviewDto dto) {
+        Review review = mapper.toEntity(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(review)));
     }
 }

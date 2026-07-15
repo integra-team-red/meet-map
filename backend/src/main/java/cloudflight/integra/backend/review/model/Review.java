@@ -1,22 +1,32 @@
 package cloudflight.integra.backend.review.model;
 
+import cloudflight.integra.backend.event.model.Event;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
+@Entity
 public class Review {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Long userId;
-    private Long eventId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    private Event event;
     private Integer rating;
+    @Column(columnDefinition = "TEXT")
     private String comment;
     private LocalDateTime createdAt;
 
     public Review() {
     }
 
-    public Review(Long id, Long userId, Long eventId, Integer rating, String comment, LocalDateTime createdAt) {
+    public Review(Long id, Long userId, Event event, Integer rating, String comment, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
-        this.eventId = eventId;
+        this.event = event;
         this.rating = rating;
         this.comment = comment;
         this.createdAt = createdAt;
@@ -31,21 +41,12 @@ public class Review {
         return this;
     }
 
-    public Long getUserId() {
-        return userId;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public Review setUserId(Long userId) {
-        this.userId = userId;
-        return this;
-    }
-
-    public Long getEventId() {
-        return eventId;
-    }
-
-    public Review setEventId(Long eventId) {
-        this.eventId = eventId;
+    public Review setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 
@@ -67,12 +68,21 @@ public class Review {
         return this;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public Event getEvent() {
+        return event;
     }
 
-    public Review setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public Review setEvent(Event event) {
+        this.event = event;
+        return this;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public Review setUserId(Long userId) {
+        this.userId = userId;
         return this;
     }
 }
