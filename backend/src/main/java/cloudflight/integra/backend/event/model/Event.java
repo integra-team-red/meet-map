@@ -50,7 +50,7 @@ public class Event {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    public Event() { }
+    public Event(){}
 
     public Event(
         Long id,

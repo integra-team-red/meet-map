@@ -1,12 +1,12 @@
 ###
-GET http://localhost:8080/api/events/1/reviews
+GET http://localhost:8080/api/events/4/reviews
 
 
 ###
 GET http://localhost:8080/api/reviews/1
 
 ###
-POST http://localhost:8080/api/events/1/reviews
+POST http://localhost:8080/api/events/reviews
 Content-Type: application/json
 
 {
@@ -16,31 +16,34 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:8080/api/events/1/reviews
+POST http://localhost:8080/api/events/reviews
 Content-Type: application/json
 
 {
     "userId": 1,
-    "rating": 3,
+    "eventId": 4,
+    "rating": 2,
     "comment": ""
 }
 
 ###
-POST http://localhost:8080/api/events/1/reviews
+POST http://localhost:8080/api/events/reviews
 Content-Type: application/json
 
 {
-    "userId": 0,
+    "userId": 3,
+    "eventId": 4,
     "rating": 5,
     "comment": ""
 }
 
 ###
-POST http://localhost:8080/api/events/1/reviews
+POST http://localhost:8080/api/events/reviews
 Content-Type: application/json
 
 {
     "userId": 0,
+    "eventId": 4,
     "rating": 9,
     "comment": ""
 }
