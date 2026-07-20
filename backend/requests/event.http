@@ -9,11 +9,13 @@ Content-Type: application/json
     "dateTime": "2026-07-09T18:48:18",
     "maxParticipants": 50,
     "minAge": 18,
-    "maxAge": null
+    "maxAge": 100,
+    "creatorId": 1,
+    "tagIds": [1, 2]
 }
 
 ### Update event
-PUT http://localhost:8080/api/events/1
+PUT http://localhost:8080/api/events/9
 Content-Type: application/json
 
 {
@@ -24,8 +26,10 @@ Content-Type: application/json
     "dateTime": "2026-07-09T18:48:18",
     "maxParticipants": 100,
     "minAge": 21,
-    "maxAge": null,
-    "status": "COMPLETED"
+    "maxAge": 100,
+    "status": "COMPLETED",
+    "creator_id": 1,
+    "tagIds": [1, 2]
 }
 
 
@@ -33,9 +37,9 @@ Content-Type: application/json
 GET http://localhost:8080/api/events
 
 ### Get event by id
-GET http://localhost:8080/api/events/1
+GET http://localhost:8080/api/events/9
 
 ### Delete coffee
-DELETE http://localhost:8080/api/events/1
+DELETE http://localhost:8080/api/events/9
 
 <> 2026-07-09T184818.200.json
