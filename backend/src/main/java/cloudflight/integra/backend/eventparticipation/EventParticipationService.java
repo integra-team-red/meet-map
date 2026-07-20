@@ -25,30 +25,27 @@ public class EventParticipationService {
         return participationRepository.findById(id);
     }
 
-    public synchronized EventParticipation joinEvent(Long eventId, Long userId) {
-
-        boolean alreadyJoined = participationRepository.existsByEventIdAndUserId(eventId, userId);
+    public synchronized EventParticipation joinEvent(EventParticipation eventParticipation) {
+        boolean alreadyJoined = participationRepository.existsByEventIdAndUserId(
+            eventParticipation.getEvent().getId(),
+            eventParticipation.getUserId()
+        );
 
         if (alreadyJoined) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User has already joined this event");
         }
-
-        long currentParticipationCount = participationRepository.countByEventId(eventId);
+        eventParticipation.setJoinedAt(LocalDateTime.now());
+        long currentParticipationCount = participationRepository.countByEventId(eventParticipation.getEvent().getId());
         //TODO: check EventParticipation count
-
-
-        EventParticipation eventParticipation = new EventParticipation(null, userId, eventId, LocalDateTime.now());
-
         return participationRepository.save(eventParticipation);
     }
 
     public List<Long> getParticipants(Long eventId) {
-        return participationRepository.findByEventId(eventId);
+        return participationRepository.findAllUserIdsByEventId(eventId);
     }
 
-    public void leaveEvent(Long eventId, Long userId) {
-        participationRepository.deleteByEventIdAndUserId(eventId, userId);
-
+    public void leaveEvent(Long id) {
+        participationRepository.deleteById(id);
     }
 
     public EventParticipation create(EventParticipation eventParticipation) {

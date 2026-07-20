@@ -1,20 +1,27 @@
 package cloudflight.integra.backend.eventparticipation.model;
 
+import cloudflight.integra.backend.event.model.Event;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
 public class EventParticipation {
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private Long userId;
-    private Long eventId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="event_id", nullable=false)
+    private Event event;
     private LocalDateTime joinedAt;
 
     public EventParticipation() {
     }
 
-    public EventParticipation(Long id, Long userId, Long eventId, LocalDateTime joinedAt) {
+    public EventParticipation(Long id, Long userId, Event event, LocalDateTime joinedAt) {
         this.id = id;
         this.userId = userId;
-        this.eventId = eventId;
+        this.event = event;
         this.joinedAt = joinedAt;
     }
 
@@ -34,13 +41,11 @@ public class EventParticipation {
         this.userId = userId;
     }
 
-    public Long getEventId() {
-        return eventId;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEventId(Long eventId) {
-        this.eventId = eventId;
-    }
+    public void setEvent(Event event) { this.event = event;}
 
     public LocalDateTime getJoinedAt() {
         return joinedAt;
