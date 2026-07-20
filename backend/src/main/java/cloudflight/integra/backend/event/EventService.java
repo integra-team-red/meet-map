@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.event;
 import cloudflight.integra.backend.event.model.Event;
+import cloudflight.integra.backend.event.model.EventStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,8 @@ public class EventService {
 
     public boolean delete(Long id) {
         return repository.findById(id).map(existing -> {
-            repository.deleteById(id);
+            existing.setStatus(EventStatus.CANCELLED);
+            repository.save(existing);
             return true;
         }).orElse(false);
     }

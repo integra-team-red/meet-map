@@ -1,21 +1,56 @@
 package cloudflight.integra.backend.event.model;
-import java.time.LocalDateTime;
+import cloudflight.integra.backend.tag.model.Tag;
+import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "events")
 public class Event {
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "title")
     private String title;
+    @Column(name = "description")
     private String description;
+    @Column(name = "address")
     private String address;
+    @Column(name = "city")
     private String city;
+    @Column(name = "latitude")
     private Double latitude;
+    @Column(name = "longitude")
     private Double longitude;
+    @Column(name = "date_time")
     private LocalDateTime dateTime;
+    @Column(name = "max_participants")
     private Integer maxParticipants;
+    @Column(name = "min_age")
     private Integer minAge;
+    @Column(name = "max_age")
     private Integer maxAge;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private EventStatus status;
-    private Long creatorId; // passed as request parameter for now
-    private LocalDateTime createdAt; // auto-set on creation
+    @Column(name = "creator_id")
+    private Long creatorId;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable
+    (
+        name = "event_tags",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
+    public Event() { }
 
     public Event(
         Long id,
@@ -47,6 +82,16 @@ public class Event {
         this.status = status;
         this.creatorId = creatorId;
         this.createdAt = createdAt;
+    }
+
+    @PrePersist
+    void onCreate(){
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+        if (this.status == null) {
+            this.status = EventStatus.ACTIVE;
+        }
     }
 
     public Long getId() {
@@ -172,6 +217,15 @@ public class Event {
 
     public Event setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+        return this;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public Event setTags(Set<Tag> tags) {
+        this.tags = tags;
         return this;
     }
 }
