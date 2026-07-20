@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.eventparticipation;
 
+import cloudflight.integra.backend.eventparticipation.model.CreateEventParticipationDto;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipationDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +26,13 @@ public class EventParticipationController {
 
     @PostMapping("/events/{id}/join/{userId}")
     public ResponseEntity<EventParticipationDto> create(@PathVariable Long id, @PathVariable Long userId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto((service.joinEvent(id, userId))));
+        CreateEventParticipationDto dto = new CreateEventParticipationDto(id, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto((service.joinEvent(mapper.toEntity(dto)))));
     }
 
-    @DeleteMapping("/events/{id}/leave/{userId}")
-    public void delete(@PathVariable Long id, @PathVariable Long userId) {
-        service.leaveEvent(id, userId);
+    @DeleteMapping("/events/{id}/leave")
+    public void delete(@PathVariable Long id) {
+        service.leaveEvent(id);
     }
 
 }
