@@ -1,7 +1,9 @@
 package cloudflight.integra.backend.tag;
 
 import cloudflight.integra.backend.tag.model.Category;
+import cloudflight.integra.backend.tag.model.CreateTagDto;
 import cloudflight.integra.backend.tag.model.TagDto;
+import jakarta.validation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +30,11 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<TagDto> create(@RequestBody TagDto tagDto) {
+    public ResponseEntity<TagDto> create(@Valid @RequestBody CreateTagDto createTagDto) {
         try {
             return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(mapper.toDto(service.create(mapper.toEntity(tagDto))));
+                .body(mapper.toDto(service.create(mapper.toEntity(createTagDto))));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }

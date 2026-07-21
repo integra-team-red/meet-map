@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.tag;
 
+import cloudflight.integra.backend.tag.model.CreateTagDto;
 import cloudflight.integra.backend.tag.model.Tag;
 import cloudflight.integra.backend.tag.model.TagDto;
 import org.mapstruct.Mapper;
@@ -8,4 +9,5 @@ import org.mapstruct.Mapper;
 public interface TagMapper {
     TagDto toDto(Tag tag);
     Tag toEntity(TagDto tagDto);
+    Tag toEntity(CreateTagDto createTagDto);
 }
