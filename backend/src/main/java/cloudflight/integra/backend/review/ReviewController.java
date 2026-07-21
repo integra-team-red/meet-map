@@ -3,6 +3,7 @@ package cloudflight.integra.backend.review;
 import cloudflight.integra.backend.review.model.CreateReviewDto;
 import cloudflight.integra.backend.review.model.Review;
 import cloudflight.integra.backend.review.model.ReviewDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class ReviewController {
     }
 
     @PostMapping("/events/reviews")
-    public ResponseEntity<ReviewDto> create(@RequestBody CreateReviewDto dto) {
+    public ResponseEntity<ReviewDto> create(@Valid @RequestBody CreateReviewDto dto) {
         Review review = mapper.toEntity(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(review)));
     }
