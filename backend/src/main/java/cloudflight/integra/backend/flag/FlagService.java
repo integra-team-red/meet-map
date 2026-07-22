@@ -3,7 +3,6 @@ package cloudflight.integra.backend.flag;
 import cloudflight.integra.backend.flag.model.Flag;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +19,6 @@ public class FlagService {
     public Optional<Flag> getById(Long id) { return repository.findById(id); }
 
     public Flag create(Flag flag) {
-        flag.setCreatedAt(LocalDateTime.now());
         return repository.save(flag);
     }
 
