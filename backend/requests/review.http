@@ -1,6 +1,8 @@
 ###
-GET http://localhost:8080/api/events/4/reviews
+GET http://localhost:8080/api/events/2/reviews
 
+###
+GET http://localhost:8080/api/events/2/reviews?page=1
 
 ###
 GET http://localhost:8080/api/reviews/1
@@ -20,8 +22,8 @@ POST http://localhost:8080/api/events/reviews
 Content-Type: application/json
 
 {
-    "userId": 1,
-    "eventId": 4,
+    "userId": 23,
+    "eventId": 2,
     "rating": 2,
     "comment": ""
 }

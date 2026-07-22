@@ -4,12 +4,14 @@ import cloudflight.integra.backend.review.model.CreateReviewDto;
 import cloudflight.integra.backend.review.model.Review;
 import cloudflight.integra.backend.review.model.ReviewDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -23,8 +25,11 @@ public class ReviewController {
     }
 
     @GetMapping("/events/{eventId}/reviews")
-    public List<ReviewDto> getAllForEvent(@PathVariable Long eventId) {
-        return service.getForEvent(eventId).stream().map(mapper::toDto).toList();
+    public Page<ReviewDto> getAllForEvent(
+        @PathVariable Long eventId,
+        @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return service.getForEvent(eventId, pageable).map(mapper::toDto);
     }
 
     @GetMapping("/reviews/{id}")

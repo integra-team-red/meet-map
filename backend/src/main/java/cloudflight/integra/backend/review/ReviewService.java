@@ -3,6 +3,8 @@ package cloudflight.integra.backend.review;
 
 import cloudflight.integra.backend.event.EventService;
 import cloudflight.integra.backend.review.model.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,8 +27,8 @@ public class ReviewService {
         return repository.findAll();
     }
 
-    public List<Review> getForEvent(Long eventId) {
-        return repository.findByEventId(eventId);
+    public Page<Review> getForEvent(Long eventId, Pageable pageable) {
+        return repository.findAllByEventId(eventId, pageable);
     }
 
     public Optional<Review> getById(Long id) {
