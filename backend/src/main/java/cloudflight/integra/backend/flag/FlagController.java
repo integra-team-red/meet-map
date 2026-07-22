@@ -1,6 +1,7 @@
 package cloudflight.integra.backend.flag;
 
 
+import cloudflight.integra.backend.flag.model.CreateFlagDto;
 import cloudflight.integra.backend.flag.model.Flag;
 import cloudflight.integra.backend.flag.model.FlagDto;
 import org.springframework.http.HttpStatus;
@@ -20,16 +21,14 @@ public class FlagController {
         this.mapper = mapper;
     }
 
-    @PostMapping(value = "/events/{eventId}/flags")
+    @PostMapping(value = "/flags")
     public ResponseEntity<FlagDto> create
         (
-            @PathVariable Long eventId,
             @RequestParam Long userId,
-            @RequestBody FlagDto dto
+            @RequestBody CreateFlagDto dto
         ) {
 
         Flag flag = mapper.toEntity(dto);
-        flag.setEventId(eventId);
         flag.setUserId(userId);
 
         Flag saved = service.create(flag);

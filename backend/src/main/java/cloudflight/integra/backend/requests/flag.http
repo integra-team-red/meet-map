@@ -1,15 +1,58 @@
-### Get all flags
-GET http://localhost:8080/api/admin/flags
-
-### Creates a flag with a free-text reason
-
-POST http://localhost:8080/api/events/1/flags?userId=1
+### Create an event to flag (flags need an existing event id)
+POST http://localhost:8080/api/events
 Content-Type: application/json
 
 {
-    "reason": "I don't like pizza :("
+    "title": "Test Event for Flags",
+    "description": "Event used for flag testing",
+    "address": "123 Main St",
+    "city": "Cluj-Napoca",
+    "dateTime": "2026-08-01T18:00:00",
+    "maxParticipants": 50,
+    "minAge": 18,
+    "maxAge": null
 }
 
-### Delete flag
+### Get all flags (should be empty initially)
+GET http://localhost:8080/api/admin/flags
 
+### Creates a flag with a free-text reason
+POST http://localhost:8080/api/flags?userId=1
+Content-Type: application/json
+
+{
+    "reason": "I don't like pizza :(",
+    "eventId": 2
+}
+
+### Creates a second flag on the same event, different user (no unique constraint - should succeed)
+POST http://localhost:8080/api/events/1/flags?userId=2
+Content-Type: application/json
+
+{
+    "reason": "Inappropriate content"
+}
+
+### Get all flags (expect 2 results, each with eventId: 1 populated)
+GET http://localhost:8080/api/admin/flags
+
+### Delete flag 1
 DELETE http://localhost:8080/api/admin/flags/1
+
+### Get all flags (expect only the second flag left)
+GET http://localhost:8080/api/admin/flags
+
+### Restart the app between this request and the previous one to confirm
+### flags survive a restart (data now lives in Postgres, not memory)
+GET http://localhost:8080/api/admin/flags
+
+### Create a flag for an event id that has no row in Postgres yet
+### Known gap: EventRepository is still in-memory, so no `event` rows exist in
+### the DB. This is expected to fail with a foreign key violation until
+### Event itself is converted to a JPA entity/repository.
+POST http://localhost:8080/api/events/999/flags?userId=1
+Content-Type: application/json
+
+{
+    "reason": "Should fail - event 999 has no row in Postgres"
+}

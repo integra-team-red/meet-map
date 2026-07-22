@@ -1,15 +1,27 @@
 package cloudflight.integra.backend.flag.model;
 
 
+import cloudflight.integra.backend.event.model.Event;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
+@Entity
 public class Flag {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
+    @Column(name = "user_id", nullable = false)
     private Long userId;
-    private Long eventId;
+
     private String reason;
     private LocalDateTime createdAt;
-
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -26,15 +38,6 @@ public class Flag {
 
     public Flag setReason(String reason) {
         this.reason = reason;
-        return this;
-    }
-
-    public Long getEventId() {
-        return eventId;
-    }
-
-    public Flag setEventId(Long eventId) {
-        this.eventId = eventId;
         return this;
     }
 
@@ -56,4 +59,19 @@ public class Flag {
         return this;
     }
 
+    public Event getEvent() {
+        return event;
+    }
+
+    public Flag setEvent(Event event) {
+        this.event = event;
+        return this;
+    }
+
+    @PrePersist
+    void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+    }
 }

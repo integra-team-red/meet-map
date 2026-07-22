@@ -2,6 +2,8 @@ package cloudflight.integra.backend.event;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +26,10 @@ public class EventService {
 
     public Event create(Event event) {
         event.setId(null);
-        event.setCreatedAt(null);
+        event.setCreatedAt(LocalDateTime.now());
+        if (event.getStatus() == null) {
+            event.setStatus(EventStatus.ACTIVE);
+        }
         return repository.save(event);
     }
 
@@ -40,6 +45,8 @@ public class EventService {
         });
     }
 
+    // soft delete: events are cancelled, not removed, since flags hold a
+    // foreign key to event and a hard delete would violate that constraint
     public boolean delete(Long id) {
         return repository.findById(id).map(existing -> {
             existing.setStatus(EventStatus.CANCELLED);

@@ -11,7 +11,9 @@ Content-Type: application/json
     "minAge": 18,
     "maxAge": 100,
     "creatorId": 1,
-    "tagIds": [1, 2]
+    "tagIds": [
+        1
+    ]
 }
 
 ### Update event
