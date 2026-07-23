@@ -2,11 +2,13 @@ package cloudflight.integra.backend.eventparticipation;
 
 import cloudflight.integra.backend.eventparticipation.model.CreateEventParticipationDto;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipationDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -20,8 +22,10 @@ public class EventParticipationController {
     }
 
     @GetMapping("/events/{id}/participants")
-    public List<Long> getAllParticipants(@PathVariable Long id) {
-        return service.getParticipants(id);
+    public Page<Long> getAllParticipants(
+        @PathVariable Long id,
+        @PageableDefault(size = 20, direction = Sort.Direction.ASC) Pageable pageable) {
+        return service.getParticipants(id, pageable);
     }
 
     @PostMapping("/events/{id}/join/{userId}")

@@ -1,6 +1,8 @@
 package cloudflight.integra.backend.eventparticipation;
 
 import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,8 +42,8 @@ public class EventParticipationService {
         return participationRepository.save(eventParticipation);
     }
 
-    public List<Long> getParticipants(Long eventId) {
-        return participationRepository.findAllUserIdsByEventId(eventId);
+    public Page<Long> getParticipants(Long eventId, Pageable pageable) {
+        return participationRepository.findAllUserIdsByEventId(eventId, pageable);
     }
 
     public void leaveEvent(Long id) {
