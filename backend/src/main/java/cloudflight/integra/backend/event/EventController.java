@@ -1,5 +1,7 @@
 package cloudflight.integra.backend.event;
+import cloudflight.integra.backend.event.model.CreateEventDto;
 import cloudflight.integra.backend.event.model.EventDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +30,13 @@ public class EventController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
     @PostMapping
-    public ResponseEntity<EventDto> create(@RequestBody EventDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(mapper.toEntity(dto))));
+    public ResponseEntity<EventDto> create(@Valid @RequestBody CreateEventDto event) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(mapper.toEntity(event))));
     }
 
     @PutMapping("/{id}")
-    public EventDto update(@PathVariable Long id, @RequestBody EventDto dto) {
-        return service.update(id, mapper.toEntity(dto)).map(mapper::toDto)
+    public EventDto update(@PathVariable Long id, @Valid @RequestBody CreateEventDto event) {
+        return service.update(id, mapper.toEntity(event)).map(mapper::toDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

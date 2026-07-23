@@ -1,4 +1,5 @@
 package cloudflight.integra.backend.event;
+import cloudflight.integra.backend.event.model.CreateEventDto;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventDto;
 import cloudflight.integra.backend.tag.model.Tag;
@@ -12,6 +13,13 @@ public interface EventMapper {
 
     @Mapping(target = "tags", source = "tagIds")
     Event toEntity(EventDto eventDto);
+
+    @Mapping(target = "tags", source = "tagIds")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    Event toEntity(CreateEventDto dto);
+
 
     default Long tagToId(Tag tag) {
         if (tag == null) {
