@@ -1,10 +1,13 @@
 package cloudflight.integra.backend.event;
+
 import cloudflight.integra.backend.event.model.EventDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
@@ -18,15 +21,16 @@ public class EventController {
     }
 
     @GetMapping
-    public List<EventDto> getAll() {
-        return service.getAll().stream().map(mapper::toDto).toList();
+    public Page<EventDto> getAll(@PageableDefault(size = 20, sort = "dateTime") Pageable pageable) {
+        return service.getAll(pageable).map(mapper::toDto);
     }
 
     @GetMapping("/{id}")
     public EventDto getById(@PathVariable Long id) {
         return service.getById(id).map(mapper::toDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
+
     @PostMapping
     public ResponseEntity<EventDto> create(@RequestBody EventDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(mapper.toEntity(dto))));
