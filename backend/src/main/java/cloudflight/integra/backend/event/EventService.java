@@ -1,10 +1,11 @@
 package cloudflight.integra.backend.event;
+
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,8 +17,8 @@ public class EventService {
     }
 
     // TODO: might want to filter out the soft deleted events in the future
-    public List<Event> getAll() {
-        return repository.findAll();
+    public Page<Event> getAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public Optional<Event> getById(Long id) {
@@ -45,8 +46,6 @@ public class EventService {
         });
     }
 
-    // soft delete: events are cancelled, not removed, since flags hold a
-    // foreign key to event and a hard delete would violate that constraint
     public boolean delete(Long id) {
         return repository.findById(id).map(existing -> {
             existing.setStatus(EventStatus.CANCELLED);
