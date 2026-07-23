@@ -1,6 +1,8 @@
 package cloudflight.integra.backend.eventparticipation;
 
 import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
@@ -15,6 +17,6 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
     boolean existsByEventIdAndUserId(Long eventId, Long userId);
     long countByEventId(Long eventId);
     @Query("SELECT ep.userId FROM EventParticipation ep LEFT JOIN Event e ON ep.event.id = e.id WHERE e.id = :eventId")
-    List<Long> findAllUserIdsByEventId(Long eventId);
+    Page<Long> findAllUserIdsByEventId(Long eventId, Pageable pageable);
 }
 
