@@ -6,7 +6,7 @@ Content-Type: application/json
     "description":  "New event description",
     "address":  "123 Main St",
     "city":  "New York",
-    "dateTime": "2026-07-09T18:48:18",
+    "dateTime": "2026-12-09T18:48:18",
     "maxParticipants": 50,
     "minAge": 18,
     "maxAge": 100,
@@ -17,7 +17,7 @@ Content-Type: application/json
 }
 
 ### Update event
-PUT http://localhost:8080/api/events/9
+PUT http://localhost:8080/api/events/2
 Content-Type: application/json
 
 {
@@ -25,12 +25,12 @@ Content-Type: application/json
     "description":  "Updated event description",
     "address":  "456 Elm St",
     "city":  "Los Angeles",
-    "dateTime": "2026-07-09T18:48:18",
+    "dateTime": "2026-10-09T18:48:18",
     "maxParticipants": 100,
     "minAge": 21,
     "maxAge": 100,
     "status": "COMPLETED",
-    "creator_id": 1,
+    "creatorId": 1,
     "tagIds": [1, 2]
 }
 
@@ -39,7 +39,7 @@ Content-Type: application/json
 GET http://localhost:8080/api/events
 
 ### Get event by id
-GET http://localhost:8080/api/events/9
+GET http://localhost:8080/api/events/2
 
 ### Delete coffee
 DELETE http://localhost:8080/api/events/9
