@@ -38,6 +38,9 @@ Content-Type: application/json
 ### Get all events
 GET http://localhost:8080/api/events
 
+### Get events on the next pages
+GET http://localhost:8080/api/events?page=2
+
 ### Get event by id
 GET http://localhost:8080/api/events/9
 
