@@ -4,6 +4,7 @@ package cloudflight.integra.backend.flag;
 import cloudflight.integra.backend.flag.model.CreateFlagDto;
 import cloudflight.integra.backend.flag.model.Flag;
 import cloudflight.integra.backend.flag.model.FlagDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +23,11 @@ public class FlagController {
     }
 
     @PostMapping(value = "/flags")
-    public ResponseEntity<FlagDto> create
-        (
-            @RequestParam Long userId,
-            @RequestBody CreateFlagDto dto
+    public ResponseEntity<FlagDto> create (
+        @RequestParam Long userId,
+        @Valid
+        @RequestBody CreateFlagDto dto
         ) {
-
         Flag flag = mapper.toEntity(dto);
         flag.setUserId(userId);
 
@@ -40,7 +40,6 @@ public class FlagController {
     public List<FlagDto> getAll() {
         return service.getAll().stream().map(mapper::toDto).toList();
     }
-
 
     @DeleteMapping(value = "/admin/flags/{id}")
     public void delete(@PathVariable Long id) {
