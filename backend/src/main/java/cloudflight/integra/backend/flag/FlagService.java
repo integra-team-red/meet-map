@@ -3,11 +3,12 @@ package cloudflight.integra.backend.flag;
 import cloudflight.integra.backend.event.EventService;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.flag.model.Flag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,7 +21,9 @@ public class FlagService {
         this.eventService = eventService;
     }
 
-    public List<Flag> getAll() {return repository.findAll();}
+    public Page<Flag> getAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
 
     public Optional<Flag> getById(Long id) { return repository.findById(id); }
 
