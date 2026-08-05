@@ -2,11 +2,13 @@ package cloudflight.integra.backend.event;
 
 import cloudflight.integra.backend.event.model.CreateEventDto;
 import cloudflight.integra.backend.event.model.EventDto;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,7 +24,11 @@ public class EventController {
         this.mapper = mapper;
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get all Events",
+        operationId = "getAllEvents"
+    )
     public Page<EventDto> getAll(@PageableDefault(size = 20, sort = "dateTime") Pageable pageable) {
         return service.getAll(pageable).map(mapper::toDto);
     }

@@ -1,0 +1,29 @@
+<p-card>
+  <ng-template #title>
+    <h3>
+      {{name()}}
+    </h3>
+  </ng-template>
+
+  <ng-template #subtitle>
+    <p>{{ location() }}</p>
+  </ng-template>
+
+  <ng-template #content>
+    <div class="flex flex-row gap-2">
+      @for (tag of tags(); track tag) {
+        <p-tag [value]="tag.toString()" severity="secondary"/>
+      }
+    </div>
+    <div class="flex flex-row justify-between mt-2">
+      <div>
+        @for (index of [1, 2, 3, 4, 5]; track index) {
+          <i class="pi pi-star"></i>
+        }
+      </div>
+      <div>
+        <span>10/16 <i class="pi pi-user"></i></span>
+      </div>
+    </div>
+  </ng-template>
+</p-card>
