@@ -1,6 +1,6 @@
 package cloudflight.integra.backend.event.model;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 public record EventDto (Long id,
                         String title,
@@ -16,5 +16,5 @@ public record EventDto (Long id,
                         EventStatus status,
                         Long creatorId,
                         LocalDateTime createdAt,
-                        Set<Long> tagIds) {
+                        List<Long> tagIds) {
 }
