@@ -8,10 +8,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
-    @Mapping(target = "tagIds", source = "tags")
-    EventDto toDto(Event event);
 
-    @Mapping(target = "tags", source = "tagIds")
+    EventDto toDto(Event event);
     Event toEntity(EventDto eventDto);
 
     @Mapping(target = "tags", source = "tagIds")
