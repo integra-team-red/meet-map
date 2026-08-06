@@ -1,5 +1,8 @@
 package cloudflight.integra.backend.event.model;
+import cloudflight.integra.backend.tag.model.TagDto;
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 public record EventDto (Long id,
@@ -16,5 +19,5 @@ public record EventDto (Long id,
                         EventStatus status,
                         Long creatorId,
                         LocalDateTime createdAt,
-                        Set<Long> tagIds) {
+                        List<TagDto> tags) {
 }
