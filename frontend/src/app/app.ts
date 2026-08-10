@@ -10,6 +10,4 @@ import {NavigationBar} from './shared/components/navigation-bar/navigation-bar';
 })
 export class App {
   protected readonly title = signal('frontend');
-
-
 }
