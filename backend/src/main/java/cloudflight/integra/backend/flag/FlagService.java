@@ -27,6 +27,11 @@ public class FlagService {
 
     public Optional<Flag> getById(Long id) { return repository.findById(id); }
 
+    public Page<Flag> getByEvent(Pageable pageable, Long eventId) {
+        Optional<Event> event = eventService.getById(eventId);
+        return repository.findByEvent(pageable, event.orElseThrow());
+    }
+
     public Flag create(Flag flag) {
         Event event = eventService.getById(flag.getEvent().getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
