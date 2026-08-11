@@ -1,1 +1,17 @@
-<p>Home</p>
+<img src="map-placeholder.jpg" alt="" class="hidden lg:block fixed inset-0 -z-10 object-cover h-full w-full">
+
+<div class="flex flex-col lg:flex-row gap-4 items-start">
+  <div class="flex flex-row flex-wrap gap-4 lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
+    @for (event of events(); track event.id) {
+      <app-event-card
+        (click)="openEvent(event.id!)"
+        class="w-full"
+        [name]="event.title!"
+        [location]="event.city + ' ' + event.address"
+        [date]="event.dateTime!"
+        [tags]="event.tags!"
+        [maxParticipants]="event.maxParticipants"
+      />
+    }
+  </div>
+</div>
