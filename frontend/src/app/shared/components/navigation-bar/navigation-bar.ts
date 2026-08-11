@@ -10,6 +10,7 @@ import {Avatar} from 'primeng/avatar';
 })
 export class NavigationBar implements OnInit {
   items: MenuItem[] | undefined;
+  mobileItems: MenuItem[] | undefined;
   ngOnInit() {
     this.items = [
       {
@@ -17,7 +18,13 @@ export class NavigationBar implements OnInit {
         routerLink: '/'
       },
       {
-        label: 'Events',
+        label: 'Create Event',
+      }
+    ];
+    this.mobileItems = [
+      {
+        label: 'Home',
+        routerLink: '/'
       },
       {
         label: 'Map',
