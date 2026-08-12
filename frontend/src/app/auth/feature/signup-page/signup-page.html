@@ -1,0 +1,75 @@
+<div class="min-h-[80vh] rounded-xl bg-linear-to-br from-indigo-300 to-indigo-500 flex items-center justify-center p-4">
+  <div class="w-full max-w-5xl flex items-stretch gap-8 p-4">
+    <div class="hidden md:block flex-1 rounded-xl bg-gray-200"></div>
+
+    <form [formGroup]="form"
+          (ngSubmit)="submit()"
+          class="flex-1 bg-white rounded-xl p-8 flex flex-col gap-4">
+      <h1 class="text-3xl font-bold text-center">Sign Up</h1>
+      <div class="text-center w-full">
+        <span class="text-surface-700 dark:text-surface-200 leading-normal">Already have an account?</span>
+        <a routerLink="/login" class="text-indigo-500 font-medium ml-1 hover:opacity-80">Log in</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1">
+          <label for="firstName">First name</label>
+          <input pInputText id="firstName" formControlName="firstName" autocomplete="given-name" class="w-full"/>
+          @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+            <small class="text-red-600">First name is required.</small>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="lastName">Last name</label>
+          <input pInputText id="lastName" formControlName="lastName" autocomplete="family-name" class="w-full"/>
+          @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+            <small class="text-red-600">Last name is required.</small>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="email">Email address</label>
+        <input pInputText id="email" type="email" formControlName="email" autocomplete="email" class="w-full"/>
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <small class="text-red-600">Please enter a valid email address.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="password">Password</label>
+        <p-password inputId="password"
+                    formControlName="password" [feedback]="false"
+                    [toggleMask]="true"
+                    autocomplete="new-password"
+                    class="w-full"
+                    [inputStyleClass]="'w-full'"/>
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+          <small class="text-red-600">Password must be at least 8 characters.</small>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="confirmPassword">Retype Password</label>
+        <p-password inputId="confirmPassword"
+                    formControlName="confirmPassword" [feedback]="false"
+                    [toggleMask]="true"
+                    autocomplete="new-password"
+                    class="w-full"
+                    [inputStyleClass]="'w-full'"/>
+        @if (form.errors?.['passwordMismatch'] && form.controls.confirmPassword.touched) {
+          <small class="text-red-600">Passwords do not match.</small>
+        }
+      </div>
+
+      @if (error()) {
+        <small class="text-red-600 text-center">{{ error() }}</small>
+      }
+
+      <p-button type="submit" label="Create Account" [loading]="loading()"
+                styleClass="w-full"/>
+    </form>
+  </div>
+</div>
+

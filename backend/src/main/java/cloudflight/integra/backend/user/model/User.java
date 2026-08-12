@@ -18,6 +18,30 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(length = 100)
+    private String firstName;
+
+    @Column(length = 100)
+    private String lastName;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public User setFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public User setLastName(String lastName) {
+        this.lastName = lastName;
+        return this;
+    }
+
     private LocalDateTime createdAt;
 
     public Long getId() {
