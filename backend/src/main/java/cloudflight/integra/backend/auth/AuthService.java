@@ -33,6 +33,8 @@ public class AuthService {
         }
 
         User user = new User()
+            .setFirstName(request.firstName())
+            .setLastName(request.lastName())
             .setEmail(email)
             .setPassword(passwordEncoder.encode(request.password()));
         userRepository.save(user);

@@ -98,6 +98,8 @@ public class DatabaseSeedService {
 
     public void seedUserTable() {
         RegisterRequest testUserReq = new RegisterRequest(
+            "Test",
+            "User",
             "test@test.com",
             "Password123"
         );
@@ -108,6 +110,8 @@ public class DatabaseSeedService {
         }
         for (int i = 0; i < 5; i++) {
             RegisterRequest userReq = new RegisterRequest(
+                faker.name().firstName(),
+                faker.name().lastName(),
                 faker.internet().safeEmailAddress(),
                 "Password123"
             );
