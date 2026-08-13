@@ -1,4 +1,5 @@
 package cloudflight.integra.backend.event.model;
+import cloudflight.integra.backend.flag.model.Flag;
 import cloudflight.integra.backend.tag.model.Tag;
 import jakarta.persistence.*;
 
@@ -49,6 +50,9 @@ public class Event {
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "event")
+    private Set<Flag> flags = new HashSet<>();
 
     public Event(){ }
 
@@ -226,6 +230,15 @@ public class Event {
 
     public Event setTags(Set<Tag> tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public Set<Flag> getFlags() {
+        return flags;
+    }
+
+    public Event setFlags(Set<Flag> flags) {
+        this.flags = flags;
         return this;
     }
 }

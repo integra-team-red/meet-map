@@ -1,4 +1,5 @@
 package cloudflight.integra.backend.event.model;
+import cloudflight.integra.backend.flag.model.FlagDto;
 import cloudflight.integra.backend.tag.model.TagDto;
 
 import java.time.LocalDateTime;
@@ -19,5 +20,6 @@ public record EventDto (Long id,
                         EventStatus status,
                         Long creatorId,
                         LocalDateTime createdAt,
-                        List<TagDto> tags) {
+                        List<TagDto> tags,
+                        List<FlagDto> flags) {
 }
