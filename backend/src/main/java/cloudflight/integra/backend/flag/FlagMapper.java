@@ -10,9 +10,10 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = EventMapper.class)
 public interface FlagMapper {
+
+    @Mapping(target = "eventId", source = "event.id")
     FlagDto toDto(Flag flag);
 
-    @Mapping(source = "eventId", target = "event.id")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     Flag toEntity(CreateFlagDto dto);
