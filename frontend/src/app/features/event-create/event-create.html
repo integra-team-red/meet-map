@@ -1,0 +1,172 @@
+<div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+  <h2 class="text-2xl font-bold mb-6 text-gray-800">Create An Event</h2>
+
+  <form (ngSubmit)="onSubmit()" [formGroup]="eventForm" class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold text-gray-700" for="title">
+        Title
+      </label>
+      <input class="w-full" formControlName="title" id="title" maxlength="255" pInputText
+        placeholder="Enter event title" type="text"
+        style="--p-inputtext-focus-border-color:var(--color-indigo-300);
+                    --p-inputtext-hover-border-color:var(--color-indigo-300)"/>
+      @if (eventForm.controls.title.touched && eventForm.controls.title.invalid) {
+        <small class="text-red-600">
+          A title is required (max 255 characters).
+        </small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold text-gray-700" for="description">
+        Description
+      </label>
+      <textarea [autoResize]="true" class="w-full" formControlName="description" id="description"
+        pTextarea placeholder="What is this event about?"
+        rows="5"
+        style="--p-textarea-focus-border-color:var(--color-indigo-300);
+                       --p-textarea-hover-border-color:var(--color-indigo-300)">
+      </textarea>
+      @if (eventForm.controls.description.touched && eventForm.controls.description.invalid) {
+        <small class="text-red-600">
+          A description is required.
+        </small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold text-gray-700" for="address">
+        Address
+      </label>
+      <input class="w-full" formControlName="address" id="address" pInputText
+        placeholder="Street and number"
+        type="text"
+        style="--p-inputtext-focus-border-color:var(--color-indigo-300);
+             --p-inputtext-hover-border-color:var(--color-indigo-300)"/>
+      @if (eventForm.controls.address.touched && eventForm.controls.address.invalid) {
+        <small class="text-red-600">
+          An address is required.
+        </small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold text-gray-700" for="city">
+        City
+      </label>
+      <input class="w-full" formControlName="city" id="city" pInputText placeholder="Enter city"
+        type="text"
+        style="--p-inputtext-focus-border-color:var(--color-indigo-300);
+             --p-inputtext-hover-border-color:var(--color-indigo-300)"/>
+      @if (eventForm.controls.city.touched && eventForm.controls.city.invalid) {
+        <small class="text-red-600">
+          A city is required.
+        </small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold text-gray-700" for="dateTime">
+        Date and time
+      </label>
+      <p-datePicker [minDate]="today" [showIcon]="true" [showTime]="true"
+        class="w-full [--p-datepicker-date-selected-background:var(--color-indigo-500)]
+                    [--p-datepicker-today-background:var(--color-indigo-50)]"
+        dateFormat="dd/mm/yy" formControlName="dateTime"
+        hourFormat="24" inputId="dateTime"
+        inputStyleClass="w-full focus:border-indigo-300! hover:border-indigo-300!"
+        placeholder="Select date and time"/>
+      @if (eventForm.controls.dateTime.touched && eventForm.controls.dateTime.invalid) {
+        <small class="text-red-600">
+          A future date and time is required.
+        </small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold text-gray-700" for="maxParticipants">
+        Max participants
+        <span class="font-normal text-gray-500">
+          (optional)
+        </span>
+      </label>
+      <p-inputNumber [min]="1" [useGrouping]="false" class="w-full"
+        formControlName="maxParticipants" inputId="maxParticipants"
+        inputStyleClass="w-full focus:border-indigo-300! hover:border-indigo-300!"
+        placeholder="No limit"/>
+      @if (eventForm.controls.maxParticipants.touched && eventForm.controls.maxParticipants.invalid) {
+        <small class="text-red-600">
+          Must allow at least one person.
+        </small>
+      }
+    </div>
+
+    <div class="flex gap-4">
+      <div class="flex flex-col gap-2 flex-1">
+        <label class="font-semibold text-gray-700" for="minAge">
+          Min age
+          <span class="font-normal text-gray-500">
+            (optional)
+          </span>
+        </label>
+        <p-inputNumber [min]="0" [useGrouping]="false" class="w-full"
+          formControlName="minAge" inputId="minAge"
+          inputStyleClass="w-full focus:border-indigo-300! hover:border-indigo-300!" placeholder="Any"/>
+      </div>
+      <div class="flex flex-col gap-2 flex-1">
+        <label class="font-semibold text-gray-700" for="maxAge">
+          Max age
+          <span class="font-normal text-gray-500">
+            (optional)
+          </span>
+        </label>
+        <p-inputNumber [min]="0" [useGrouping]="false" class="w-full"
+          formControlName="maxAge" inputId="maxAge"
+          inputStyleClass="w-full focus:border-indigo-300! hover:border-indigo-300!" placeholder="Any"/>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold text-gray-700" for="tagIds">
+        Tags
+        <span class="font-normal text-gray-500">
+          (optional)
+        </span>
+      </label>
+      <p-multiSelect [filter]="true" [options]="tags()" class="w-full
+                   [--p-multiselect-option-selected-focus-background:var(--color-indigo-300)]
+                   [--p-multiselect-option-selected-focus-color:var(--color-white)]
+                   [--p-multiselect-option-focus-background:var(--color-indigo-500)]
+                   [--p-multiselect-option-focus-color:var(--color-white)]
+                   [--p-multiselect-option-selected-background:var(--color-indigo-300)]
+                   [--p-multiselect-option-selected-color:var(--color-white)]
+                   [--p-multiselect-focus-border-color:var(--color-indigo-300)]
+                   [--p-checkbox-checked-background:var(--color-indigo-500)]
+                   [--p-checkbox-checked-border-color:var(--color-indigo-500)]
+                   [--p-checkbox-checked-hover-background:var(--color-white)]
+                   [--p-checkbox-checked-hover-border-color:var(--color-indigo-500)]
+                   [--p-inputtext-focus-border-color:var(--color-indigo-300)]
+                   [--p-inputtext-hover-border-color:var(--color-indigo-300)]"
+        display="chip" formControlName="tagIds" inputId="tagIds"
+        optionLabel="name" optionValue="id" placeholder="Select tags"/>
+    </div>
+
+    @if (serverErrors().length) {
+      <div class="rounded bg-red-50 border border-red-200 p-3">
+        @for (error of serverErrors(); track $index) {
+          <small class="block text-red-600">{{ error }}</small>
+        }
+      </div>
+    }
+    <div class="mt-4 flex justify-center">
+      <button [disabled]="eventForm.invalid || submitting()" [loading]="submitting()"
+        class="bg-indigo-500! border-0!
+              hover:border-2! hover:border-indigo-500! hover:bg-indigo-50! hover:text-indigo-500!" pButton
+        rounded type="submit">
+        <span pButtonLabel>
+          Create Event
+        </span>
+      </button>
+    </div>
+  </form>
+</div>

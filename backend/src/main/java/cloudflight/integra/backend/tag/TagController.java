@@ -5,6 +5,7 @@ import cloudflight.integra.backend.tag.model.CreateTagDto;
 import cloudflight.integra.backend.tag.model.TagDto;
 import jakarta.validation.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,14 +23,14 @@ public class TagController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<TagDto> getAll(@RequestParam(required = false) String category) {
         if(category != null)
             return service.getByCategory(Category.valueOf(category)).stream().map(mapper::toDto).toList();
         return service.getAll().stream().map(mapper::toDto).toList();
     }
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TagDto> create(@Valid @RequestBody CreateTagDto createTagDto) {
         try {
             return ResponseEntity
