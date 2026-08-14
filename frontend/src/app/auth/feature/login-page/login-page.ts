@@ -43,8 +43,12 @@ export class LoginPage {
     this.api.login({email, password})
       .subscribe({
         next: ({token}) => {
-          (rememberMe ? localStorage : sessionStorage).setItem('token', token!);
           this.loading.set(false);
+          if (!token) {
+            this.error.set('Something went wrong. Please try again.');
+            return;
+          }
+          (rememberMe ? localStorage : sessionStorage).setItem('token', token);
           this.router.navigate(['/']);
         },
         error: (err) => {

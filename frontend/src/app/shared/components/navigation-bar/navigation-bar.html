@@ -2,7 +2,10 @@
   <p-menubar [model]="items" [pt]="{ rootList: 'grow justify-around' }">
     <ng-template #end>
       <div class="flex items-center gap-2">
-        <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
+        <a routerLink="/profile" aria-label="Profile">
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
+        </a>
       </div>
     </ng-template>
   </p-menubar>
@@ -11,7 +14,10 @@
   <p-menubar [model]="mobileItems" [pt]="{ rootList: 'grow justify-around' }">
     <ng-template #end>
       <div class="flex items-center gap-2">
-        <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
+        <a routerLink="/profile" aria-label="Profile">
+        <p-avatar
+          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
+        </a>
       </div>
     </ng-template>
   </p-menubar>
