@@ -4,6 +4,7 @@ import {LoginPage} from './auth/feature/login-page/login-page';
 import {SignupPage} from './auth/feature/signup-page/signup-page';
 import {AdminPanel} from './admin/feature/admin-panel/admin-panel';
 import {EventCreateComponent} from './features/event-create/event-create';
+import {ProfilePage} from './profile/feature/profile-page/profile-page';
 
 export const routes: Routes = [
   {
@@ -25,5 +26,9 @@ export const routes: Routes = [
   {
     path: 'events/create',
     component: EventCreateComponent,
-  }
+  },
+  {
+    path: 'profile',
+    component: ProfilePage,
+  },
 ];
