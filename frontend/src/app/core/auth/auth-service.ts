@@ -18,6 +18,10 @@ export class AuthService {
       sessionStorage.getItem('token');
   }
 
+  isAuthenticated() {
+    return !!this.getToken();
+  }
+
   clearToken(): void {
     localStorage.removeItem(this.tokenKey);
     sessionStorage.removeItem(this.tokenKey);
