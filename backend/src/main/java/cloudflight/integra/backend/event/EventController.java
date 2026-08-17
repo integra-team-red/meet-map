@@ -29,8 +29,11 @@ public class EventController {
         summary = "Get all Events",
         operationId = "getAllEvents"
     )
-    public Page<EventDto> getAll(@PageableDefault(size = 20, sort = "dateTime") Pageable pageable) {
-        return service.getAll(pageable).map(mapper::toDto);
+    public Page<EventDto> getAll(
+        @PageableDefault(size = 20, sort = "dateTime") Pageable pageable,
+        @RequestParam(defaultValue = "") String searchTerm
+    ) {
+        return service.getAll(pageable, searchTerm).map(mapper::toDto);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
