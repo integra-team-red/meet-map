@@ -9,7 +9,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   if (!token) {
-    return next(req);
+    if (req.url.includes("login")|| req.url.includes("register"))
+      return next(req);
+    router.navigate(['/login']);
   }
 
   return next(req.clone({
