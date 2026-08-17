@@ -1,6 +1,8 @@
 <div class="h-screen flex flex-col justify-between overflow-hidden">
   <header class="p-2">
-    <app-navigation-bar/>
+    @if (auth.getToken()){
+      <app-navigation-bar/>
+    }
   </header>
 
   <main class="mr-4 ml-4 mb-4 grow overflow-y-scroll">
