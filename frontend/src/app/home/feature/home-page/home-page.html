@@ -1,17 +1,26 @@
-<img src="map-placeholder.jpg" alt="" class="hidden lg:block fixed inset-0 -z-10 object-cover h-full w-full">
+<div class="flex flex-col gap-2">
+  <div>
+    <p-iconfield>
+      <p-inputicon class="pi pi-search"/>
+      <input type="text" pInputText #filter placeholder="Search" fluid (input)="onSearchUpdated(filter.value)"/>
+    </p-iconfield>
+  </div>
 
-<div class="flex flex-col lg:flex-row gap-4 items-start">
-  <div class="flex flex-row flex-wrap gap-4 lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
-    @for (event of events(); track event.id) {
-      <app-event-card
-        (click)="openEvent(event.id!)"
-        class="w-full"
-        [name]="event.title!"
-        [location]="event.city + ' ' + event.address"
-        [date]="event.dateTime!"
-        [tags]="event.tags!"
-        [maxParticipants]="event.maxParticipants"
-      />
-    }
+  <img src="map-placeholder.jpg" alt="" class="hidden lg:block fixed inset-0 -z-10 object-cover h-full w-full">
+
+  <div class="flex flex-col lg:flex-row gap-4 items-start">
+    <div class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
+      @for (event of events(); track event.id) {
+        <app-event-card
+          (click)="openEvent(event.id!)"
+          class="w-full"
+          [name]="event.title!"
+          [location]="event.city + ' ' + event.address"
+          [date]="event.dateTime!"
+          [tags]="event.tags!"
+          [maxParticipants]="event.maxParticipants"
+        />
+      }
+    </div>
   </div>
 </div>

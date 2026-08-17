@@ -17,8 +17,8 @@ public class EventService {
     }
 
     // TODO: might want to filter out the soft deleted events in the future
-    public Page<Event> getAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Event> getAll(Pageable pageable, String searchTerm) {
+        return repository.findAllByTitleContainingIgnoreCase(searchTerm, pageable);
     }
 
     public Optional<Event> getById(Long id) {
