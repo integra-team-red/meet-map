@@ -1,6 +1,6 @@
 package cloudflight.integra.backend.event.model;
 import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Set;
 
 public record CreateEventDto(
@@ -21,7 +21,7 @@ public record CreateEventDto(
     Double longitude,
     @NotNull(message = "The event must have a date.")
     @Future(message = "An event must be set in the future.")
-    LocalDateTime dateTime,
+    Instant dateTime,
     @Min(value = 1, message = "The capacity must allow at least one person.")
     Integer maxParticipants,
     @Min(value = 0, message = "The age cannot be negative.")
