@@ -1,10 +1,11 @@
 package cloudflight.integra.backend.event.model;
+
 import cloudflight.integra.backend.flag.model.FlagDto;
 import cloudflight.integra.backend.tag.model.TagDto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 public record EventDto (Long id,
                         String title,
@@ -13,7 +14,7 @@ public record EventDto (Long id,
                         String city,
                         Double latitude,
                         Double longitude,
-                        LocalDateTime dateTime,
+                        Instant dateTime,
                         Integer maxParticipants,
                         Integer minAge,
                         Integer maxAge,

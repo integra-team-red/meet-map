@@ -6,6 +6,10 @@ import cloudflight.integra.backend.tag.model.Tag;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
@@ -18,6 +22,14 @@ public interface EventMapper {
     @Mapping(target = "createdAt", ignore = true)
     Event toEntity(CreateEventDto dto);
 
+
+    default Instant toUtc(LocalDateTime localDateTime) {
+        return localDateTime == null ? null : localDateTime.toInstant(ZoneOffset.UTC);
+    }
+
+    default LocalDateTime toLocalUtc(Instant instant) {
+        return instant == null ? null : LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
 
     default Long tagToId(Tag tag) {
         if (tag == null) {
