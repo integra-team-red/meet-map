@@ -47,6 +47,10 @@ public class EventController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Create Event",
+        operationId = "createEvent"
+    )
     public ResponseEntity<EventDto> create(@Valid @RequestBody CreateEventDto event) {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(mapper.toEntity(event))));
     }

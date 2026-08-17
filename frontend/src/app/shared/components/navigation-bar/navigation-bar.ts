@@ -20,6 +20,7 @@ export class NavigationBar implements OnInit {
       },
       {
         label: 'Create Event',
+        routerLink: '/events/create'
       }
     ];
     this.mobileItems = [
@@ -32,6 +33,7 @@ export class NavigationBar implements OnInit {
       },
       {
         label: 'Create Event',
+        routerLink: '/events/create'
       }
     ];
   }
