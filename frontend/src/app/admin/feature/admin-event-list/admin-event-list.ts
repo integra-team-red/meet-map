@@ -1,6 +1,11 @@
-import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  OnInit,
+  output
+} from '@angular/core';
 import {PageEventDto} from '@app/api/model/pageEventDto';
-import {EventControllerService} from '@app/api/api/eventController.service';
 import {AdminEventCard} from '../../../shared/ui/admin-event-card/admin-event-card';
 import {Card} from 'primeng/card';
 import {IconField} from 'primeng/iconfield';
@@ -8,7 +13,7 @@ import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
 import {ScrollPanel} from 'primeng/scrollpanel';
 import {Paginator, PaginatorState} from 'primeng/paginator';
-import {FlagControllerService} from '@app/api/api/flagController.service';
+import {EventDto} from '@app/api/model/eventDto';
 
 @Component({
   selector: 'app-admin-event-list',
@@ -24,31 +29,28 @@ import {FlagControllerService} from '@app/api/api/flagController.service';
   templateUrl: './admin-event-list.html',
 })
 export class AdminEventList implements OnInit {
-  eventService: EventControllerService = inject(EventControllerService);
-  flagService: FlagControllerService = inject(FlagControllerService);
-  page = signal<PageEventDto|undefined>(undefined);
-  events = computed(() => this.page()?.content!)
+  page = input.required<PageEventDto|null>();
+  pageRequest = output<number[]>()
 
+  events = computed(() => this.page()?.content!)
   countPage = computed(() => 10)
   countTotal = computed(() => this.page()?.totalElements ?? 0)
 
+  onEventClicked = output<EventDto>()
+
   ngOnInit() {
-    this.getEventPage(0, 10);
+    this.requestPage()
   }
 
-  protected getEventPage(page: number | undefined, rows: number | undefined) {
-    this.eventService.getAllEvents({ page: page ?? 0, size: rows ?? 10, sort: ["desc"] })
-      .subscribe((response: PageEventDto) => {
-        console.log(response);
-        this.page.set(response);
-      });
+  protected requestPage(page: number = 0, rows: number = 10){
+    this.pageRequest.emit([page, rows])
   }
 
-  protected eventClicked(id: number) {
-    console.log("clicked event " + id);
+  protected clickEvent(e: EventDto) {
+    this.onEventClicked.emit(e)
   }
 
-  protected onPageChange(event: PaginatorState) {
-    this.getEventPage(event.page, event.rows)
+  protected changePage(event: PaginatorState) {
+    this.requestPage(event.page, event.rows)
   }
 }

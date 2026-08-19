@@ -1,4 +1,4 @@
-<p-card class="w-full">
+<p-card class="w-full h-full">
   <div class="gap-4 flex flex-col w-full">
     <div class="flex flex-col md:flex-row items-center justify-between w-full">
       <p-iconfield class="align-middle w-full">
@@ -8,7 +8,7 @@
       <p-paginator
         [rows]="countPage()"
         [totalRecords]="countTotal()"
-        (onPageChange)="onPageChange($event)"
+        (onPageChange)="changePage($event)"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="{first} - {last} of {totalRecords}"
         [showPageLinks]="false"
@@ -16,10 +16,12 @@
         class="min-w-fit"
       ></p-paginator>
     </div>
-    <p-scrollpanel class="w-full h-screen" [style]="{ width: '100%', height: '75vh' }">
-      <div class="flex flex-col gap-4">
+    <p-scrollpanel class="w-full border-gray-200 border rounded-2xl p-2 h-[calc(100vh-16em)]">
+      <div class="flex flex-col gap-4 w-full">
         @for (event of events(); track event.id) {
-          <app-admin-event-card [name]="event.title!" [description]="event.description!" [flagCount]="event.flags!.length" (click)="eventClicked(event.id!)" class="w-full"/>
+          <app-admin-event-card [name]="event.title!" [description]="event.description!"
+                                [flagCount]="event.flags!.length" (click)="clickEvent(event)" class="w-full"
+                                [status]="event.status!"/>
         }
       </div>
     </p-scrollpanel>

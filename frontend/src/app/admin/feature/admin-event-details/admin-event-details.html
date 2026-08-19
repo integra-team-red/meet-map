@@ -1,0 +1,119 @@
+<p-card class="md:w-full sm:hidden" [class]="{'hidden': !!inputEvent()}">
+  <div class="flex flex-col gap-4">
+
+    <p-button (onClick)="deselectEvent()" variant="outlined" severity="secondary">
+      <span>
+        <i class="pi pi-backward"></i>
+        Back
+      </span>
+    </p-button>
+
+    <p>
+      <span class="text-indigo-300">#{{ event()?.id }}</span>
+      created by
+      <span class="text-indigo-300">{{ event()?.creatorId }}</span>
+      at
+      <span class="text-gray-500">{{ event()?.createdAt }}</span>
+    </p>
+    <p class="text-indigo-500 text-2xl">
+      {{ event()?.title }}
+    </p>
+
+    <p-scrollpanel class="w-full border-gray-200 border rounded-2xl p-2 overflow-visible h-[calc(100vh-24em)]">
+      <div class="flex flex-col gap-4 m-2 p-2 h-full overflow-visible">
+
+        <p-floatlabel variant="on">
+          <input pInputText id="on_label" [(ngModel)]="event()!.title" autocomplete="off"/>
+          <label for="on_label">Title</label>
+        </p-floatlabel>
+        <p-floatlabel variant="on">
+          <textarea pTextarea id="on_label"
+                    [(ngModel)]="event()!.description"
+                    rows="5" cols="30" style="resize: none"
+                    class="h-full w-full">
+          </textarea>
+          <label for="on_label">Description</label>
+        </p-floatlabel>
+
+        <div class="border-gray-300 border rounded-2xl p-0 overflow-visible">
+
+          <div class="h-24 overflow-clip rounded-t-2xl">
+            <img src="map-placeholder.jpg" alt="map" class="-translate-y-1/3" width=""/>
+          </div>
+
+          <div class="border-t-gray-300 border-t p-2 flex flex-row flex-wrap">
+            <div class="flex flex-row w-full flex-wrap justify-between gap-2">
+              <div class="flex flex-row flex-wrap gap-1">
+                <p-floatlabel variant="on">
+                  <input pInputText id="on_label" [(ngModel)]="event()!.city" autocomplete="off"/>
+                  <label for="on_label">City</label>
+                </p-floatlabel>
+                <p-floatlabel variant="on">
+                  <input pInputText id="on_label" [(ngModel)]="event()!.address" autocomplete="off"/>
+                  <label for="on_label">Address</label>
+                </p-floatlabel>
+              </div>
+              <div class="flex flex-row justify-center">
+                <p-floatlabel variant="on">
+                  <p-datePicker id="on_label" inputId="calendar-dateonly"
+                                [(ngModel)]="eventDate"
+                                (ngModelChange)="setEventDate($event)"
+                                [showTime]="true"
+                                [dateFormat]="'yy-mm-dd'"
+                                [hourFormat]="'24'"
+                                [baseZIndex]="1000"
+                                appendTo="body"/>
+                  <label for="on_label" class="font-bold block mb-2">Date & Time</label>
+                </p-floatlabel>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <div class="flex flex-row gap-4 text-center justify-between">
+          <p class="min-w-fit">Age Range: </p>
+          <div class="flex flex-box w-full gap-4">
+            <p>{{ event()!.minAge }}</p>
+            <p-slider id="age-range-slider" [(ngModel)]="eventAgeRange" (ngModelChange)="setEventAgeRange($event)"
+                      [range]="true" class="w-full" [min]="0" [max]="100"/>
+            <p>{{ event()!.maxAge }}</p>
+          </div>
+        </div>
+        <div class="flex flex-row flex-wrap gap-1">
+          <p-floatlabel variant="on">
+            <input pInputText id="on_label" [(ngModel)]="event()!.latitude" autocomplete="off"/>
+            <label for="on_label">Latitude</label>
+          </p-floatlabel>
+          <p-floatlabel variant="on">
+            <input pInputText id="on_label" [(ngModel)]="event()!.longitude" autocomplete="off"/>
+            <label for="on_label">Longitude</label>
+          </p-floatlabel>
+        </div>
+        <p-floatlabel variant="on">
+          <p-inputNumber id="on_label" [showButtons]="true" buttonLayout="horizontal"
+                          [(ngModel)]="event()!.maxParticipants" [step]="1">
+            <ng-template #incrementbuttonicon>
+              <span class="pi pi-plus"></span>
+            </ng-template>
+            <ng-template #decrementbuttonicon>
+              <span class="pi pi-minus"></span>
+            </ng-template>
+          </p-inputNumber>
+          <label for="on_label">Max Participants</label>
+        </p-floatlabel>
+
+
+      </div>
+    </p-scrollpanel>
+
+    <div class="flex flex-row justify-between">
+      <p-button label="Dismiss" variant="outlined" severity="secondary"/>
+      <div class="flex flex-row gap-4">
+        <p-button label="Save Changes" variant="outlined" severity="primary" (onClick)="updateEvent()"/>
+        <p-button label="Cancel Event..." variant="outlined" severity="danger" (onClick)="deleteEvent()"/>
+      </div>
+    </div>
+  </div>
+</p-card>
