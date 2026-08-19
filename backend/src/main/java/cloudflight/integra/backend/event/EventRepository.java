@@ -23,7 +23,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         AND COALESCE(e.minAge, 0) <= :maxAge
         AND e.dateTime >= :dateFrom
         AND e.dateTime <= :dateTo
-        AND (:noTags = true OR t.id IN :tagIds)""")
+        AND (:noTags = true OR t.id IN :tagIds)
+        AND (:creatorId = null OR e.creatorId = :creatorId)""")
     Page<Event> findFiltered(
         @Param("searchTerm") String searchTerm,
         @Param("city") String city,
@@ -33,6 +34,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         @Param("maxAge") Integer maxAge,
         @Param("dateFrom") LocalDateTime dateFrom,
         @Param("dateTo") LocalDateTime dateTo,
+        @Param("creatorId") Long creatorId,
         Pageable pageable);
 
     @Query("SELECT DISTINCT city FROM Event")

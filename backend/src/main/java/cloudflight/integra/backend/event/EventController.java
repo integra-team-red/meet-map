@@ -46,9 +46,12 @@ public class EventController {
         @RequestParam(defaultValue = "0") Integer minAge,
         @RequestParam(defaultValue = "200") Integer maxAge,
         @RequestParam(defaultValue = "1900-01-01") LocalDate dateFrom,
-        @RequestParam(defaultValue = "2999-12-31") LocalDate dateTo
+        @RequestParam(defaultValue = "2999-12-31") LocalDate dateTo,
+        @RequestParam(required = false) Long creatorId
     ) {
-        return service.getAll(pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo).map(mapper::toDto);
+        return service.getAll(
+            pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId
+        ).map(mapper::toDto);
     }
 
     @GetMapping(value = "/cities", produces = MediaType.APPLICATION_JSON_VALUE)

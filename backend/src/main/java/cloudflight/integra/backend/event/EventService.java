@@ -29,13 +29,14 @@ public class EventService {
         Integer minAge,
         Integer maxAge,
         LocalDate dateFrom,
-        LocalDate dateTo
+        LocalDate dateTo,
+        Long creatorId
     ) {
         boolean noTags = tagIds == null || tagIds.isEmpty();
         List<Long> tags = noTags ? List.of(-1L) : tagIds;
         LocalDateTime from = dateFrom.atStartOfDay();
         LocalDateTime to = dateTo.atTime(LocalTime.MAX);
-        return repository.findFiltered(searchTerm, city, tags, noTags, minAge, maxAge, from, to, pageable);
+        return repository.findFiltered(searchTerm, city, tags, noTags, minAge, maxAge, from, to, creatorId, pageable);
     }
 
     public Optional<Event> getById(Long id) {

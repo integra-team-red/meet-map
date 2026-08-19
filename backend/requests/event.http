@@ -1,5 +1,6 @@
 POST http://localhost:8080/api/events
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "title":  "New Event",
@@ -19,6 +20,7 @@ Content-Type: application/json
 ### Update event
 PUT http://localhost:8080/api/events/2
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "title":  "Updated Event",
@@ -37,14 +39,18 @@ Content-Type: application/json
 
 ### Get all events
 GET http://localhost:8080/api/events
+Authorization: Bearer {{token}}
 
 ### Get events on the next pages
-GET http://localhost:8080/api/events?page=2
+GET http://localhost:8080/api/events?page=0&size=10&creatorId=1
+Authorization: Bearer {{token}}
 
 ### Get event by id
 GET http://localhost:8080/api/events/2
+Authorization: Bearer {{token}}
 
 ### Delete coffee
 DELETE http://localhost:8080/api/events/9
+Authorization: Bearer {{token}}
 
 <> 2026-07-09T184818.200.json
