@@ -3,6 +3,7 @@ package cloudflight.integra.backend.tag;
 import cloudflight.integra.backend.tag.model.Category;
 import cloudflight.integra.backend.tag.model.CreateTagDto;
 import cloudflight.integra.backend.tag.model.TagDto;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +25,10 @@ public class TagController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get all Tags",
+        operationId = "getAllTags"
+    )
     public List<TagDto> getAll(@RequestParam(required = false) String category) {
         if(category != null)
             return service.getByCategory(Category.valueOf(category)).stream().map(mapper::toDto).toList();
