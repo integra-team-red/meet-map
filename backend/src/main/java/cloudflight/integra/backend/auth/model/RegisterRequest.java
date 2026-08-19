@@ -1,8 +1,8 @@
 package cloudflight.integra.backend.auth.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 public record RegisterRequest(
     @NotBlank(message = "A first name is required.")
@@ -17,6 +17,12 @@ public record RegisterRequest(
     String email,
     @NotBlank(message = "A password is required.")
     @Size(min = 8, message = "The password must be at least 8 characters long.")
-    String password
+    String password,
+    @NotNull
+    @Past(message = "The birth date must be in the past.")
+    LocalDate birthDate,
+    @NotNull
+    @Size(max = 500, message = "The description is too long.")
+    String description
 ) {
 }

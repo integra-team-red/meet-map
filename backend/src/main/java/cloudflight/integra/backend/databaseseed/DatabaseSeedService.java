@@ -25,7 +25,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,7 +103,9 @@ public class DatabaseSeedService {
             "Test",
             "User",
             "test@test.com",
-            "Password123"
+            "Password123",
+            LocalDate.of(2000, 05, 10),
+            "Description_Test"
         );
         try {
             authService.register(testUserReq);
@@ -113,7 +117,9 @@ public class DatabaseSeedService {
                 faker.name().firstName(),
                 faker.name().lastName(),
                 faker.internet().safeEmailAddress(),
-                "Password123"
+                "Password123",
+                LocalDate.ofInstant(faker.date().birthday().toInstant(), ZoneId.systemDefault()),
+                faker.lorem().paragraph()
             );
             try {
                 authService.register(userReq);
