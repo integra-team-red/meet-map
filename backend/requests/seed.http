@@ -1,5 +1,7 @@
 ###
 POST http://localhost:8080/api/seed
+Authorization: Bearer {{token}}
 
 ###
 DELETE http://localhost:8080/api/seed
+Authorization: Bearer {{token}}
