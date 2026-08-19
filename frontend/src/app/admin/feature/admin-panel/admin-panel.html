@@ -1,4 +1,22 @@
 <div class="gap-4 flex flex-row w-full">
-  <app-admin-event-list class="w-full"/>
+  <app-admin-event-list
+    [page]="listPage()"
+    (onEventClicked)="eventClicked($event)"
+    (pageRequest)="pageRequested($event)"
+    [ngClass]="{
+      'max-lg:hidden': isEventSelected(),
+    }"
+  />
+  <app-admin-event-details
+    [inputEvent]="detailsEvent()"
+    (onEventDelete)="eventDeleted($event)"
+    (onEventUpdate)="eventUpdated($event)"
+    (onEventDeselect)="eventDeselected()"
+    [hidden]=""
+    class="w-full"
+    [ngClass]="{
+      'hidden': !isEventSelected(),
+    }"
+  />
 </div>
 
