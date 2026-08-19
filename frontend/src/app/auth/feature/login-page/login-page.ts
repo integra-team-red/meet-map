@@ -6,6 +6,7 @@ import {CheckboxModule} from 'primeng/checkbox';
 import {PasswordModule} from 'primeng/password';
 import {AuthControllerService} from '@app/api/api/authController.service';
 import {InputTextModule} from 'primeng/inputtext';
+import {AuthService} from '../../../core/auth/auth-service';
 
 @Component({
   selector: 'app-login-page',
@@ -17,6 +18,7 @@ import {InputTextModule} from 'primeng/inputtext';
 export class LoginPage {
   private readonly api = inject(AuthControllerService)
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   protected readonly form = inject(FormBuilder).nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -48,7 +50,7 @@ export class LoginPage {
             this.error.set('Something went wrong. Please try again.');
             return;
           }
-          (rememberMe ? localStorage : sessionStorage).setItem('token', token);
+          this.authService.setToken(token, rememberMe);
           this.router.navigate(['/']);
         },
         error: (err) => {
@@ -59,5 +61,4 @@ export class LoginPage {
         },
       });
   }
-
 }

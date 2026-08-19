@@ -3,10 +3,10 @@ package cloudflight.integra.backend.event;
 import cloudflight.integra.backend.event.model.CreateEventDto;
 import cloudflight.integra.backend.event.model.EventDto;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,10 +46,6 @@ public class EventController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @Operation(
-        summary = "Create a new event",
-        operationId = "createEvent"
-    )
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "Create Event",
