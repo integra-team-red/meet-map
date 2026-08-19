@@ -9,6 +9,60 @@
   <img src="map-placeholder.jpg" alt="" class="hidden lg:block fixed inset-0 -z-10 object-cover h-full w-full">
 
   <div class="flex flex-col lg:flex-row gap-4 items-start">
+    <div class="w-full lg:w-96">
+      <p-card>
+        <p-accordion [(value)]="accordionValue">>
+          <p-accordion-panel value="0">
+            <p-accordion-header>Filters</p-accordion-header>
+            <p-accordion-content>
+              <div class="flex flex-col gap-6">
+                <div class="flex items-center justify-between">
+                  <label>Sort by</label>
+                  <div class="w-30 h-full">
+                    <p-select [options]="options" [(ngModel)]="sortOrder" (onChange)="searchEvents()" optionLabel="name"
+                              placeholder="Sort by" fluid/>
+                  </div>
+                </div>
+
+                <form [formGroup]="filters" (ngSubmit)="applyFilters()">
+                  <div class="flex flex-col gap-6">
+                    <div class="flex flex-col gap-2">
+                      <label>City</label>
+                      <p-select formControlName="city" inputId="on_label" [options]="cities()"/>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                      <label>Tags</label>
+                      <p-multiselect [options]="tags()" formControlName="tags" optionLabel="name" optionValue="id"
+                                      display="chip" class="w-full"></p-multiselect>
+                    </div>
+                    <div class="flex justify-between">
+                      <label>Age</label>
+                      <span>{{ filters.controls.age.value?.[0] }} - {{ filters.controls.age.value?.[1] }}</span>
+                    </div>
+
+                    <div class="card flex justify-center">
+                      <p-slider formControlName="age" [range]="true" class="w-56"/>
+                    </div>
+
+                    <div class="card flex justify-center mt-6">
+                      @if (accordionValue() === '0') {
+                        <p-datepicker formControlName="dateRange" selectionMode="range" [inline]="true"></p-datepicker>
+                      }
+                    </div>
+                    <div class="card flex justify-end  ">
+                      <p-button type="button" icon="pi pi-trash" (onClick)="clearFilters()"/>
+                    </div>
+                    <div class="card flex justify-center mt-10 ">
+                      <p-button type="submit" label="Apply"/>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </p-accordion-content>
+          </p-accordion-panel>
+        </p-accordion>
+      </p-card>
+    </div>
     <div class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
       @for (event of events(); track event.id) {
         <app-event-card

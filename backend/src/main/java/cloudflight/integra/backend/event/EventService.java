@@ -5,7 +5,11 @@ import cloudflight.integra.backend.event.model.EventStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,8 +21,21 @@ public class EventService {
     }
 
     // TODO: might want to filter out the soft deleted events in the future
-    public Page<Event> getAll(Pageable pageable, String searchTerm) {
-        return repository.findAllByTitleContainingIgnoreCase(searchTerm, pageable);
+    public Page<Event> getAll(
+        Pageable pageable,
+        String searchTerm,
+        String city,
+        List<Long> tagIds,
+        Integer minAge,
+        Integer maxAge,
+        LocalDate dateFrom,
+        LocalDate dateTo
+    ) {
+        boolean noTags = tagIds == null || tagIds.isEmpty();
+        List<Long> tags = noTags ? List.of(-1L) : tagIds;
+        LocalDateTime from = dateFrom.atStartOfDay();
+        LocalDateTime to = dateTo.atTime(LocalTime.MAX);
+        return repository.findFiltered(searchTerm, city, tags, noTags, minAge, maxAge, from, to, pageable);
     }
 
     public Optional<Event> getById(Long id) {
@@ -52,5 +69,13 @@ public class EventService {
             repository.save(existing);
             return true;
         }).orElse(false);
+    }
+
+    public List<String> getCities() {
+        return repository.findDistinctCities();
+    }
+
+    public Page<Event> getAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }

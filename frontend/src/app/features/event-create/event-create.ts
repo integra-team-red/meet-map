@@ -47,7 +47,7 @@ export class EventCreateComponent implements OnInit {
   private tagApi = inject(TagControllerService);
 
   ngOnInit() {
-    this.tagApi.getAll().subscribe((tags) => this.tags.set(tags));
+    this.tagApi.getAllTags().subscribe((tags) => this.tags.set(tags));
   }
 
   onSubmit() {

@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
@@ -24,6 +27,12 @@ public class EventController {
         this.mapper = mapper;
     }
 
+    public Page<EventDto> getAll(
+        @PageableDefault(size = 20, sort = "dateTime") Pageable pageable
+    ) {
+        return service.getAll(pageable).map(mapper::toDto);
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "Get all Events",
@@ -31,9 +40,24 @@ public class EventController {
     )
     public Page<EventDto> getAll(
         @PageableDefault(size = 20, sort = "dateTime") Pageable pageable,
-        @RequestParam(defaultValue = "") String searchTerm
+        @RequestParam(defaultValue = "") String searchTerm,
+        @RequestParam(defaultValue = "") String city,
+        @RequestParam(required = false) List<Long> tagIds,
+        @RequestParam(defaultValue = "0") Integer minAge,
+        @RequestParam(defaultValue = "200") Integer maxAge,
+        @RequestParam(defaultValue = "1900-01-01") LocalDate dateFrom,
+        @RequestParam(defaultValue = "2999-12-31") LocalDate dateTo
     ) {
-        return service.getAll(pageable, searchTerm).map(mapper::toDto);
+        return service.getAll(pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo).map(mapper::toDto);
+    }
+
+    @GetMapping(value = "/cities", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Get all cities of events",
+        operationId = "getCities"
+    )
+    public List<String> getCities() {
+        return service.getCities();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

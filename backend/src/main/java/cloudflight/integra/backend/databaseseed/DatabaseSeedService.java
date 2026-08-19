@@ -153,7 +153,7 @@ public class DatabaseSeedService {
     }
 
     public void seedEventTable() {
-        if (!eventService.getAll(Pageable.unpaged(), "").isEmpty()) {
+        if (!eventService.getAll(Pageable.unpaged()).isEmpty()) {
             return;
         }
         List<Tag> allTags = tagService.getAll();
@@ -194,7 +194,7 @@ public class DatabaseSeedService {
         if (!eventParticipationService.getAll().isEmpty()) {
             return;
         }
-        List<Event> allEvents = eventService.getAll(Pageable.unpaged(), "").getContent();
+        List<Event> allEvents = eventService.getAll(Pageable.unpaged()).getContent();
         if (allEvents.isEmpty()) {
             return;
         }
@@ -215,7 +215,7 @@ public class DatabaseSeedService {
         if (!flagService.getAll(Pageable.unpaged()).isEmpty()) {
             return;
         }
-        List<Event> allEvents = eventService.getAll(Pageable.unpaged(), "").getContent();
+        List<Event> allEvents = eventService.getAll(Pageable.unpaged()).getContent();
         if (allEvents.isEmpty()) {
             return;
         }
@@ -237,7 +237,7 @@ public class DatabaseSeedService {
         if (!reviewService.getAll().isEmpty()) {
             return;
         }
-        List<Event> allEvents = eventService.getAll(Pageable.unpaged(), "").getContent();
+        List<Event> allEvents = eventService.getAll(Pageable.unpaged()).getContent();
         if (allEvents.isEmpty()) {
             return;
         }
