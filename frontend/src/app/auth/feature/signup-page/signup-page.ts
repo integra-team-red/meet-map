@@ -30,6 +30,8 @@ export class SignupPage {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', Validators.required],
+    birthDate: ['', Validators.required],
+    description: ['', Validators.maxLength(500)],
   }, {validators: passwordsMatch});
 
   protected readonly error = signal<string | null>(null);
@@ -46,9 +48,9 @@ export class SignupPage {
 
     this.loading.set(true);
     this.error.set(null);
-    const {firstName, lastName, email, password} = this.form.getRawValue();
+    const {firstName, lastName, email, password, birthDate, description} = this.form.getRawValue();
 
-    this.api.register({firstName, lastName, email, password})
+    this.api.register({firstName, lastName, email, password, birthDate, description})
       .subscribe({
         next: () => this.router.navigate(['/login']),
         error: (err: HttpErrorResponse) => {

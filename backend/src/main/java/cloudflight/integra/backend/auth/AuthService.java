@@ -36,7 +36,9 @@ public class AuthService {
             .setFirstName(request.firstName())
             .setLastName(request.lastName())
             .setEmail(email)
-            .setPassword(passwordEncoder.encode(request.password()));
+            .setPassword(passwordEncoder.encode(request.password()))
+            .setBirthDate(request.birthDate())
+            .setDescription(request.description());
         userRepository.save(user);
     }
 

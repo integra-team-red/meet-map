@@ -2,6 +2,7 @@ package cloudflight.integra.backend.user.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,6 +24,30 @@ public class User {
 
     @Column(length = 100)
     private String lastName;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
+
+    @Column(length = 500)
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public User setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public User setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+        return this;
+    }
 
     public String getFirstName() {
         return firstName;
