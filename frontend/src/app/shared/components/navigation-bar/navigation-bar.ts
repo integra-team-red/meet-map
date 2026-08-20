@@ -16,7 +16,7 @@ export class NavigationBar implements OnInit {
     this.items = [
       {
         label: 'Home',
-        routerLink: '/'
+        routerLink: '/home'
       },
       {
         label: 'Create Event',
@@ -26,7 +26,7 @@ export class NavigationBar implements OnInit {
     this.mobileItems = [
       {
         label: 'Home',
-        routerLink: '/'
+        routerLink: '/home'
       },
       {
         label: 'Map',
