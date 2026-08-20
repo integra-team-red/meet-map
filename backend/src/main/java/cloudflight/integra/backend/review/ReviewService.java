@@ -62,4 +62,8 @@ public class ReviewService {
             return true;
         }).orElse(false);
     }
+
+    public Double getAverageRatingForEvent(Long eventId) {
+        return repository.findAverageRatingByEventId(eventId);
+    }
 }
