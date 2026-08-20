@@ -5,6 +5,8 @@ import cloudflight.integra.backend.review.model.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -13,4 +15,6 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findAllByEventId(Long eventId, Pageable pageable);
     Optional<Review> findReviewsByEventAndUserId(Event event, Long userId);
+    @Query("select avg(r.rating) from Review r where r.event.id = :eventId")
+    Double findAverageRatingByEventId(@Param("eventId") Long eventId);
 }
