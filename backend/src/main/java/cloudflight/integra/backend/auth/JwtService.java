@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.auth;
 
+import cloudflight.integra.backend.user.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -24,16 +25,20 @@ public class JwtService {
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(String email) {
+    public String generateToken(String email, Role role) {
         Date now = new Date();
         return Jwts.builder()
             .subject(email)
+            .claim("role", role.name())
             .issuedAt(now)
             .expiration(new Date(now.getTime() + expirationMs))
             .signWith(key)
             .compact();
     }
 
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }

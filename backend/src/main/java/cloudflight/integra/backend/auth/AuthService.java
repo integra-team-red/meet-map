@@ -52,7 +52,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials.");
         }
 
-        return new AuthResponse(jwtService.generateToken(user.getEmail()));
+        return new AuthResponse(jwtService.generateToken(user.getEmail(), user.getRole()));
     }
 
     private static String normalizeEmail(String email) {

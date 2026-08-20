@@ -1,6 +1,7 @@
 package cloudflight.integra.backend.config;
 
 import cloudflight.integra.backend.auth.JwtAuthFilter;
+import cloudflight.integra.backend.user.model.Role;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,10 +43,9 @@ public class SecurityConfig {
             .sessionManagement(sm ->
                 sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(("/api/admin/**")).hasRole(Role.ADMIN.toString())
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(
-                    "/v3/api-docs/**"
-                ).permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter,
