@@ -5,11 +5,16 @@ import {SignupPage} from './auth/feature/signup-page/signup-page';
 import {AdminPanel} from './admin/feature/admin-panel/admin-panel';
 import {EventCreateComponent} from './features/event-create/event-create';
 import {ProfilePage} from './profile/feature/profile-page/profile-page';
+import {LandingPage} from './landing/feature/landing-page/landing-page';
 import {authGuard} from './core/guards/auth-guard/auth-guard';
 
 export const routes: Routes = [
   {
     path: '',
+    component: LandingPage,
+  },
+  {
+    path: 'home',
     component: HomePage,
   },
   {
