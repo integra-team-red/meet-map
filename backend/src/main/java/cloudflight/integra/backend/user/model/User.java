@@ -49,6 +49,19 @@ public class User {
         return this;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public User setRole(Role role) {
+        this.role = role;
+        return this;
+    }
+
     public String getFirstName() {
         return firstName;
     }
