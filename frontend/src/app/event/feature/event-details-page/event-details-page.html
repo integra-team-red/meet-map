@@ -30,12 +30,11 @@
     </div>
 
     <div class="md:col-start-2 md:row-start-2">
-      <h2>Tags</h2>
-      <ul>
-        @for (tag of event.tags; track tag) {
-          <li>{{ tag.name }}</li>
+      <div class="flex flex-wrap gap-4">
+        @for (tag of event.tags; track tag){
+          <p-tag [value]="tag.name" />
         }
-      </ul>
+      </div>
     </div>
   </div>
 } @else {
