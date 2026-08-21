@@ -71,6 +71,7 @@ export class ProfilePage implements OnInit {
         this.user.set(user);
         this.loading.set(false);
         this.getCreated(user.id!);
+        this.getJoined(user.id!);
       },
       error: () => {
         this.error.set('Could not load your profile. Please try again.');
@@ -150,6 +151,25 @@ export class ProfilePage implements OnInit {
   protected isTagSelected(tag: TagDto): boolean {
     return tag.id !== undefined &&
       this.draftTagIds().includes(tag.id);
+  }
+
+  protected readonly joinedEvents = signal<EventDto[]>([]);
+  joinedPage = signal(0)
+  joinedRows = signal(10)
+  joinedTotal = signal(0)
+
+  protected getJoined(id: number, page = this.joinedPage(), rows = this.joinedRows()) {
+    this.joinedPage.set(page)
+    this.joinedRows.set(rows)
+    this.userApi.getJoinedEvents({page:page, size:rows}, id)
+      .subscribe((page) => {
+        this.joinedEvents.set(page.content!);
+        this.joinedTotal.set(page.totalElements!);
+      });
+  }
+
+  protected changeJoinedPage(event: PaginatorState) {
+    this.getJoined(this.user()!.id!, event.page, event.rows)
   }
 
   protected cancelTagDialog(): void {
