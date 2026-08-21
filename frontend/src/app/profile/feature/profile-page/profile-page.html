@@ -42,7 +42,34 @@
       </div>
 
       <div class="rounded-xl border border-indigo-200 p-4 md:p-6">
-        <h2 class="text-lg md:text-2xl font-bold">Joined Events</h2>
+        <div class="flex flex-row flex-wrap items-center md:justify-between justify-center gap-x-4">
+          <div class="flex flex-row items-center gap-4">
+            <h2 class="text-lg md:text-2xl font-bold">Joined Events</h2>
+          </div>
+          <p-paginator
+            (onPageChange)="changeJoinedPage($event)"
+            [rows]="joinedRows()"
+            [totalRecords]="joinedTotal()"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="{first} - {last} of {totalRecords}"
+            [showPageLinks]="false"
+            [showFirstLastIcon]="false"
+          />
+        </div>
+        <p-scroll-panel class="p-2">
+          <div class="flex flex-col gap-4 h-[calc(100vh-24em)]">
+            @for (event of joinedEvents(); track event.id) {
+              <app-event-card
+                [name]="event.title!"
+                [location]="event.city + ' ' + event.address"
+                [date]="event.dateTime!"
+                [tags]="event.tags!"
+                [maxParticipants]="event.maxParticipants"
+                class="w-full"
+              />
+            }
+          </div>
+        </p-scroll-panel>
       </div>
     </section>
   </div>
