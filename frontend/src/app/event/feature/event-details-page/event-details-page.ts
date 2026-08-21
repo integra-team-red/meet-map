@@ -7,10 +7,11 @@ import {FormsModule} from '@angular/forms';
 import {EventParticipationControllerService} from '@app/api/api/eventParticipationController.service';
 import {ReviewControllerService} from '@app/api/api/reviewController.service';
 import {PageReviewDto} from '@app/api/model/pageReviewDto';
+import {Tag} from 'primeng/tag';
 
 @Component({
   selector: 'app-event-details-page',
-  imports: [DatePipe, Rating, FormsModule],
+  imports: [DatePipe, Rating, FormsModule, Tag],
   templateUrl: './event-details-page.html',
 })
 export class EventDetailsPage {
