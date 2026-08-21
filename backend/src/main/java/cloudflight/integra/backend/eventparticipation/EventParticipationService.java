@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.eventparticipation;
 
+import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,10 @@ public class EventParticipationService {
 
     public Page<Long> getParticipants(Long eventId, Pageable pageable) {
         return participationRepository.findAllUserIdsByEventId(eventId, pageable);
+    }
+
+    public Page<Event> getEventsByParticipant(Long userId, Pageable pageable) {
+        return participationRepository.findAllEventsByParticipant(userId, pageable);
     }
 
     public void leaveEvent(Long id) {

@@ -38,5 +38,4 @@ public class EventParticipationController {
     public void delete(@PathVariable Long id) {
         service.leaveEvent(id);
     }
-
 }
