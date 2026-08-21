@@ -1,9 +1,12 @@
 package cloudflight.integra.backend.user.model;
 
+import cloudflight.integra.backend.tag.model.Tag;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -30,6 +33,20 @@ public class User {
 
     @Column(length = 500)
     private String description;
+
+    @ManyToMany
+    @JoinTable(name = "user_tags",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     public String getDescription() {
         return description;

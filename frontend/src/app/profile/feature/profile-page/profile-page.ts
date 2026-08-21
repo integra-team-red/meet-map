@@ -1,33 +1,69 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {ButtonModule} from 'primeng/button';
 import {AvatarModule} from 'primeng/avatar';
+import {DialogModule} from 'primeng/dialog';
+import {ChipModule} from 'primeng/chip';
+import {ScrollPanel} from 'primeng/scrollpanel';
+import {Paginator, PaginatorState} from 'primeng/paginator';
 
 import {Router} from '@angular/router';
 import {UserControllerService} from '@app/api/api/userController.service';
 import {UserDto} from '@app/api/model/userDto';
-import {ScrollPanel} from 'primeng/scrollpanel';
-import {EventCard} from '../../../shared/ui/event-card/event-card';
+import {TagDto} from '@app/api/model/tagDto';
+import {TagControllerService} from '@app/api/api/tagController.service';
+import {UpdateUserTagsDto} from '@app/api/model/updateUserTagsDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {EventDto} from '@app/api/model/eventDto';
-import {Paginator, PaginatorState} from 'primeng/paginator';
-
+import {EventCard} from '../../../shared/ui/event-card/event-card';
 
 @Component({
   selector: 'app-profile-page',
   templateUrl: './profile-page.html',
-  imports: [ButtonModule, AvatarModule, ScrollPanel, EventCard, Paginator],
+  imports: [
+    ButtonModule,
+    AvatarModule,
+    ChipModule,
+    DialogModule,
+    ScrollPanel,
+    EventCard,
+    Paginator,
+  ],
 })
 export class ProfilePage implements OnInit {
   private readonly userApi = inject(UserControllerService);
+  private readonly tagApi = inject(TagControllerService);
   private readonly eventApi = inject(EventControllerService);
   private readonly router = inject(Router);
 
-  //Placeholder until Matrix communication is implemented
+  // Placeholder until Matrix communication is implemented
   protected readonly matrixId = 'ianis67skibidi@matrix.meet-map.ro';
 
+  protected readonly user = signal<UserDto | null>(null);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
-  protected readonly user = signal<UserDto | null>(null);
+
+  protected readonly assignedTags = signal<TagDto[]>([]);
+  protected readonly availableTags = signal<TagDto[]>([]);
+
+  protected dialogVisible = signal(false);
+  protected readonly draftTagIds = signal<number[]>([]);
+  protected readonly saving = signal(false);
+
+  protected readonly sortedTags = computed(() =>
+    [...this.availableTags()].sort((a, b) =>
+      (a.name ?? '').localeCompare(b.name ?? '')
+    )
+  );
+  protected readonly sortedAssignedTags = computed(() =>
+    [...this.assignedTags()].sort((a, b) =>
+      (a.name ?? '').localeCompare(b.name ?? '')
+    )
+  );
+
+  protected readonly createdEvents = signal<EventDto[]>([]);
+  protected readonly createdPage = signal(0);
+  protected readonly createdRows = signal(10);
+  protected readonly createdTotal = signal(0);
 
   ngOnInit(): void {
     this.userApi.getCurrentUser().subscribe({
@@ -36,25 +72,32 @@ export class ProfilePage implements OnInit {
         this.loading.set(false);
         this.getCreated(user.id!);
       },
-      error: (err) => {
+      error: () => {
         this.error.set('Could not load your profile. Please try again.');
         this.loading.set(false);
       },
-    })
+    });
+
+    this.userApi.getTags().subscribe({
+      next: (tags) => {
+        this.assignedTags.set(tags);
+      },
+    });
+
+    this.tagApi.getAll().subscribe({
+      next: (tags) => {
+        this.availableTags.set(tags);
+      },
+    });
   }
 
-  protected createPressed() {
+  protected createPressed(): void {
     this.router.navigate([`events/create`]);
   }
 
-  protected readonly createdEvents = signal<EventDto[]>([]);
-  createdPage = signal(0)
-  createdRows = signal(10)
-  createdTotal = signal(0)
-
-  protected getCreated(id: number, page = this.createdPage(), rows = this.createdRows()) {
-    this.createdPage.set(page)
-    this.createdRows.set(rows)
+  protected getCreated(id: number, page = this.createdPage(), rows = this.createdRows()): void {
+    this.createdPage.set(page);
+    this.createdRows.set(rows);
     this.eventApi.getAllEvents(
       {page: page, size: rows},
       undefined,
@@ -71,8 +114,65 @@ export class ProfilePage implements OnInit {
       });
   }
 
-  protected changeCreatedPage(event: PaginatorState) {
-    this.getCreated(this.user()!.id!, event.page, event.rows)
+  protected changeCreatedPage(event: PaginatorState): void {
+    this.getCreated(this.user()!.id!, event.page, event.rows);
+  }
+
+  protected openTagDialog(): void {
+    this.draftTagIds.set(
+      this.assignedTags()
+        .map(tag => tag.id)
+        .filter((id): id is number => id !== undefined)
+    );
+
+    this.dialogVisible.set(true);
+  }
+
+  protected toggleTag(tag: TagDto): void {
+    if (tag.id === undefined) {
+      return;
+    }
+
+    const currentIds = this.draftTagIds();
+
+    if (currentIds.includes(tag.id)) {
+      this.draftTagIds.set(
+        currentIds.filter(id => id !== tag.id)
+      );
+    } else {
+      this.draftTagIds.set([
+        ...currentIds,
+        tag.id,
+      ]);
+    }
+  }
+
+  protected isTagSelected(tag: TagDto): boolean {
+    return tag.id !== undefined &&
+      this.draftTagIds().includes(tag.id);
+  }
+
+  protected cancelTagDialog(): void {
+    this.dialogVisible.set(false);
+  }
+
+  protected saveTags(): void {
+    const dto: UpdateUserTagsDto = {
+      tagIds: this.draftTagIds(),
+    };
+
+    this.saving.set(true);
+
+    this.userApi.updateTags(dto).subscribe({
+      next: (tags) => {
+        this.assignedTags.set(tags);
+        this.dialogVisible.set(false);
+        this.saving.set(false);
+      },
+      error: () => {
+        this.saving.set(false);
+        this.error.set('Could not update your tags. Please try again.');
+      },
+    });
   }
 }
-
