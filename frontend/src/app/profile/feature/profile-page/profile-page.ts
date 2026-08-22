@@ -84,7 +84,7 @@ export class ProfilePage implements OnInit {
       },
     });
 
-    this.tagApi.getAll().subscribe({
+    this.tagApi.getAllTags().subscribe({
       next: (tags) => {
         this.availableTags.set(tags);
       },
