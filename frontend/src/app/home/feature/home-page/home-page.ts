@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild} from '@angular/core';
 import {EventDto} from '@app/api/model/eventDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {PageEventDto} from '@app/api/model/pageEventDto';
@@ -18,6 +18,7 @@ import {MultiSelect} from 'primeng/multiselect';
 import {Button} from 'primeng/button';
 import {TagControllerService} from '@app/api/api/tagController.service';
 
+const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-home-page',
@@ -41,10 +42,18 @@ import {TagControllerService} from '@app/api/api/tagController.service';
   ],
   templateUrl: './home-page.html',
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   eventService: EventControllerService = inject(EventControllerService);
   tagService: TagControllerService = inject(TagControllerService);
   router = inject(Router);
+
+  @ViewChild('sentinel') sentinelRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('scrollContainer') scrollContainerRef!: ElementRef<HTMLDivElement>;
+  isLoading = signal(false);
+  isLastPage = signal(false);
+  private observer?: IntersectionObserver;
+  private currentPage = signal(0);
+
 
   protected filters = new FormGroup({
     city: new FormControl<string | null>(null),
@@ -66,10 +75,27 @@ export class HomePage implements OnInit {
   tags = signal<TagDto[]>([])
 
   ngOnInit(): void {
-    this.searchEvents();
+    this.searchEvents(true);
     this.getCities();
     this.getTags();
   }
+
+  ngAfterViewInit(): void {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some(e => e.isIntersecting)) {
+          this.loadNextPage();
+        }
+      },
+      {root: this.scrollContainerRef.nativeElement, rootMargin: '200px'}
+    );
+    this.observer.observe(this.sentinelRef.nativeElement);
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
+  }
+
 
   protected applyFilters() {
     this.searchEvents();
@@ -92,11 +118,28 @@ export class HomePage implements OnInit {
     })
   }
 
-  protected searchEvents() {
+  protected searchEvents(reset: boolean = true) {
+    if (reset) {
+      this.currentPage.set(0);
+      this.isLastPage.set(false);
+      this.events.set([]);
+    }
+    this.fetchPage(this.currentPage());
+  }
+
+  protected loadNextPage() {
+    if (this.isLoading() || this.isLastPage()) return;
+    this.fetchPage(this.currentPage() + 1);
+  }
+
+  private fetchPage(page: number) {
+    if (this.isLoading()) return;
+    this.isLoading.set(true);
+
     const f = this.filters.value;
 
     this.eventService.getAllEvents(
-      {page: 0, size: 20, sort: [this.sortOrder.value]},
+      {page, size: PAGE_SIZE, sort: [this.sortOrder.value]},
       this.searchQuery() || undefined,
       f.city ?? undefined,
       f.tags?.length ? f.tags : undefined,
@@ -104,8 +147,20 @@ export class HomePage implements OnInit {
       f.age?.[1],
       f.dateRange?.[0] ? this.toLocalDate(f.dateRange[0]) : undefined,
       f.dateRange?.[1] ? this.toLocalDate(f.dateRange[1]) : undefined,
-    ).subscribe((response: PageEventDto) => {
-      this.events.set(response.content!);
+    ).subscribe({
+      next: (response: PageEventDto) => {
+        const newContent = response.content ?? [];
+        if (page === 0) {
+          this.events.set(newContent);
+        } else {
+          const existingIds = new Set(this.events().map(e => e.id));
+          this.events.set([...this.events(), ...newContent.filter(e => !existingIds.has(e.id))]);
+        }
+        this.currentPage.set(page);
+        this.isLastPage.set(response.last ?? newContent.length < PAGE_SIZE);
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false),
     });
   }
 
