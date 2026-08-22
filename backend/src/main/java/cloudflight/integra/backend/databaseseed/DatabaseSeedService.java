@@ -20,6 +20,7 @@ import cloudflight.integra.backend.tag.TagService;
 import cloudflight.integra.backend.tag.model.Category;
 import cloudflight.integra.backend.tag.model.Tag;
 import cloudflight.integra.backend.user.UserRepository;
+import cloudflight.integra.backend.user.model.User;
 import com.github.javafaker.Faker;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
@@ -133,16 +134,27 @@ public class DatabaseSeedService {
         if (!tagService.getAll().isEmpty()) {
             return;
         }
-        for (int i = 0; i < 10; i++) {
+
+        Set<String> usedNames = new HashSet<>();
+        int attempts = 0;
+        while (usedNames.size() < 10 && attempts < 100) {
+            attempts++;
             Tag tag = new Tag();
             tag.setCategory(faker.options().option(Category.class));
             switch (tag.getCategory()) {
-                case PERSONALITY -> tag.setName(faker.options().option(
-                    "Introvert", "Extrovert", "Ambivert", "Analytical", "Creative", "Pragmatic"));
-                case HOBBY -> tag.setName(faker.options().option(
-                    "Reading", "Traveling", "Photography", "Cooking", "Gaming", "Hiking"));
-                case EVENT_TYPE -> tag.setName(faker.options().option(
-                    "Conference", "Seminar", "Workshop", "Meetup", "Hackathon", "Webinar", "Networking"));
+                case PERSONALITY ->
+                    tag.setName(faker.options()
+                        .option("Introvert", "Extrovert", "Ambivert", "Analytical", "Creative", "Pragmatic"));
+                case HOBBY ->
+                    tag.setName(faker.options()
+                        .option("Reading", "Traveling", "Photography", "Cooking", "Gaming", "Hiking"));
+                case EVENT_TYPE ->
+                    tag.setName(faker.options()
+                        .option("Conference", "Seminar", "Workshop", "Meetup", "Hackathon", "Webinar",
+                            "Networking"));
+            }
+            if (!usedNames.add(tag.getName())) {
+                continue;
             }
             try {
                 tagService.create(tag);
@@ -228,7 +240,7 @@ public class DatabaseSeedService {
             try {
                 flagService.create(flag);
             } catch (Exception e) {
-                System.out.println("Failed to save eventParticipation: " + e.getMessage());
+                System.out.println("Failed to save Flag: " + e.getMessage());
             }
         }
     }
@@ -238,20 +250,21 @@ public class DatabaseSeedService {
             return;
         }
         List<Event> allEvents = eventService.getAll(Pageable.unpaged()).getContent();
-        if (allEvents.isEmpty()) {
+        List<User> allUsers = userRepository.findAll();
+        if (allEvents.isEmpty() || allUsers.isEmpty()) {
             return;
         }
         for (int i = 0; i < 25; i++) {
             Review review = new Review();
-            review.setUserId((long) faker.number().numberBetween(0, 100));
+            review.setUser(allUsers.get(faker.number().numberBetween(0, allUsers.size())));
             review.setEvent(allEvents.get(faker.number().numberBetween(0, allEvents.size())));
             review.setCreatedAt(LocalDateTime.of(2026, 7, faker.number().numberBetween(1, 30), 12, 0));
-            review.setRating(faker.number().numberBetween(1, 5));
+            review.setRating(faker.number().numberBetween(1, 6));
             review.setComment(faker.leagueOfLegends().quote());
             try {
                 reviewService.create(review);
             } catch (Exception e) {
-                System.out.println("Failed to save eventParticipation: " + e.getMessage());
+                System.out.println("Failed to save Review: " + e.getMessage());
             }
         }
     }

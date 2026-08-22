@@ -24,7 +24,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         AND e.dateTime >= :dateFrom
         AND e.dateTime <= :dateTo
         AND (:noTags = true OR t.id IN :tagIds)
-        AND (:creatorId = null OR e.creatorId = :creatorId)""")
+        AND (:creatorId IS NULL OR e.creatorId = :creatorId)""")
     Page<Event> findFiltered(
         @Param("searchTerm") String searchTerm,
         @Param("city") String city,

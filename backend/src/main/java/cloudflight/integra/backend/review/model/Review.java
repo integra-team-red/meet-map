@@ -1,6 +1,7 @@
 package cloudflight.integra.backend.review.model;
 
 import cloudflight.integra.backend.event.model.Event;
+import cloudflight.integra.backend.user.model.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,9 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
@@ -23,9 +26,9 @@ public class Review {
     public Review() {
     }
 
-    public Review(Long id, Long userId, Event event, Integer rating, String comment, LocalDateTime createdAt) {
+    public Review(Long id, User user, Event event, Integer rating, String comment, LocalDateTime createdAt) {
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.event = event;
         this.rating = rating;
         this.comment = comment;
@@ -77,12 +80,12 @@ public class Review {
         return this;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public Review setUserId(Long userId) {
-        this.userId = userId;
+    public Review setUser(User user) {
+        this.user = user;
         return this;
     }
 }
