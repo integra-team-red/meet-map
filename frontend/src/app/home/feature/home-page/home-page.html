@@ -63,7 +63,8 @@
         </p-accordion>
       </p-card>
     </div>
-    <div class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
+    <div #scrollContainer
+         class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
       @for (event of events(); track event.id) {
         <app-event-card
           (click)="openEvent(event.id!)"
@@ -74,6 +75,19 @@
           [tags]="event.tags!"
           [maxParticipants]="event.maxParticipants"
         />
+      }
+      <div #sentinel class="w-full h-1"></div>
+
+      @if (isLoading()) {
+        <div class="w-full flex justify-center py-4">
+          <i class="pi pi-spin pi-spinner text-2xl text-gray-400"></i>
+        </div>
+      }
+
+      @if (isLastPage() && events().length > 0) {
+        <div class="w-full text-center text-gray-400 py-4 text-sm">
+          No more events
+        </div>
       }
     </div>
   </div>
