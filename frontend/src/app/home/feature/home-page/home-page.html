@@ -32,8 +32,7 @@
                     </div>
                     <div class="flex flex-col gap-2">
                       <label>Tags</label>
-                      <p-multiselect [options]="tags()" formControlName="tags" optionLabel="name" optionValue="id"
-                                     class="w-full" display="chip"></p-multiselect>
+                      <p-multiselect [options]="tags()" formControlName="tags" optionLabel="name" optionValue="id" class="w-full" display="chip"></p-multiselect>
                     </div>
                     <div class="flex justify-between">
                       <label>Age</label>
@@ -63,8 +62,7 @@
         </p-accordion>
       </p-card>
     </div>
-    <div #scrollContainer
-         class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
+    <div #scrollContainer class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
       @for (event of events(); track event.id) {
         <app-event-card
           (click)="openEvent(event.id!)"
