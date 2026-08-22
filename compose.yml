@@ -6,3 +6,12 @@ services:
     ports:
       - "5400:5432"
     shm_size: 128mb
+
+  backend:
+    container_name: meet_map
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    profiles: [ backend ]
