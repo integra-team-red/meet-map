@@ -7,26 +7,26 @@ import {FormsModule} from '@angular/forms';
 import {EventParticipationControllerService} from '@app/api/api/eventParticipationController.service';
 import {ReviewControllerService} from '@app/api/api/reviewController.service';
 import {PageReviewDto} from '@app/api/model/pageReviewDto';
+import {ReviewCard} from '../../../features/review-card/review-card';
 import {Tag} from 'primeng/tag';
 
 @Component({
   selector: 'app-event-details-page',
-  imports: [DatePipe, Rating, FormsModule, Tag],
+  imports: [DatePipe, Rating, FormsModule, ReviewCard, Tag],
   templateUrl: './event-details-page.html',
 })
 export class EventDetailsPage {
-  private eventService = inject(EventControllerService);
-  private participationService = inject(EventParticipationControllerService);
-  private reviewService = inject(ReviewControllerService);
-
   readonly id = input.required({transform: numberAttribute});
-
   event = signal<EventDto | undefined>(undefined);
   participantsCount = signal<number | undefined>(undefined);
   reviewPage = signal<PageReviewDto | undefined>(undefined);
   reviewCount = computed(() => this.reviewPage()?.totalElements);
   averageRating = signal<number | undefined>(undefined);
   starRating = computed(() => Math.round((this.averageRating() ?? 0)));
+  reviews = computed(() => this.reviewPage()?.content ?? []);
+  private eventService = inject(EventControllerService);
+  private participationService = inject(EventParticipationControllerService);
+  private reviewService = inject(ReviewControllerService);
 
   constructor() {
     effect(() => {

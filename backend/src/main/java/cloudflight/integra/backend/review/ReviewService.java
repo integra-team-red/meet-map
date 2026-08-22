@@ -1,6 +1,5 @@
 package cloudflight.integra.backend.review;
 
-
 import cloudflight.integra.backend.event.EventService;
 import cloudflight.integra.backend.review.model.Review;
 import org.springframework.data.domain.Page;
@@ -42,7 +41,7 @@ public class ReviewService {
         if (review.getRating() < 1 || review.getRating() > 5) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating must be between 1 and 5.");
         }
-        if (repository.findReviewsByEventAndUserId(review.getEvent(), review.getUserId()).isPresent()) {
+        if (repository.findReviewsByEventAndUserId(review.getEvent(), review.getUser().getId()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Event already reviewed by this user.");
         }
         review.setCreatedAt(LocalDateTime.now());
