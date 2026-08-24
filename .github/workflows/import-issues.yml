@@ -1,11 +1,9 @@
-name: Import Issues
+name: Import Issues 🤓
 on:
-  workflow_dispatch:
-    inputs:
-      file_path:
-        description: 'Path to the issue file'
-        required: true
-        default: 'issues.csv'
+  push:
+
+env:
+  FILE_PATH: 'issues.csv'
 
 jobs:
   import-issues:
@@ -17,6 +15,6 @@ jobs:
       - name: Import Issues
         uses: dsanchezcr/issue-importer-action@v1.0.0
         with:
-          file-path: ${{ github.event.inputs.file_path }}
+          file-path: ${{ env.FILE_PATH }}
           file-format: csv
           github-token: ${{ secrets.GITHUB_TOKEN }}
