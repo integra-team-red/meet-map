@@ -1,0 +1,113 @@
+title,body
+Polish the event feed page,"As a User, I want the event feed to feel polished and responsive so I have a smooth browsing experience.
+
+### Acceptance Criteria
+- [ ] Empty state is displayed when no events match the current filters
+- [ ] Loading skeletons are shown while events are being fetched
+- [ ] Sort options are available (e.g. date ascending, newest first)
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Display average rating on event cards,"As a User, I want to see the average rating on event cards in the feed so I can quickly gauge event quality.
+
+### Acceptance Criteria
+- [ ] Average rating is displayed on each event card (e.g. star icon + number)
+- [ ] Events with no reviews show an appropriate fallback (e.g. no rating displayed)
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Implement Nominatim geocoding backend service,"As a Developer, I want a backend service that converts addresses to coordinates via Nominatim so events can be placed on a map.
+
+### Acceptance Criteria
+- [ ] A geocoding service calls the Nominatim API with an address string and returns latitude/longitude
+- [ ] Results are cached locally to avoid hitting Nominatim rate limits during development
+- [ ] The service is available for use in the event creation/update flow
+- [ ] Error cases are handled (address not found, Nominatim unavailable)"
+Add map preview to the event creation form,"As a User, I want to see a map preview on the event creation form so I can visually confirm the event location.
+
+### Acceptance Criteria
+- [ ] On desktop, a map preview area is shown on the event creation form with a placeholder for now
+- [ ] On mobile, the map preview is not displayed
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Enable join and leave event functionality,"As a User, I want to join and leave events so I can manage my participation.
+
+### Acceptance Criteria
+- [ ] The Join Event button on the event details page is enabled and functional (previously disabled with ""Coming soon"")
+- [ ] Joining calls POST /api/events/{id}/join and updates the participant list
+- [ ] Leaving calls DELETE /api/events/{id}/leave and updates the participant list
+- [ ] Age restriction and max participant errors from the backend are communicated to the user
+- [ ] The button reflects the user's current participation status
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Display event status visual states,"As a User, I want to see clear visual indicators of an event's status so I can tell at a glance if it is active, cancelled, or completed.
+
+### Acceptance Criteria
+- [ ] Event cards and the event details page show a visual indicator for active, cancelled, and completed statuses
+- [ ] Cancelled and completed events are visually distinct from active ones
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Implement submit review form,"As a User, I want to submit a review for a completed event I attended so I can share my feedback.
+
+### Acceptance Criteria
+- [ ] A review form is shown on the event details page for completed events the user participated in
+- [ ] The form includes a star rating (1–5) and an optional comment field
+- [ ] On submission, the review is created via POST /api/events/{id}/reviews
+- [ ] The form is hidden if the user has already reviewed the event
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Implement review prompt modal on login,"As a User, I want to be prompted to review completed events I attended so I don't forget to leave feedback.
+
+### Acceptance Criteria
+- [ ] On login, pending reviews are fetched from GET /api/users/me/pending-reviews
+- [ ] If pending reviews exist, a modal prompts the user to leave a review
+- [ ] The modal allows the user to submit or dismiss each pending review
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Implement theming and theme picker,"As a User, I want a new app theme and the ability to switch themes so the app looks polished and suits my preference.
+
+### Acceptance Criteria
+- [ ] A new custom theme is implemented across the app (colors, typography, component styles)
+- [ ] A theme picker is available in the navbar allowing the user to switch themes
+- [ ] The selected theme persists across sessions (e.g. stored in localStorage)
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Add toast notifications for key actions,"As a User, I want to see confirmation messages when I perform important actions so I know they succeeded.
+
+### Acceptance Criteria
+- [ ] Toast / snackbar notifications are shown on: event creation, event joining, event leaving, event cancellation/deletion, review submission, and profile updates
+- [ ] Error toasts are shown when these actions fail
+- [ ] Toasts auto-dismiss after a reasonable duration
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Polish admin panel,"As an Admin, I want a polished admin panel so I can efficiently moderate the platform.
+
+### Acceptance Criteria
+- [ ] Flag counts are displayed per event
+- [ ] Bulk dismiss option is available for flags
+- [ ] Moderation actions (edit/cancel event) are accessible from the admin panel
+- [ ] Only users with the ADMIN role can access the panel
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Fix missing form validation on event creation,"The event creation form does not validate inputs on the frontend. Users can submit invalid data with no feedback.
+
+### Acceptance Criteria
+- [ ] Required fields show validation errors before submission
+- [ ] Error messages are displayed inline next to the relevant fields"
+Fix extra character in filters card,"An extra "">"" character is displayed in the filters card on the feed page.
+
+### Acceptance Criteria
+- [ ] The stray "">"" is removed from the filters card"
+Fix login form error messages,"The login form shows a generic ""bad request"" message instead of the actual validation errors returned by the backend.
+
+### Acceptance Criteria
+- [ ] Login form displays the error messages received from the backend response
+- [ ] Messages are user-friendly and shown inline or as a form-level error"
+Redirect logged-in users away from landing page,"A logged-in user can navigate to the landing page instead of being redirected to the home/feed page.
+
+### Acceptance Criteria
+- [ ] Authenticated users accessing the landing page are redirected to the home/feed page"
+Reduce space used by events section on profile page,"The ""Your events"" section on the profile page takes up too much vertical space.
+
+### Acceptance Criteria
+- [ ] The events section uses a more compact layout per the Figma design"
+Update navbar with all app routes,"As a User, I want the navbar to include links to all sections of the app so I can navigate to any page.
+
+### Acceptance Criteria
+- [ ] Navbar includes links to all current routes (feed, create event, profile, admin panel for admins)
+- [ ] Active route is visually highlighted
+- [ ] Layout follows the Figma design and is responsive / mobile-friendly"
+Make event cards proper router links,"Event cards in the feed use (click) handlers instead of router links. There are no hover animations and no native link behavior (open in new tab, etc.).
+
+### Acceptance Criteria
+- [ ] Event cards use routerLink instead of (click) handlers
+- [ ] Hover animation is added to event cards
+- [ ] Standard link behavior works (e.g. middle-click to open in new tab)"
