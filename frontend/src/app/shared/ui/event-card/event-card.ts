@@ -4,6 +4,7 @@ import {DatePipe} from '@angular/common';
 import {TagDto} from '@app/api/model/tagDto';
 import {Tag} from 'primeng/tag';
 import {RouterLink} from '@angular/router';
+import {EventDto} from '@app/api/model/eventDto';
 
 @Component({
   selector: 'app-event-card',
@@ -22,4 +23,6 @@ export class EventCard {
   readonly tags = input<TagDto[]>([]);
   readonly maxParticipants = input<number>();
   readonly id = input<number>()
+  readonly status = input<EventDto.StatusEnum>()
+  protected readonly EventDto = EventDto;
 }
