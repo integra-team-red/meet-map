@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
 import {Avatar} from 'primeng/avatar';
-import {RouterLink} from '@angular/router';
+import {RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({
   selector: 'app-navigation-bar',
   templateUrl: './navigation-bar.html',
-  imports: [MenubarModule, Avatar, RouterLink]
+  imports: [MenubarModule, Avatar, RouterLink, RouterLinkActive]
 })
 export class NavigationBar implements OnInit {
   items: MenuItem[] | undefined;
@@ -20,7 +20,11 @@ export class NavigationBar implements OnInit {
       },
       {
         label: 'Create Event',
-        routerLink: '/events/create'
+        routerLink: '/events/create',
+      },
+      {
+        label: 'Admin Panel',
+        routerLink: '/admin'
       }
     ];
     this.mobileItems = [
@@ -28,12 +32,16 @@ export class NavigationBar implements OnInit {
         label: 'Home',
         routerLink: '/home'
       },
-      {
+/*      {
         label: 'Map',
-      },
+      },*/
       {
         label: 'Create Event',
         routerLink: '/events/create'
+      },
+      {
+        label: 'Admin Panel',
+        routerLink: '/admin'
       }
     ];
   }
