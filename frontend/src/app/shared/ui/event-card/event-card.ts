@@ -3,13 +3,15 @@ import {Card} from 'primeng/card';
 import {DatePipe} from '@angular/common';
 import {TagDto} from '@app/api/model/tagDto';
 import {Tag} from 'primeng/tag';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-event-card',
   imports: [
     Card,
     DatePipe,
-    Tag
+    Tag,
+    RouterLink
   ],
   templateUrl: './event-card.html',
 })
@@ -19,4 +21,5 @@ export class EventCard {
   readonly date = input.required<string>()
   readonly tags = input<TagDto[]>([]);
   readonly maxParticipants = input<number>();
+  readonly id = input<number>()
 }
