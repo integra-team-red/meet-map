@@ -4,5 +4,6 @@ import cloudflight.integra.backend.event.model.EventDto;
 
 import java.time.LocalDateTime;
 
-public record EventParticipationDto(Long id, Long userId, EventDto event, LocalDateTime joinedAt) {
+public record EventParticipationDto(Long id, Long userId, String firstName, String lastName, EventDto event,
+                                    LocalDateTime joinedAt) {
 }

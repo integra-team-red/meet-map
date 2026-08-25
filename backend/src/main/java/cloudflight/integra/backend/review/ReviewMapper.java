@@ -8,9 +8,9 @@ import cloudflight.integra.backend.review.model.ReviewDto;
 import cloudflight.integra.backend.user.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
 import java.util.Objects;
 import java.util.stream.Stream;
+
 
 @Mapper(componentModel = "spring", uses = EventMapper.class)
 public interface ReviewMapper {

@@ -28,10 +28,8 @@ public class EventParticipationService {
     }
 
     public synchronized EventParticipation joinEvent(EventParticipation eventParticipation) {
-        boolean alreadyJoined = participationRepository.existsByEventIdAndUserId(
-            eventParticipation.getEvent().getId(),
-            eventParticipation.getUserId()
-        );
+        boolean alreadyJoined = participationRepository.existsByEventIdAndUserId(eventParticipation.getEvent().getId(),
+            eventParticipation.getUserId());
 
         if (alreadyJoined) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User has already joined this event");
@@ -42,8 +40,8 @@ public class EventParticipationService {
         return participationRepository.save(eventParticipation);
     }
 
-    public Page<Long> getParticipants(Long eventId, Pageable pageable) {
-        return participationRepository.findAllUserIdsByEventId(eventId, pageable);
+    public Page<EventParticipation> getParticipants(Long eventId, Pageable pageable) {
+        return participationRepository.findByEventId(eventId, pageable);
     }
 
     public void leaveEvent(Long id) {

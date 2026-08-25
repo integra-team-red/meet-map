@@ -1,17 +1,26 @@
 package cloudflight.integra.backend.eventparticipation.model;
 
 import cloudflight.integra.backend.event.model.Event;
+import cloudflight.integra.backend.user.model.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import java.time.LocalDateTime;
 
 @Entity
 public class EventParticipation {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "user_id")
     private Long userId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="event_id", nullable=false)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
     private LocalDateTime joinedAt;
 
@@ -45,7 +54,9 @@ public class EventParticipation {
         return event;
     }
 
-    public void setEvent(Event event) { this.event = event;}
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 
     public LocalDateTime getJoinedAt() {
         return joinedAt;
@@ -55,4 +66,7 @@ public class EventParticipation {
         this.joinedAt = joinedAt;
     }
 
+    public User getUser() {
+        return user;
+    }
 }
