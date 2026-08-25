@@ -83,20 +83,26 @@
           />
         </div>
         <p-scroll-panel class="p-2">
-          <div class="flex flex-col gap-4 h-[calc(100vh-24em)]">
-            @for (event of createdEvents(); track event.id) {
-              <app-event-card
-                [id]="event.id!"
-                [name]="event.title!"
-                [location]="event.city + ' ' + event.address"
-                [date]="event.dateTime!"
-                [tags]="event.tags!"
-                [maxParticipants]="event.maxParticipants"
-                [status]="event.status!"
-                class="w-full"
-              />
-            }
-          </div>
+          @if (createdEvents().length === 0) {
+            <div class="flex items-center justify-center py-6 text-gray-500">
+              You don't have any events yet.
+            </div>
+          }
+          @else {
+            <div class="flex flex-col gap-4 max-h-[calc(100vh-24em)]">
+              @for (event of createdEvents(); track event.id) {
+                <app-event-card
+                  [id]="event.id!"
+                  [name]="event.title!"
+                  [location]="event.city + ' ' + event.address"
+                  [date]="event.dateTime!"
+                  [tags]="event.tags!"
+                  [maxParticipants]="event.maxParticipants"
+                  [status]="event.status!"class="w-full"
+                />
+              }
+            </div>
+          }
         </p-scroll-panel>
       </div>
 
@@ -117,20 +123,26 @@
           />
         </div>
         <p-scroll-panel class="p-2">
-          <div class="flex flex-col gap-4 h-[calc(100vh-24em)]">
-            @for (event of joinedEvents(); track event.id) {
-              <app-event-card
-                [id]="event.id!"
-                [name]="event.title!"
-                [location]="event.city + ' ' + event.address"
-                [date]="event.dateTime!"
-                [tags]="event.tags!"
-                [maxParticipants]="event.maxParticipants"
-                [status]="event.status!"
-                class="w-full"
-              />
-            }
-          </div>
+          @if (joinedEvents().length === 0) {
+            <div class="flex items-center justify-center py-6 text-gray-500">
+              You have not joined any events yet.
+            </div>
+          }
+          @else {
+            <div class="flex flex-col gap-4 max-h-[calc(100vh-24em)]">
+              @for (event of joinedEvents(); track event.id) {
+                <app-event-card
+                  [id]="event.id!"
+                  [name]="event.title!"
+                  [location]="event.city + ' ' + event.address"
+                  [date]="event.dateTime!"
+                  [tags]="event.tags!"
+                  [maxParticipants]="event.maxParticipants"
+                  [status]="event.status!"class="w-full"
+                />
+              }
+            </div>
+          }
         </p-scroll-panel>
       </div>
 
