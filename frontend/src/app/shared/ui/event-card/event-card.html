@@ -1,4 +1,7 @@
-<p-card>
+<p-card
+  class="border-2 border-white cursor-pointer
+  transition hover:-translate-y-1 hover:drop-shadow-xl hover:border-emerald-200"
+  [routerLink]="[`/events/${id()}`]">
   <ng-template #title>
     <h3>
       {{name()}}

@@ -68,6 +68,7 @@
         <app-event-card
           (click)="openEvent(event.id!)"
           class="w-full"
+          [id]="event.id!"
           [name]="event.title!"
           [location]="event.city + ' ' + event.address"
           [date]="event.dateTime!"
