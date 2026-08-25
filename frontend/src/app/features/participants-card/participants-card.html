@@ -1,0 +1,30 @@
+<p-card>
+  <ng-template #title>
+    <div class="border-b border-b-gray-200 pb-2">
+      <span class="text-sm font-normal text-gray-500">
+        {{ count() }}/{{ maxParticipants() ?? '?' }} Participants
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template #content>
+    @if (participants().length) {
+      <p-scrollpanel class="h-44">
+        <ul class="flex flex-col gap-3 pr-3">
+          @for (participant of participants(); track participant.id) {
+            <li class="flex items-center gap-2">
+              <p-avatar [image]="userImagePlaceholderURL()" shape="circle"/>
+              <span class="text-sm truncate">
+                {{ participantName(participant) }}
+              </span>
+            </li>
+          }
+        </ul>
+      </p-scrollpanel>
+    } @else {
+      <p class="text-sm text-gray-500">
+        No participants yet
+      </p>
+    }
+  </ng-template>
+</p-card>
