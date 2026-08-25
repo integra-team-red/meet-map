@@ -51,7 +51,7 @@ export class LoginPage {
             return;
           }
           this.authService.setToken(token, rememberMe);
-          this.router.navigate(['/']);
+          this.router.navigate(['/home']);
         },
         error: (err) => {
           this.error.set(

@@ -12,6 +12,7 @@ import {EventDetailsPage} from './event/feature/event-details-page/event-details
 export const routes: Routes = [
   {
     path: '',
+    canActivate: [authGuard],
     component: LandingPage,
   },
   {
