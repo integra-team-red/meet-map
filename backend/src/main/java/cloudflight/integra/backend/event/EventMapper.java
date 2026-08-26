@@ -2,6 +2,7 @@ package cloudflight.integra.backend.event;
 import cloudflight.integra.backend.event.model.CreateEventDto;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventDto;
+import cloudflight.integra.backend.review.model.EventAverageRating;
 import cloudflight.integra.backend.tag.model.Tag;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,7 +13,12 @@ import java.time.ZoneOffset;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
+    @Mapping(target = "averageRating", source = "rating.averageRating")
+    @Mapping(target = "reviewsCount", source = "rating.reviewCount")
+    EventDto toDto(Event event, EventAverageRating rating);
 
+    @Mapping(target = "reviewsCount", ignore = true)
+    @Mapping(target = "averageRating", ignore = true)
     EventDto toDto(Event event);
     Event toEntity(EventDto eventDto);
 

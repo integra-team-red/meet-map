@@ -22,5 +22,7 @@ public record EventDto (Long id,
                         Long creatorId,
                         LocalDateTime createdAt,
                         List<TagDto> tags,
-                        List<FlagDto> flags) {
+                        List<FlagDto> flags,
+                        Double averageRating,
+                        Long reviewsCount) {
 }

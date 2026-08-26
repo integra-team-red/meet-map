@@ -37,11 +37,10 @@
         }
       </div>
       <div class="flex flex-row justify-between mt-2">
-        <div>
-          @for (index of [1, 2, 3, 4, 5]; track index) {
-            <i class="pi pi-star"></i>
-          }
-        </div>
+        <app-star-rating
+        [averageRating]="averageRating()"
+        [reviewsCount]="reviewsCount()">
+      </app-star-rating>
         <div>
           <span>{{maxParticipants()}}  <i class="pi pi-user"></i></span>
         </div>

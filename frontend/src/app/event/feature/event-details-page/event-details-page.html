@@ -30,8 +30,8 @@
 
     <section class="md:col-start-2 md:row-start-2">
       <div class="flex flex-wrap gap-4">
-        @for (tag of event.tags; track tag){
-          <p-tag [value]="tag.name" />
+        @for (tag of event.tags; track tag) {
+          <p-tag [value]="tag.name"/>
         }
       </div>
 
@@ -67,17 +67,10 @@
     </section>
 
     <section class="min-w-0 flex flex-col gap-4 md:col-start-1 md:row-start-2">
-      <div class="flex flex-row items-center gap-2 md:gap-x-4 pt-3">
-          <span>
-              {{ reviewCount() ?? '0' }}/5
-          </span>
-        <div class="flex items-center gap-2">
-          <p-rating [ngModel]=starRating() [readonly]="true"/>
-          <span class="text-gray-500">
-              from {{ reviewCount() ?? '...' }} reviews
-            </span>
-        </div>
-      </div>
+      <app-star-rating
+        [averageRating]="event.averageRating"
+        [reviewsCount]="event.reviewsCount">
+      </app-star-rating>
 
       <h2 class="text-xl">
         Reviews
