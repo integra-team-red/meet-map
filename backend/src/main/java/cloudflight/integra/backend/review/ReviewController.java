@@ -57,16 +57,4 @@ public class ReviewController {
         Review review = mapper.toEntity(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(review)));
     }
-
-    @GetMapping(value = "/events/{eventId}/reviews/average", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Get average rating for an event",
-        operationId = "getAverageRating"
-    )
-    public Double getAverageRatingForEvent(@PathVariable Long eventId) {
-        Double averageRating = service.getAverageRatingForEvent(eventId);
-        if (averageRating == null)
-            return 0.0;
-        return service.getAverageRatingForEvent(eventId);
-    }
 }

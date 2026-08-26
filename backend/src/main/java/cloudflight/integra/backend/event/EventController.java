@@ -1,7 +1,10 @@
 package cloudflight.integra.backend.event;
 
 import cloudflight.integra.backend.event.model.CreateEventDto;
+import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventDto;
+import cloudflight.integra.backend.review.ReviewService;
+import cloudflight.integra.backend.review.model.EventAverageRating;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -15,29 +18,23 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
     private final EventService service;
     private final EventMapper mapper;
+    private final ReviewService reviewService;
 
-    public EventController(EventService service, EventMapper mapper) {
+    public EventController(EventService service, EventMapper mapper, ReviewService reviewService) {
         this.service = service;
         this.mapper = mapper;
-    }
-
-    public Page<EventDto> getAll(
-        @PageableDefault(size = 20, sort = "dateTime") Pageable pageable
-    ) {
-        return service.getAll(pageable).map(mapper::toDto);
+        this.reviewService = reviewService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Get all Events",
-        operationId = "getAllEvents"
-    )
+    @Operation(summary = "Get all Events", operationId = "getAllEvents")
     public Page<EventDto> getAll(
         @PageableDefault(size = 20, sort = "dateTime") Pageable pageable,
         @RequestParam(defaultValue = "") String searchTerm,
@@ -49,43 +46,34 @@ public class EventController {
         @RequestParam(defaultValue = "2999-12-31") LocalDate dateTo,
         @RequestParam(required = false) Long creatorId
     ) {
-        return service.getAll(
-            pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId
-        ).map(mapper::toDto);
+        Page<Event> events = service.getAll(
+            pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId);
+        Map<Long, EventAverageRating> ratings = reviewService.getAverageRatings(
+            events.getContent().stream().map(Event::getId).toList());
+        return events.map(event -> mapper.toDto(event, ratings.get(event.getId())));
     }
 
     @GetMapping(value = "/cities", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Get all cities of events",
-        operationId = "getCities"
-    )
+    @Operation(summary = "Get all cities of events", operationId = "getCities")
     public List<String> getCities() {
         return service.getCities();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Get Event by Id",
-        operationId = "getEvent"
-    )
+    @Operation(summary = "Get Event by Id", operationId = "getEvent")
     public EventDto getById(@PathVariable Long id) {
-        return service.getById(id).map(mapper::toDto)
+        return service.getById(id).map(event -> mapper.toDto(
+            event, reviewService.getAverageRatingForEvent(id)))
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Create Event",
-        operationId = "createEvent"
-    )
+    @Operation(summary = "Create Event", operationId = "createEvent")
     public ResponseEntity<EventDto> create(@Valid @RequestBody CreateEventDto event) {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(mapper.toEntity(event))));
     }
 
-    @Operation(
-        summary = "Update an event",
-        operationId = "updateEvent"
-    )
+    @Operation(summary = "Update an event", operationId = "updateEvent")
     @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EventDto update(@PathVariable Long id, @Valid @RequestBody CreateEventDto event) {
         return service.update(id, mapper.toEntity(event)).map(mapper::toDto)
@@ -93,10 +81,7 @@ public class EventController {
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-        summary = "Delete Event by Id",
-        operationId = "deleteEvent"
-    )
+    @Operation(summary = "Delete Event by Id", operationId = "deleteEvent")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (service.delete(id)) {
             return ResponseEntity.noContent().build();

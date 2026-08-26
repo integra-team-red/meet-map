@@ -1,6 +1,7 @@
 package cloudflight.integra.backend.review;
 
 import cloudflight.integra.backend.event.EventService;
+import cloudflight.integra.backend.review.model.EventAverageRating;
 import cloudflight.integra.backend.review.model.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -62,7 +66,15 @@ public class ReviewService {
         }).orElse(false);
     }
 
-    public Double getAverageRatingForEvent(Long eventId) {
-        return repository.findAverageRatingByEventId(eventId);
+    public EventAverageRating getAverageRatingForEvent(Long eventId) {
+        return getAverageRatings(List.of(eventId)).get(eventId);
+    }
+
+    public Map<Long, EventAverageRating> getAverageRatings(Collection<Long> eventIds) {
+        if (eventIds.isEmpty()) {
+            return Map.of();
+        }
+        return repository.findAverageRatingByEventIds(eventIds).stream()
+            .collect(Collectors.toMap(EventAverageRating::eventId, r -> r));
     }
 }

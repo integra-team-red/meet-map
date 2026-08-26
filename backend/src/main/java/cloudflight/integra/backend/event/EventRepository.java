@@ -39,5 +39,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT DISTINCT city FROM Event")
     List<String> findDistinctCities();
-
 }
