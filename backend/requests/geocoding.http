@@ -1,0 +1,4 @@
+### GET an address (freeform query)
+GET http://localhost:8080/api/geocoding/coordinates?city=cluj-napoca&address=bogdan petriceicu hasdeu 90-92
+Authorization: Bearer {{token}}
+
