@@ -12,7 +12,6 @@ const passwordsMatch = (group: AbstractControl): ValidationErrors | null => {
   return password === confirmPassword ? null : {passwordMismatch: true};
 };
 
-
 @Component({
   selector: 'app-signup-page',
   templateUrl: './signup-page.html',
@@ -21,6 +20,7 @@ const passwordsMatch = (group: AbstractControl): ValidationErrors | null => {
     ButtonModule, RouterLink],
 })
 export class SignupPage {
+  readonly today = new Date().toISOString().split('T')[0];
   private readonly api = inject(AuthControllerService);
   private readonly router = inject(Router);
 
@@ -45,7 +45,6 @@ export class SignupPage {
       return;
     }
 
-
     this.loading.set(true);
     this.error.set(null);
     const {firstName, lastName, email, password, birthDate, description} = this.form.getRawValue();
@@ -54,13 +53,9 @@ export class SignupPage {
       .subscribe({
         next: () => this.router.navigate(['/login']),
         error: (err: HttpErrorResponse) => {
-          console.log(err);
-          this.error.set(
-            err.error?.message ?? 'Something went wrong. Please try again.',
-          );
+          this.error.set(err.error?.message ?? 'Could not register new user');
           this.loading.set(false);
         },
       });
   }
 }
-
