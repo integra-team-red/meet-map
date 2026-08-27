@@ -65,7 +65,7 @@
 
       <div class="flex flex-col gap-1">
         <label for="birthDate">Birth date</label>
-        <input class="w-full" formControlName="birthDate" id="birthDate" pInputText type="date"/>
+        <input class="w-full" formControlName="birthDate" id="birthDate" pInputText type="date" [max]="today"/>
         @if (form.controls.birthDate.invalid && form.controls.birthDate.touched) {
           <small class="text-red-600">Birth date is required.</small>
         }
