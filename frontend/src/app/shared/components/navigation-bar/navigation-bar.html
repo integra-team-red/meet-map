@@ -1,31 +1,46 @@
 <div class="hidden lg:block mx-auto px-2 mt-4">
   <p-menubar [model]="items" [pt]="{ rootList: 'grow justify-around'  }">
     <ng-template #item let-item>
-      <!-- Will change p-menubar-item-focus-background to match secondary once we add theming -->
-        <a [routerLink]="item.routerLink" routerLinkActive="bg-[var(--p-menubar-item-focus-background)]" class="p-menubar-item-link">
-          {{ item.label }}
-        </a>
+      <a [routerLink]="item.routerLink" routerLinkActive="bg-primary-100"
+          class="p-menubar-item-link rounded-[var(--p-navigation-item-border-radius)]">
+        {{ item.label }}
+      </a>
     </ng-template>
     <ng-template #end>
-      <a routerLink="/profile" aria-label="Profile">
-        <p-avatar
-          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
-      </a>
+      <div class="flex items-center gap-4">
+        <p-select
+          [options]="themeOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="theme()"
+          (ngModelChange)="setTheme($event)"/>
+        <a routerLink="/profile" aria-label="Profile">
+          <p-avatar
+            image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"/>
+        </a>
+      </div>
     </ng-template>
   </p-menubar>
 </div>
 <div class="mx-auto lg:hidden px-2 mt-4">
   <p-menubar [model]="mobileItems" [pt]="{ rootList: 'grow justify-around' }">
     <ng-template #item let-item>
-      <a [routerLink]="item.routerLink" routerLinkActive="bg-[var(--p-menubar-item-focus-background)]" class="p-menubar-item-link">
+      <a [routerLink]="item.routerLink" routerLinkActive="bg-primary-100"
+          class="p-menubar-item-link rounded-[var(--p-navigation-item-border-radius)]">
         {{ item.label }}
       </a>
     </ng-template>
     <ng-template #end>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-4">
+        <p-select
+          [options]="themeOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="theme()"
+          (ngModelChange)="setTheme($event)"/>
         <a routerLink="/profile" aria-label="Profile">
-        <p-avatar
-          image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
+          <p-avatar
+            image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"/>
         </a>
       </div>
     </ng-template>
