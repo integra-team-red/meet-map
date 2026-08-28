@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 @Repository
 public interface EventParticipationRepository extends JpaRepository<EventParticipation, Long> {
@@ -18,6 +19,8 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
     void deleteById(@NonNull Long id);
 
     boolean existsByEventIdAndUserId(Long eventId, Long userId);
+
+    Optional<EventParticipation> findByEventIdAndUserId(Long eventId, Long userId);
 
     long countByEventId(Long eventId);
 
