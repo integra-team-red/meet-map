@@ -8,12 +8,7 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-4">
-        <p-select
-          [options]="themeOptions"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="theme()"
-          (ngModelChange)="setTheme($event)"/>
+        <app-theme-picker/>
         <a routerLink="/profile" aria-label="Profile">
           <p-avatar
             image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"/>
@@ -32,12 +27,7 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-4">
-        <p-select
-          [options]="themeOptions"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="theme()"
-          (ngModelChange)="setTheme($event)"/>
+        <app-theme-picker/>
         <a routerLink="/profile" aria-label="Profile">
           <p-avatar
             image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle"/>

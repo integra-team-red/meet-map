@@ -1,0 +1,6 @@
+<p-select
+  [options]="themeOptions"
+  optionLabel="label"
+  optionValue="value"
+  [ngModel]="theme()"
+  (ngModelChange)="setTheme($event)"/>
