@@ -3,7 +3,7 @@
   [class.border-white]="status() != 'COMPLETED'"
   class="border-2 cursor-pointer
   transition hover:-translate-y-1 hover:drop-shadow-xl"
-  [class.hover:border-emerald-200]="status() != 'CANCELLED'"
+  [class.hover:border-primary-200]="status() != 'CANCELLED'"
   [class.hover:border-red-200]="status() == 'CANCELLED'"
   [class.contrast-90]="status() == 'CANCELLED'"
   [routerLink]="[`/events/${id()}`]">

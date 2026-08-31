@@ -3,6 +3,7 @@ package cloudflight.integra.backend.event;
 import cloudflight.integra.backend.event.model.CreateEventDto;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventDto;
+import cloudflight.integra.backend.event.model.EventStatus;
 import cloudflight.integra.backend.review.ReviewService;
 import cloudflight.integra.backend.review.model.EventAverageRating;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,10 +45,11 @@ public class EventController {
         @RequestParam(defaultValue = "200") Integer maxAge,
         @RequestParam(defaultValue = "1900-01-01") LocalDate dateFrom,
         @RequestParam(defaultValue = "2999-12-31") LocalDate dateTo,
-        @RequestParam(required = false) Long creatorId
-    ) {
+        @RequestParam(required = false) Long creatorId,
+        @RequestParam(required = false)EventStatus status
+        ) {
         Page<Event> events = service.getAll(
-            pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId);
+            pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId, status);
         Map<Long, EventAverageRating> ratings = reviewService.getAverageRatings(
             events.getContent().stream().map(Event::getId).toList());
         return events.map(event -> mapper.toDto(event, ratings.get(event.getId())));

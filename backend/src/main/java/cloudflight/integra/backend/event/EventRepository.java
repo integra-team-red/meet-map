@@ -1,6 +1,7 @@
 package cloudflight.integra.backend.event;
 
 import cloudflight.integra.backend.event.model.Event;
+import cloudflight.integra.backend.event.model.EventStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +25,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         AND e.dateTime >= :dateFrom
         AND e.dateTime <= :dateTo
         AND (:noTags = true OR t.id IN :tagIds)
-        AND (:creatorId IS NULL OR e.creatorId = :creatorId)""")
+        AND (:creatorId IS NULL OR e.creatorId = :creatorId)
+        AND (:status IS NULL OR e.status = :status)""")
     Page<Event> findFiltered(
         @Param("searchTerm") String searchTerm,
         @Param("city") String city,
@@ -35,6 +37,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         @Param("dateFrom") LocalDateTime dateFrom,
         @Param("dateTo") LocalDateTime dateTo,
         @Param("creatorId") Long creatorId,
+        @Param("status") EventStatus status,
         Pageable pageable);
 
     @Query("SELECT DISTINCT city FROM Event")

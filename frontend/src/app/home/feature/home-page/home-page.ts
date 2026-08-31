@@ -149,6 +149,8 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       f.age?.[1],
       f.dateRange?.[0] ? this.toLocalDate(f.dateRange[0]) : undefined,
       f.dateRange?.[1] ? this.toLocalDate(f.dateRange[1]) : undefined,
+      undefined,
+      'ACTIVE'
     ).subscribe({
       next: (response: PageEventDto) => {
         const newContent = response.content ?? [];
