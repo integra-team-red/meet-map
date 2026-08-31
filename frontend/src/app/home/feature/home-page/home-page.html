@@ -63,24 +63,52 @@
       </p-card>
     </div>
     <div #scrollContainer class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 max-h-screen overflow-y-scroll [scrollbar-width:none]">
-      @for (event of events(); track event.id) {
-        <app-event-card
-          (click)="openEvent(event.id!)"
-          class="w-full"
-          [id]="event.id!"
-          [name]="event.title!"
-          [location]="event.city + ' ' + event.address"
-          [date]="event.dateTime!"
-          [tags]="event.tags!"
-          [maxParticipants]="event.maxParticipants"
-          [averageRating]="event.averageRating"
-          [reviewsCount]="event.reviewsCount"
-          [status]="event.status!"
-        />
+      @if (isLoading()) {
+        @for (i of [1, 2, 3]; track i) {
+          <p-card class="w-full ">
+            <p-skeleton class="mb-4" width="70%" height="1.5rem"/>
+            <div class="flex flex-col gap-3">
+              <p-skeleton width="80%" height="1rem"/>
+              <p-skeleton width="50%" height="1rem"/>
+              <div class="flex flex-row gap-2">
+                <p-skeleton width="20%" height="1.5rem"/>
+                <p-skeleton width="20%" height="1.5rem"/>
+                <p-skeleton width="20%" height="1.5rem"/>
+              </div>
+              <div class="flex flex-row justify-between">
+                <p-skeleton width="30%" height="1rem"/>
+                <p-skeleton width="10%" height="1rem"/>
+              </div>
+            </div>
+          </p-card>
+        }
+      } @else if (events().length === 0) {
+        <p-card class="w-full">
+          <div class="flex flex-col items-center text-center gap-4 py-8">
+            <i class="pi pi-search "></i>
+            No events match
+          </div>
+        </p-card>
+      } @else {
+        @for (event of events(); track event.id) {
+          <app-event-card
+            (click)="openEvent(event.id!)"
+            class="w-full"
+            [id]="event.id!"
+            [name]="event.title!"
+            [location]="event.city + ' ' + event.address"
+            [date]="event.dateTime!"
+            [tags]="event.tags!"
+            [maxParticipants]="event.maxParticipants"
+            [averageRating]="event.averageRating"
+            [reviewsCount]="event.reviewsCount"
+            [status]="event.status!"
+          />
+        }
       }
       <div #sentinel class="w-full h-1"></div>
 
-      @if (isLoading()) {
+      @if (isLoading() && events().length > 0) {
         <div class="w-full flex justify-center py-4">
           <i class="pi pi-spin pi-spinner text-2xl text-gray-400"></i>
         </div>
