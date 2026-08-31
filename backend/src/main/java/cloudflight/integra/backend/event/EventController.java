@@ -46,8 +46,8 @@ public class EventController {
         @RequestParam(defaultValue = "1900-01-01") LocalDate dateFrom,
         @RequestParam(defaultValue = "2999-12-31") LocalDate dateTo,
         @RequestParam(required = false) Long creatorId,
-        @RequestParam(required = false)EventStatus status
-        ) {
+        @RequestParam(required = false) EventStatus status
+    ) {
         Page<Event> events = service.getAll(
             pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId, status);
         Map<Long, EventAverageRating> ratings = reviewService.getAverageRatings(
@@ -65,7 +65,7 @@ public class EventController {
     @Operation(summary = "Get Event by Id", operationId = "getEvent")
     public EventDto getById(@PathVariable Long id) {
         return service.getById(id).map(event -> mapper.toDto(
-            event, reviewService.getAverageRatingForEvent(id)))
+                event, reviewService.getAverageRatingForEvent(id)))
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
