@@ -17,6 +17,7 @@ import {TagDto} from '@app/api/model/tagDto';
 import {MultiSelect} from 'primeng/multiselect';
 import {Button} from 'primeng/button';
 import {TagControllerService} from '@app/api/api/tagController.service';
+import {Skeleton} from 'primeng/skeleton';
 
 const PAGE_SIZE = 20;
 
@@ -39,6 +40,7 @@ const PAGE_SIZE = 20;
     MultiSelect,
     Button,
     ReactiveFormsModule,
+    Skeleton,
   ],
   templateUrl: './home-page.html',
 })
