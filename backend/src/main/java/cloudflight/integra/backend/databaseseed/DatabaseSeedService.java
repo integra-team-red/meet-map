@@ -105,7 +105,7 @@ public class DatabaseSeedService {
             "User",
             "test@test.com",
             "Password123",
-            LocalDate.of(2000, 05, 10),
+            LocalDate.of(2000, 5, 10),
             "Description_Test"
         );
         try {
@@ -181,7 +181,7 @@ public class DatabaseSeedService {
             event.setLatitude(faker.number().randomDouble(4, 0, 90));
             event.setLongitude(faker.number().randomDouble(4, 0, 90));
             event.setDateTime(LocalDateTime.of(
-                2026, 7, faker.number().numberBetween(1, 31), 12, 0));
+                2026, 9, faker.number().numberBetween(1, 30), 12, 0));
             event.setMaxParticipants(faker.number().numberBetween(0, 150));
             event.setMinAge(faker.number().numberBetween(0, 18));
             event.setMaxAge(faker.number().numberBetween(event.getMinAge(), 19));

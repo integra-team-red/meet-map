@@ -47,7 +47,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         @Param("dateTo") LocalDateTime dateTo,
         @Param("creatorId") Long creatorId,
         @Param("status") EventStatus status,
-        Pageable pageable);
+        Pageable pageable
+    );
 
     @Query("SELECT DISTINCT city FROM Event")
     List<String> findDistinctCities();
