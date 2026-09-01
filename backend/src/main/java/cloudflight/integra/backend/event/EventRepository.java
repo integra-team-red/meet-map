@@ -4,6 +4,7 @@ import cloudflight.integra.backend.event.model.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,14 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
+    @Modifying(clearAutomatically = true)
+    @Query("""
+
+        UPDATE Event e
+        SET e.status = cloudflight.integra.backend.event.model.EventStatus.COMPLETED
+        WHERE e.status = cloudflight.integra.backend.event.model.EventStatus.ACTIVE
+        AND e.dateTime < :now""")
+    int markPastEventsCompleted(@Param("now") LocalDateTime now);
 
     @Query("""
         SELECT DISTINCT e FROM Event e
