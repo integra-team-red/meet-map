@@ -20,3 +20,7 @@ springdoc:
 jwt:
   secret: diusabdiuasbfouasbfoausbfibasdabfoasnfoaslb
   expiration-ms: 2400000
+
+app:
+  event-completion:
+    cron: "-"
