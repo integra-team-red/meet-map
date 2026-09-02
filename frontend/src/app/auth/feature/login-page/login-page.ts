@@ -51,7 +51,7 @@ export class LoginPage {
             return;
           }
           this.authService.setToken(token, rememberMe);
-          this.router.navigate(['/home']);
+          this.router.navigate(['/home'], {queryParams: {'from-login': true}});
         },
         error: (err) => {
           this.error.set(

@@ -3,6 +3,8 @@ package cloudflight.integra.backend.review;
 import cloudflight.integra.backend.review.model.CreateReviewDto;
 import cloudflight.integra.backend.review.model.Review;
 import cloudflight.integra.backend.review.model.ReviewDto;
+import cloudflight.integra.backend.user.UserService;
+import cloudflight.integra.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,10 +23,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReviewController {
     private final ReviewService service;
     private final ReviewMapper mapper;
+    private final UserService userService;
 
-    public ReviewController(ReviewService service, ReviewMapper mapper) {
+    public ReviewController(ReviewService service, ReviewMapper mapper, UserService userService) {
         this.service = service;
         this.mapper = mapper;
+        this.userService = userService;
     }
 
     @GetMapping(value = "/events/{eventId}/reviews", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -53,8 +58,9 @@ public class ReviewController {
         summary = "Create a new review for an event",
         operationId = "createReview"
     )
-    public ResponseEntity<ReviewDto> create(@Valid @RequestBody CreateReviewDto dto) {
-        Review review = mapper.toEntity(dto);
+    public ResponseEntity<ReviewDto> create(@Valid @RequestBody CreateReviewDto dto, Authentication authentication) {
+        User user = userService.getByEmail(authentication.getName());
+        Review review = mapper.toEntity(dto).setUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(review)));
     }
 }

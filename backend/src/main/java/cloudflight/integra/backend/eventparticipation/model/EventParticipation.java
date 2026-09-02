@@ -24,6 +24,18 @@ public class EventParticipation {
     private Event event;
     private LocalDateTime joinedAt;
 
+    @Column(name = "review_dismissed")
+    private Boolean reviewDismissed = false;
+
+    public Boolean getReviewDismissed() {
+        return reviewDismissed;
+    }
+
+    public EventParticipation setReviewDismissed(Boolean reviewDismissed) {
+        this.reviewDismissed = reviewDismissed;
+        return this;
+    }
+
     public EventParticipation() {
     }
 
