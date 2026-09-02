@@ -70,8 +70,6 @@
           </div>
         </div>
 
-
-
         <div class="flex flex-row gap-4 text-center justify-between">
           <p class="min-w-fit">Age Range: </p>
           <div class="flex flex-box w-full gap-4">
@@ -103,8 +101,6 @@
           </p-inputNumber>
           <label for="on_label">Max Participants</label>
         </p-floatlabel>
-
-
       </div>
     </p-scrollpanel>
 
@@ -112,8 +108,15 @@
       <p-button label="Dismiss" variant="outlined" severity="secondary"/>
       <div class="flex flex-row gap-4">
         <p-button label="Save Changes" variant="outlined" severity="primary" (onClick)="updateEvent()"/>
-        <p-button label="Cancel Event..." variant="outlined" severity="danger" (onClick)="deleteEvent()"/>
+        <p-button label="Cancel Event..." variant="outlined" severity="danger" (onClick)="confirmCancel()"/>
       </div>
     </div>
+
+    <p-confirm-dialog>
+      <div class="flex justify-center gap-2">
+        <p-button label="Go back" variant="outlined" severity="primary" />
+        <p-button label="Cancel" variant="outlined" severity="danger" (onClick)="deleteEvent()"/>
+      </div>
+    </p-confirm-dialog>
   </div>
 </p-card>

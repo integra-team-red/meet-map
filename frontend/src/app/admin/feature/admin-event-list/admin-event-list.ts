@@ -14,6 +14,7 @@ import {InputText} from 'primeng/inputtext';
 import {ScrollPanel} from 'primeng/scrollpanel';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 import {EventDto} from '@app/api/model/eventDto';
+import StatusEnum = EventDto.StatusEnum;
 
 @Component({
   selector: 'app-admin-event-list',
@@ -32,7 +33,8 @@ export class AdminEventList implements OnInit {
   page = input.required<PageEventDto|null>();
   pageRequest = output<number[]>()
 
-  events = computed(() => this.page()?.content!)
+  events = computed(() =>
+    this.page()?.content!.filter(event => event.status !== StatusEnum.Cancelled))
   countPage = computed(() => 10)
   countTotal = computed(() => this.page()?.totalElements ?? 0)
 
