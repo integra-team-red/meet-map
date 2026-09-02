@@ -7,8 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,5 +35,14 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
             "WHERE ep.userId = :participantId"
     )
     Page<Event> findAllEventsByParticipant(Long participantId, Pageable pageable);
+
+    @Query("SELECT ep FROM EventParticipation ep " +
+        "WHERE ep.userId = :userId " +
+        "AND ep.event.status = cloudflight.integra.backend.event.model.EventStatus.COMPLETED " +
+        "AND ep.reviewDismissed = false " +
+        "AND NOT EXISTS (SELECT 1 FROM Review r WHERE r.event = ep.event AND r.user.id = :userId) " +
+        "ORDER BY ep.event.dateTime DESC")
+    List<EventParticipation> findPendingReviews(@Param("userId") Long userId, Pageable pageable);
+
 }
 

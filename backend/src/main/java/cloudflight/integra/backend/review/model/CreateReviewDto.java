@@ -8,10 +8,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public record CreateReviewDto(
-
-    Long id,
-    @NotNull(message = "User ID is required")
-    Long userId,
     @NotNull(message = "Event ID is required")
     Long eventId,
     @NotNull(message = "Rating is required")
