@@ -6,6 +6,8 @@ Content-Type: application/json
     "firstName": "Test",
     "lastName": "User",
     "email": "test@example.com",
+    "birthDate": "1970-01-01",
+    "description": "",
     "password": "password123"
 }
 ### Log in and capture the token

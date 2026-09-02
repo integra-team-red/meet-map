@@ -15,6 +15,7 @@ import {UpdateUserTagsDto} from '@app/api/model/updateUserTagsDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {EventDto} from '@app/api/model/eventDto';
 import {EventCard} from '../../../shared/ui/event-card/event-card';
+import {IconField} from 'primeng/iconfield';
 
 @Component({
   selector: 'app-profile-page',
@@ -27,6 +28,7 @@ import {EventCard} from '../../../shared/ui/event-card/event-card';
     ScrollPanel,
     EventCard,
     Paginator,
+    IconField,
   ],
 })
 export class ProfilePage implements OnInit {
@@ -34,9 +36,6 @@ export class ProfilePage implements OnInit {
   private readonly tagApi = inject(TagControllerService);
   private readonly eventApi = inject(EventControllerService);
   private readonly router = inject(Router);
-
-  // Placeholder until Matrix communication is implemented
-  protected readonly matrixId = 'ianis67skibidi@matrix.meet-map.ro';
 
   protected readonly user = signal<UserDto | null>(null);
   protected readonly loading = signal(true);
@@ -59,6 +58,10 @@ export class ProfilePage implements OnInit {
       (a.name ?? '').localeCompare(b.name ?? '')
     )
   );
+
+  protected readonly matrixId = computed(() => this.user()!.mxId);
+  protected readonly matrixPassword = computed(() => this.user()!.mxPassword);
+  protected matrixPasswordVisible = signal(false);
 
   protected readonly createdEvents = signal<EventDto[]>([]);
   protected readonly createdPage = signal(0);
@@ -194,5 +197,9 @@ export class ProfilePage implements OnInit {
         this.error.set('Could not update your tags. Please try again.');
       },
     });
+  }
+
+  protected toggleMatrixPasswordVisibility() {
+    this.matrixPasswordVisible.update((e) => !e);
   }
 }
