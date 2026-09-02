@@ -1,0 +1,28 @@
+<p-dialog
+  [closable]="false"
+  [modal]="true"
+  [style]="{ width: '90vw', maxWidth: '400px' }"
+  [visible]="visible()"
+  header="How was it?"
+>
+  @if (pendingReviewSource.value(); as pending) {
+    <div class="flex flex-col gap-4">
+      <p class="text-lg font-medium">{{ pending.event?.title }}</p>
+
+      <div class="flex flex-col gap-2">
+        <label>Your rating</label>
+        <p-rating [(ngModel)]="rating" [stars]="5"/>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label>Comment (optional)</label>
+        <textarea [(ngModel)]="comment" fluid pTextarea placeholder="Tell us about the event" rows="3"></textarea>
+      </div>
+
+      <div class="flex justify-between mt-2">
+        <p-button (onClick)="dismiss()" [text]="true" label="Not now" severity="secondary"/>
+        <p-button (onClick)="submit()" [disabled]="rating() === 0" [loading]="submitting()" label="Submit"/>
+      </div>
+    </div>
+  }
+</p-dialog>

@@ -6,6 +6,7 @@ import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
 import cloudflight.integra.backend.user.UserRepository;
 import cloudflight.integra.backend.user.model.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -117,5 +118,22 @@ public class EventParticipationService {
             participationRepository.deleteById(id);
             return true;
         }).orElse(false);
+    }
+
+    public Optional<EventParticipation> getLastPendingReview(Long userId) {
+        List<EventParticipation> results = participationRepository.findPendingReviews(userId, PageRequest.of(0, 1));
+
+        if (results.isEmpty())
+            return Optional.empty();
+
+        return Optional.of(results.getFirst());
+    }
+
+    public void dismissReview(Long eventId, Long userId) {
+        EventParticipation participation = participationRepository.findByEventIdAndUserId(eventId, userId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participation not found"));
+
+        participation.setReviewDismissed(true);
+        participationRepository.save(participation);
     }
 }

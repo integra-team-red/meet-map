@@ -3,7 +3,7 @@ import {EventDto} from '@app/api/model/eventDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {PageEventDto} from '@app/api/model/pageEventDto';
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {IconField} from 'primeng/iconfield';
 import {InputIcon} from 'primeng/inputicon';
 import {InputText} from 'primeng/inputtext';
@@ -17,6 +17,7 @@ import {TagDto} from '@app/api/model/tagDto';
 import {MultiSelect} from 'primeng/multiselect';
 import {Button} from 'primeng/button';
 import {TagControllerService} from '@app/api/api/tagController.service';
+import {PendingReviewModal} from '../pending-review/pending-review-modal';
 import {Skeleton} from 'primeng/skeleton';
 
 const PAGE_SIZE = 20;
@@ -40,6 +41,7 @@ const PAGE_SIZE = 20;
     MultiSelect,
     Button,
     ReactiveFormsModule,
+    PendingReviewModal,
     Skeleton,
   ],
   templateUrl: './home-page.html',
@@ -48,6 +50,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   eventService: EventControllerService = inject(EventControllerService);
   tagService: TagControllerService = inject(TagControllerService);
   router = inject(Router);
+  protected fromLogin = signal(false);
 
   @ViewChild('sentinel') sentinelRef!: ElementRef<HTMLDivElement>;
   @ViewChild('scrollContainer') scrollContainerRef!: ElementRef<HTMLDivElement>;
@@ -55,6 +58,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   isLastPage = signal(false);
   private observer?: IntersectionObserver;
   private currentPage = signal(0);
+  private route = inject(ActivatedRoute);
 
 
   protected filters = new FormGroup({
@@ -80,6 +84,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.searchEvents(true);
     this.getCities();
     this.getTags();
+    this.fromLogin.set(this.route.snapshot.queryParamMap.has('from-login'));
   }
 
   ngAfterViewInit(): void {
