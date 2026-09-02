@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,8 +24,13 @@ public class UserService {
     }
 
     public User getByEmail(String email) {
-        return repository.findByEmail(email)
-            .orElseThrow(() -> new
+        return repository.findByEmail(email).map((user) -> {
+                if(user.getMxPassword() != null)
+                    user.setMxPassword(
+                        new String(Base64.getDecoder().decode(user.getMxPassword()), StandardCharsets.UTF_8)
+                    );
+                return user;
+            }).orElseThrow(() -> new
                 ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 

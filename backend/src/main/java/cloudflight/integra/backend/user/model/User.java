@@ -34,6 +34,12 @@ public class User {
     @Column(length = 500)
     private String description;
 
+    @Column
+    private String mxId;
+
+    @Column
+    private String mxPassword;
+
     @ManyToMany
     @JoinTable(name = "user_tags",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -132,6 +138,24 @@ public class User {
 
     public User setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+        return this;
+    }
+
+    public String getMxId() {
+        return mxId;
+    }
+
+    public User setMxId(String mxId) {
+        this.mxId = mxId;
+        return this;
+    }
+
+    public String getMxPassword() {
+        return mxPassword;
+    }
+
+    public User setMxPassword(String mxPassword) {
+        this.mxPassword = mxPassword;
         return this;
     }
 

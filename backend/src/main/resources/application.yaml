@@ -30,3 +30,7 @@ server:
 app:
   event-completion:
     cron: "0 0 0 * * *"
+
+synapse:
+  url: ${SYNAPSE_URL}
+  secret: ${SYNAPSE_REGISTRATION_SHARED_SECRET}

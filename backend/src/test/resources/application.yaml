@@ -24,3 +24,7 @@ jwt:
 app:
   event-completion:
     cron: "-"
+
+synapse:
+  url: abcd
+  secret: ghijkl
