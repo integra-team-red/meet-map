@@ -8,6 +8,7 @@ import {PageEventDto} from '@app/api/model/pageEventDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {NgClass} from '@angular/common';
 import {CreateEventDto} from '@app/api/model/createEventDto';
+import {ToastNotificationService} from '../../../shared/ui/toast-notification-service/toast-notification-service';
 
 @Component({
   selector: 'app-admin-panel',
@@ -27,6 +28,8 @@ export class AdminPanel {
     return !!this.detailsEvent();
   });
 
+  constructor(private toastNotificationService: ToastNotificationService) {}
+
   listPage = signal<PageEventDto|null>(null);
   detailsEvent = signal<EventDto|null>(null);
 
@@ -34,8 +37,8 @@ export class AdminPanel {
   rowsNumCached = 10;
 
   protected backendGetEventPage(page: number = this.pageNumCached, rows: number = this.rowsNumCached) {
-    this.pageNumCached = page
-    this.rowsNumCached = rows
+    this.pageNumCached = page;
+    this.rowsNumCached = rows;
     this.eventService.getAllEvents({ page: page, size: rows, sort: ["desc"] })
       .subscribe((response: PageEventDto) => {
         console.log(response);
@@ -46,14 +49,16 @@ export class AdminPanel {
   protected backendUpdateEvent(e: EventDto) {
     this.eventService.updateEvent(e.id!, e as CreateEventDto).subscribe((response) => {
       this.replaceEvent(response);
-    })
+      this.toastNotificationService.showSuccess("The Event has been updated.");
+    });
   }
 
   protected backendDeleteEvent(e: EventDto){
     this.eventService.deleteEvent(e.id!)
       .subscribe(() => {
         this.detailsEvent.set(null);
-        this.backendGetEventPage()
+        this.backendGetEventPage();
+        this.toastNotificationService.showSuccess("The Event has been canceled.");
       });
   }
 
@@ -67,14 +72,14 @@ export class AdminPanel {
         }
       }
       return page;
-    })
-    this.detailsEvent.update((event) => (event && event!.id == e.id) ? structuredClone(e) : event)
+    });
+    this.detailsEvent.update((event) => (event && event!.id == e.id) ? structuredClone(e) : event);
   }
 
   pageRequested = (pageable: number[]) => {
     if(pageable.length == 2)
       this.backendGetEventPage(pageable[0], pageable[1]);
-    this.backendGetEventPage()
+    this.backendGetEventPage();
   }
 
   eventUpdated = (e: EventDto) => {
@@ -87,9 +92,9 @@ export class AdminPanel {
 
   eventClicked = (e: EventDto)=> {
     try {
-      this.detailsEvent.set(structuredClone(e))
+      this.detailsEvent.set(structuredClone(e));
     } catch (e) {
-      console.log(this.detailsEvent)
+      console.log(this.detailsEvent);
     }
   }
 

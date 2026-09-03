@@ -6,6 +6,7 @@ import {FormsModule} from '@angular/forms';
 import {Textarea} from 'primeng/textarea';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ReviewControllerService} from '@app/api/api/reviewController.service';
+import {ToastNotificationService} from '../toast-notification-service/toast-notification-service';
 
 @Component({
   selector: 'app-submit-review',
@@ -22,7 +23,7 @@ export class SubmitReview {
   protected reviewError = signal<string | undefined>(undefined);
   private reviewService = inject(ReviewControllerService);
 
-  constructor() {
+  constructor(private toastNotificationService: ToastNotificationService) {
     effect(() => {
       this.eventId();
       this.reviewError.set(undefined);
@@ -47,12 +48,14 @@ export class SubmitReview {
         this.submitted.emit();
         this.reviewRating.set(0);
         this.reviewComment.set('');
+        this.toastNotificationService.showSuccess("Your review has been posted.");
       }, error: (err: HttpErrorResponse) => {
         this.reviewSubmitting.set(false);
         if (err.status === 409) {
           this.submitted.emit();
         }
         this.reviewError.set(err.error.message);
+        this.toastNotificationService.showError("An error occurred. Please try again.");
       },
     });
   }

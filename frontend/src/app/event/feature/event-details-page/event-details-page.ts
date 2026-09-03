@@ -16,6 +16,7 @@ import {UserControllerService} from '@app/api/api/userController.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Message} from 'primeng/message';
 import {SubmitReview} from '../../../shared/ui/submit-review/submit-review';
+import {ToastNotificationService} from '../../../shared/ui/toast-notification-service/toast-notification-service';
 
 @Component({
   selector: 'app-event-details-page',
@@ -96,7 +97,7 @@ export class EventDetailsPage {
   private reviewService = inject(ReviewControllerService);
   private userService = inject(UserControllerService);
 
-  constructor() {
+  constructor(private toastNotificationService: ToastNotificationService) {
     this.userService.getCurrentUser().subscribe(user => {
       this.currentUser.set(user);
     });
@@ -118,15 +119,24 @@ export class EventDetailsPage {
     this.joinError.set(undefined);
     this.joinLoading.set(true);
 
-    const action$ = this.isParticipating() ? this.participationService.leaveEvent(eventId) : this.participationService.joinEvent(eventId);
+    const action$ = this.isParticipating()
+      ? this.participationService.leaveEvent(eventId)
+      : this.participationService.joinEvent(eventId);
 
     action$.subscribe({
       next: () => {
         this.joinLoading.set(false);
         this.refreshParticipants();
+
+        if(this.isParticipating()) {
+          this.toastNotificationService.showSuccess("You have left the event successfully.");
+        } else {
+          this.toastNotificationService.showSuccess("You have joined the event successfully.");
+        }
       }, error: (err: HttpErrorResponse) => {
         this.joinLoading.set(false);
         this.joinError.set(this.extractErrorMessage(err));
+        this.toastNotificationService.showError(this.extractErrorMessage(err));
       },
     });
   }
