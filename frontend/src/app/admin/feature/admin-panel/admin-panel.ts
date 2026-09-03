@@ -8,6 +8,7 @@ import {PageEventDto} from '@app/api/model/pageEventDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {NgClass} from '@angular/common';
 import {CreateEventDto} from '@app/api/model/createEventDto';
+import {ToastNotificationService} from '../../../shared/ui/toast-notification-service/toast-notification-service';
 
 @Component({
   selector: 'app-admin-panel',
@@ -26,6 +27,8 @@ export class AdminPanel {
     console.log(!!this.detailsEvent() ? "Event #" + this.detailsEvent()!.id + " is selected." : "No event is selected");
     return !!this.detailsEvent();
   });
+
+  constructor(private toastNotification: ToastNotificationService) {}
 
   listPage = signal<PageEventDto|null>(null);
   detailsEvent = signal<EventDto|null>(null);
@@ -55,6 +58,7 @@ export class AdminPanel {
   protected backendUpdateEvent(e: EventDto) {
     this.eventService.updateEvent(e.id!, e as CreateEventDto).subscribe((response) => {
       this.replaceEvent(response);
+      this.toastNotification.showSuccess("The Event has been updated.")
     })
   }
 
@@ -63,6 +67,7 @@ export class AdminPanel {
       .subscribe(() => {
         this.detailsEvent.set(null);
         this.backendGetEventPage()
+        this.toastNotification.showSuccess("The Event has been canceled.")
       });
   }
 

@@ -8,6 +8,7 @@ import {providePrimeNG} from 'primeng/config';
 import {ApiModule, Configuration} from '../../typescript-client';
 import {authInterceptor} from './core/interceptors/auth-interceptor';
 import {storedThemeName, THEMES} from './theme/theme';
+import {MessageService} from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: '.my-app-dark'
         }
       }
-    })
+    }),
+    MessageService,
   ]
 };

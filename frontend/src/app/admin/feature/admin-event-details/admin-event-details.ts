@@ -10,6 +10,8 @@ import {InputText} from 'primeng/inputtext';
 import {InputNumber} from 'primeng/inputnumber';
 import {DatePicker} from 'primeng/datepicker';
 import {ScrollPanel} from 'primeng/scrollpanel';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ConfirmationService} from 'primeng/api';
 
 @Component({
   selector: 'app-admin-event-details',
@@ -24,8 +26,10 @@ import {ScrollPanel} from 'primeng/scrollpanel';
     InputText,
     InputNumber,
     DatePicker,
-    ScrollPanel
+    ScrollPanel,
+    ConfirmDialogModule,
   ],
+  providers: [ConfirmationService],
   templateUrl: './admin-event-details.html',
 })
 export class AdminEventDetails{
@@ -34,6 +38,8 @@ export class AdminEventDetails{
   onEventDelete = output<EventDto>();
   onEventUpdate = output<EventDto>();
   onEventDeselect = output<void>();
+
+  constructor(private confirmationService: ConfirmationService) {}
 
   event = linkedSignal<EventDto|null>(() => this.inputEvent()!);
   eventAgeRange = linkedSignal(() => [
@@ -57,6 +63,29 @@ export class AdminEventDetails{
       if(e) e.dateTime = date.toISOString()
       return e;
     })
+  }
+
+  confirmCancel() {
+    this.confirmationService.confirm({
+      message: "Are you sure you want to cancel this event?",
+      header: "Canceling confirmation",
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: "Go back",
+        severity: 'primary',
+        outlined: true
+      },
+      acceptButtonProps: {
+        label: "Cancel",
+        severity: 'danger',
+        outlined: true
+      },
+      accept: () => {
+        this.deleteEvent();
+      },
+      reject: () => {
+      }
+    });
   }
 
   protected updateEvent() {
