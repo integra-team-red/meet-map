@@ -11,7 +11,7 @@ import {CreateEventDto} from '@app/api/model/createEventDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {TagControllerService} from '@app/api/api/tagController.service';
 import {TagDto} from '@app/api/model/tagDto';
-
+import {ToastNotificationService} from '../../shared/ui/toast-notification-service/toast-notification-service';
 
 @Component({
   selector: 'app-event-create',
@@ -49,6 +49,8 @@ export class EventCreateComponent implements OnInit {
   private eventApi = inject(EventControllerService);
   private tagApi = inject(TagControllerService);
 
+  constructor(private toastNotification: ToastNotificationService) {}
+
   ngOnInit() {
     this.tagApi.getAllTags().subscribe((tags) => this.tags.set(tags));
   }
@@ -82,11 +84,13 @@ export class EventCreateComponent implements OnInit {
         this.submitting.set(false);
         console.log('Created event', created);
         this.eventForm.reset({tagIds: []});
+        this.toastNotification.showSuccess("The Event has been successfully created.")
       },
       error: (err) => {
         console.log('ERROR fired', err);
         this.submitting.set(false);
         this.applyServerErrors(err);
+        this.toastNotification.showError("An error occurred, please try again.")
       },
     });
   }
