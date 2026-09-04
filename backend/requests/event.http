@@ -49,7 +49,7 @@ Authorization: Bearer {{token}}
 GET http://localhost:8080/api/events/2
 Authorization: Bearer {{token}}
 
-### Delete coffee
+### Delete event
 DELETE http://localhost:8080/api/events/9
 Authorization: Bearer {{token}}
 
