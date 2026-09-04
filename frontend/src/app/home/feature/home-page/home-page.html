@@ -1,9 +1,12 @@
 <div class="flex flex-col gap-2 h-full min-h-0">
+  @if (fromLogin()) {
+    <app-pending-review-modal/>
+  }
   <div>
     <p-iconfield>
       <p-inputicon class="pi pi-search"/>
       <input type="text" pInputText #filter
-        placeholder="Search" fluid (input)="onSearchUpdated(filter.value)"/>
+             placeholder="Search" fluid (input)="onSearchUpdated(filter.value)"/>
     </p-iconfield>
   </div>
 
@@ -21,9 +24,10 @@
                   <label>Sort by</label>
                   <div class="w-30 h-full">
                     <p-select [options]="options" [(ngModel)]="sortOrder" (onChange)="searchEvents()" optionLabel="name"
-                      placeholder="Sort by" fluid/>
+                              placeholder="Sort by" fluid/>
                   </div>
                 </div>
+
                 <form [formGroup]="filters" (ngSubmit)="applyFilters()">
                   <div class="flex flex-col gap-6">
                     <div class="flex flex-col gap-2">
@@ -33,7 +37,7 @@
                     <div class="flex flex-col gap-2">
                       <label>Tags</label>
                       <p-multiselect [options]="tags()" formControlName="tags" optionLabel="name" optionValue="id"
-                        class="w-full" display="chip"></p-multiselect>
+                                     class="w-full" display="chip"></p-multiselect>
                     </div>
                     <div class="flex justify-between">
                       <label>Age</label>
@@ -49,10 +53,10 @@
                         <p-datepicker formControlName="dateRange" selectionMode="range" [inline]="true"></p-datepicker>
                       }
                     </div>
-                    <div class="card flex justify-end  ">
+                    <div class="card flex justify-end">
                       <p-button type="button" icon="pi pi-trash" (onClick)="clearFilters()"/>
                     </div>
-                    <div class="card flex justify-center mt-10 ">
+                    <div class="card flex justify-center mt-10">
                       <p-button type="submit" label="Apply"/>
                     </div>
                   </div>
@@ -65,7 +69,7 @@
     </div>
 
     <div #scrollContainer
-      class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 lg:h-full lg:min-h-0 lg:overflow-y-auto [scrollbar-width:none]">
+         class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 lg:h-full lg:min-h-0 lg:overflow-y-auto [scrollbar-width:none]">
       @if (isLoading()) {
         @for (i of [1, 2, 3]; track i) {
           <p-card class="w-full ">
