@@ -3,8 +3,10 @@ package cloudflight.integra.backend.user.model;
 import cloudflight.integra.backend.tag.model.Tag;
 import jakarta.persistence.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +35,12 @@ public class User {
 
     @Column(length = 500)
     private String description;
+
+    @Column
+    private String mxId;
+
+    @Column
+    private String mxPassword;
 
     @ManyToMany
     @JoinTable(name = "user_tags",
@@ -132,6 +140,26 @@ public class User {
 
     public User setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+        return this;
+    }
+
+    public String getMxId() {
+        return mxId;
+    }
+
+    public User setMxId(String mxId) {
+        this.mxId = mxId;
+        return this;
+    }
+
+    public String getMxPassword() {
+        if (mxPassword == null) return null;
+        return new String(Base64.getDecoder().decode(mxPassword), StandardCharsets.UTF_8);
+    }
+
+    public User setMxPassword(String mxPassword) {
+        if (mxPassword == null) return null;
+        this.mxPassword = Base64.getEncoder().encodeToString(mxPassword.getBytes(StandardCharsets.UTF_8));
         return this;
     }
 

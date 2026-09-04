@@ -6,6 +6,8 @@ services:
     ports:
       - "5400:5432"
     shm_size: 128mb
+    volumes:
+      - ./postgres:/var/lib/postgresql
 
   backend:
     container_name: meet_map
@@ -15,3 +17,24 @@ services:
     depends_on:
       - db
     profiles: [ backend ]
+
+  matrix-init:
+    image: matrixdotorg/synapse
+    container_name: meet_map_matrix_init
+    env_file: .env
+    volumes:
+      - ./synapse:/data
+    command: generate
+
+  matrix:
+    image: matrixdotorg/synapse
+    container_name: meet_map_matrix
+    env_file: .env
+    ports:
+      - "18008:8008"
+      - "18448:8448"
+    volumes:
+      - ./synapse:/data
+    depends_on:
+      matrix-init:
+        condition: service_completed_successfully

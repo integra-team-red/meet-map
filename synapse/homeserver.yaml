@@ -1,0 +1,39 @@
+# Configuration file for Synapse.
+#
+# This is a YAML file: see [1] for a quick introduction. Note in particular
+# that *indentation is important*: all the elements of a list or dictionary
+# should have the same indentation.
+#
+# [1] https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+#
+# For more information on how to configure Synapse, including a complete accounting of
+# each option, go to docs/usage/configuration/config_documentation.md or
+# https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html
+server_name: "meetmap.ro"
+pid_file: /data/homeserver.pid
+listeners:
+  - port: 8008
+    resources:
+    - compress: false
+      names:
+      - client
+      - federation
+    tls: false
+    type: http
+    x_forwarded: true
+database:
+  name: sqlite3
+  args:
+    database: /data/homeserver.db
+log_config: "/data/meetmap.ro.log.config"
+media_store_path: /data/media_store
+registration_shared_secret: "c55d56406af7cde914979573349c05907b3577c0f24a404167c5e6a49dc6399d"
+report_stats: false
+macaroon_secret_key: "xbXry4liy-1MjhRto:1b5~mE0-P.#J1pIvBLzSSY8o+83=y*@o"
+form_secret: "eoP5@2*NFblTL5-Kxk_fB=lqabHI*0L9;t15efxYS3=J#YNdrt"
+signing_key_path: "/data/meetmap.ro.signing.key"
+trusted_key_servers:
+  - server_name: "matrix.org"
+
+
+# vim:ft=yaml
