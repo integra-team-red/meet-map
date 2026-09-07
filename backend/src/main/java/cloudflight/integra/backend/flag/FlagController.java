@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,14 +29,13 @@ public class FlagController {
 
     @PostMapping(value = "/flags")
     public ResponseEntity<FlagDto> create (
-        @RequestParam Long userId,
         @Valid
-        @RequestBody CreateFlagDto dto
+        @RequestBody CreateFlagDto dto,
+        Authentication authentication
         ) {
         Flag flag = mapper.toEntity(dto);
-        flag.setUserId(userId);
 
-        Flag saved = service.create(flag);
+        Flag saved = service.create(flag, authentication.getName());
         FlagDto flagDto = mapper.toDto(saved);
         return ResponseEntity.status(HttpStatus.CREATED).body(flagDto);
     }

@@ -14,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -71,8 +72,9 @@ public class EventController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create Event", operationId = "createEvent")
-    public ResponseEntity<EventDto> create(@Valid @RequestBody CreateEventDto event) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(mapper.toEntity(event))));
+    public ResponseEntity<EventDto> create(@Valid @RequestBody CreateEventDto event, Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(mapper.toDto(service.create(mapper.toEntity(event), authentication.getName())));
     }
 
     @Operation(summary = "Update an event", operationId = "updateEvent")

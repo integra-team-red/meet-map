@@ -195,7 +195,7 @@ public class DatabaseSeedService {
             }
             event.setTags(randomEventTags);
             try {
-                eventService.create(event);
+                eventService.create(event, faker.internet().emailAddress());
             } catch (Exception e) {
                 System.out.println("Failed to save event: " + e.getMessage());
             }
@@ -238,7 +238,7 @@ public class DatabaseSeedService {
             flag.setCreatedAt(LocalDateTime.of(2026, 7, faker.number().numberBetween(1, 30), 12, 0));
             flag.setReason(faker.harryPotter().quote());
             try {
-                flagService.create(flag);
+                flagService.create(flag, faker.internet().emailAddress());
             } catch (Exception e) {
                 System.out.println("Failed to save Flag: " + e.getMessage());
             }
@@ -260,9 +260,12 @@ public class DatabaseSeedService {
             review.setEvent(allEvents.get(faker.number().numberBetween(0, allEvents.size())));
             review.setCreatedAt(LocalDateTime.of(2026, 7, faker.number().numberBetween(1, 30), 12, 0));
             review.setRating(faker.number().numberBetween(1, 6));
-            review.setComment(faker.leagueOfLegends().quote());
+            String quote = faker.leagueOfLegends().quote();
+            if (quote.length() > 100)
+                quote = quote.substring(0, 99);
+            review.setComment(quote);
             try {
-                reviewService.create(review);
+                reviewService.create(review, faker.internet().emailAddress());
             } catch (Exception e) {
                 System.out.println("Failed to save Review: " + e.getMessage());
             }

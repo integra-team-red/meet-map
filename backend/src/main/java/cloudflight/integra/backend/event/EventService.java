@@ -2,9 +2,13 @@ package cloudflight.integra.backend.event;
 
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
+import cloudflight.integra.backend.user.UserRepository;
+import cloudflight.integra.backend.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,9 +19,11 @@ import java.util.Optional;
 @Service
 public class EventService {
     private final EventRepository repository;
+    private final UserRepository userRepository;
 
-    public EventService(EventRepository repository) {
+    public EventService(EventRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     // TODO: might want to filter out the soft deleted events in the future
@@ -45,8 +51,11 @@ public class EventService {
         return repository.findById(id);
     }
 
-    public Event create(Event event) {
+    public Event create(Event event, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
         event.setId(null);
+        event.setCreatorId(user.getId());
         event.setCreatedAt(LocalDateTime.now());
         if (event.getStatus() == null) {
             event.setStatus(EventStatus.ACTIVE);

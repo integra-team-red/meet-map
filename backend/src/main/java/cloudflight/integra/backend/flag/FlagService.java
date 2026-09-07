@@ -3,6 +3,8 @@ package cloudflight.integra.backend.flag;
 import cloudflight.integra.backend.event.EventService;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.flag.model.Flag;
+import cloudflight.integra.backend.user.UserRepository;
+import cloudflight.integra.backend.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,12 @@ import java.util.Optional;
 public class FlagService {
     private final FlagRepository repository;
     private final EventService eventService;
+    private final UserRepository userRepository;
 
-    public FlagService(FlagRepository repository, EventService eventService) {
+    public FlagService(FlagRepository repository, EventService eventService, UserRepository userRepository) {
         this.repository = repository;
         this.eventService = eventService;
+        this.userRepository = userRepository;
     }
 
     public Page<Flag> getAll(Pageable pageable) {
@@ -32,7 +36,9 @@ public class FlagService {
         return repository.findByEvent(pageable, event.orElseThrow());
     }
 
-    public Flag create(Flag flag) {
+    public Flag create(Flag flag, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
         Event event = eventService.getById(flag.getEvent().getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
         return repository.save(flag);
