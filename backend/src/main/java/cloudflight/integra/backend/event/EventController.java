@@ -79,15 +79,19 @@ public class EventController {
 
     @Operation(summary = "Update an event", operationId = "updateEvent")
     @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EventDto update(@PathVariable Long id, @Valid @RequestBody CreateEventDto event) {
-        return service.update(id, mapper.toEntity(event)).map(mapper::toDto)
+    public EventDto update(
+        @PathVariable Long id,
+        @Valid @RequestBody CreateEventDto event,
+        Authentication authentication
+    ) {
+        return service.update(id, mapper.toEntity(event), authentication.getName()).map(mapper::toDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Delete Event by Id", operationId = "deleteEvent")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (service.delete(id)) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+        if (service.delete(id, authentication.getName())) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
