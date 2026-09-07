@@ -3,6 +3,7 @@ package cloudflight.integra.backend.event;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
 import cloudflight.integra.backend.user.UserRepository;
+import cloudflight.integra.backend.user.model.Role;
 import cloudflight.integra.backend.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,8 +64,12 @@ public class EventService {
         return repository.save(event);
     }
 
-    public Optional<Event> update(Long id, Event event) {
+    public Optional<Event> update(Long id, Event event, String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found."));
         return repository.findById(id).map(existing -> {
+            if(!existing.getCreatorId().equals(user.getId()) && user.getRole() != Role.ADMIN)
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to take this action.");
             event.setId(id);
             event.setCreatedAt(existing.getCreatedAt());
             event.setCreatorId(existing.getCreatorId());
@@ -75,8 +80,12 @@ public class EventService {
         });
     }
 
-    public boolean delete(Long id) {
+    public boolean delete(Long id, String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
         return repository.findById(id).map(existing -> {
+            if(!existing.getCreatorId().equals(user.getId()) && user.getRole() != Role.ADMIN)
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to take this action.");
             existing.setStatus(EventStatus.CANCELLED);
             repository.save(existing);
             return true;
