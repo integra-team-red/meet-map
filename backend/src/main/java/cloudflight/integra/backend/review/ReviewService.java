@@ -3,6 +3,8 @@ package cloudflight.integra.backend.review;
 import cloudflight.integra.backend.event.EventService;
 import cloudflight.integra.backend.review.model.EventAverageRating;
 import cloudflight.integra.backend.review.model.Review;
+import cloudflight.integra.backend.user.UserRepository;
+import cloudflight.integra.backend.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,10 +22,12 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository repository;
     private final EventService eventService;
+    private final UserRepository userRepository;
 
-    public ReviewService(ReviewRepository repository, EventService eventService) {
+    public ReviewService(ReviewRepository repository, EventService eventService, UserRepository userRepository) {
         this.repository = repository;
         this.eventService = eventService;
+        this.userRepository = userRepository;
     }
 
     public List<Review> getAll() {
@@ -38,7 +42,9 @@ public class ReviewService {
         return repository.findById(id);
     }
 
-    public Review create(Review review) {
+    public Review create(Review review, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
         if (eventService.getById(review.getEvent().getId()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event does not exist");
         }
@@ -48,6 +54,7 @@ public class ReviewService {
         if (repository.findReviewsByEventAndUserId(review.getEvent(), review.getUser().getId()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Event already reviewed by this user.");
         }
+        review.setUser(user);
         review.setCreatedAt(LocalDateTime.now());
         return repository.save(review);
     }

@@ -61,6 +61,7 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> create(@Valid @RequestBody CreateReviewDto dto, Authentication authentication) {
         User user = userService.getByEmail(authentication.getName());
         Review review = mapper.toEntity(dto).setUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(review)));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(mapper.toDto(service.create(review, authentication.getName())));
     }
 }
