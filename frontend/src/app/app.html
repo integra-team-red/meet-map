@@ -1,15 +1,15 @@
 <div class="h-screen flex flex-col justify-between overflow-hidden">
-  <header class="p-2">
+  <header class="p-2 z-10">
     @if (auth.getToken()){
       <app-navigation-bar/>
     }
   </header>
 
-  <main class="mr-4 ml-4 mb-4 grow overflow-y-scroll lg:overflow-hidden">
+  <main class="mr-4 ml-4 mb-4 grow overflow-y-scroll lg:overflow-hidden ">
     <router-outlet/>
   </main>
 
-  <footer class="text-center text-xs bg-blue-100">
+  <footer class="text-center text-xs bg-blue-100 z-10">
     Footer
   </footer>
 </div>

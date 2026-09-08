@@ -52,6 +52,15 @@ public class DatabaseSeedService {
     private final ReviewService reviewService;
 
     private final Faker faker = new Faker();
+    private record SeedCity(String name, double lat, double lon) {}
+
+    private static final List<SeedCity> CITIES = List.of(
+        new SeedCity("Cluj-Napoca", 46.7712, 23.6236),
+        new SeedCity("Bucharest",   44.4268, 26.1025),
+        new SeedCity("Timisoara",   45.7489, 21.2087),
+        new SeedCity("Iasi",        47.1585, 27.6014),
+        new SeedCity("Brasov",      45.6579, 25.6012)
+    );
 
     public DatabaseSeedService(
         UserRepository userRepository,
@@ -172,14 +181,15 @@ public class DatabaseSeedService {
         if (allTags.isEmpty()) {
             return;
         }
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 100; i++) {
             Event event = new Event();
             event.setTitle(faker.book().title());
             event.setDescription(faker.lorem().paragraph());
             event.setAddress(faker.address().streetAddress());
-            event.setCity(faker.address().city());
-            event.setLatitude(faker.number().randomDouble(4, 0, 90));
-            event.setLongitude(faker.number().randomDouble(4, 0, 90));
+            SeedCity c = CITIES.get(faker.number().numberBetween(0, CITIES.size()));
+            event.setCity(c.name());
+            event.setLatitude(c.lat() + faker.number().randomDouble(4, -30, 30) / 1000.0);
+            event.setLongitude(c.lon() + faker.number().randomDouble(4, -30, 30) / 1000.0);
             event.setDateTime(LocalDateTime.of(
                 2026, 9, faker.number().numberBetween(1, 30), 12, 0));
             event.setMaxParticipants(faker.number().numberBetween(0, 150));

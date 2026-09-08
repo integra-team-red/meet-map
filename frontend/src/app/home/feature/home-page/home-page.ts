@@ -19,6 +19,7 @@ import {Button} from 'primeng/button';
 import {TagControllerService} from '@app/api/api/tagController.service';
 import {PendingReviewModal} from '../pending-review/pending-review-modal';
 import {Skeleton} from 'primeng/skeleton';
+import {EventMap} from '../../../shared/ui/event-map/event-map';
 
 const PAGE_SIZE = 20;
 
@@ -43,6 +44,7 @@ const PAGE_SIZE = 20;
     ReactiveFormsModule,
     PendingReviewModal,
     Skeleton,
+    EventMap,
   ],
   templateUrl: './home-page.html',
 })
