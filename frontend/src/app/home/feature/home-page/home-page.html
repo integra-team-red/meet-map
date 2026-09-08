@@ -3,16 +3,16 @@
     <app-pending-review-modal/>
   }
   <div>
-    <p-iconfield>
+    <p-iconfield class="z-10">
       <p-inputicon class="pi pi-search"/>
       <input type="text" pInputText #filter placeholder="Search" fluid (input)="onSearchUpdated(filter.value)"/>
     </p-iconfield>
   </div>
 
-  <img src="map-placeholder.jpg" alt="" class="hidden lg:block fixed inset-0 -z-10 object-cover h-full w-full">
+  <app-event-map [events]="events()" class="hidden lg:block fixed inset-0 z-0" />
 
-  <div class="flex flex-col lg:flex-row gap-4 items-start grow min-h-0">
-    <div class="w-full lg:w-96 lg:h-full lg:min-h-0 lg:overflow-y-auto [scrollbar-width:none]">
+  <div class="flex flex-col lg:flex-row gap-4 items-start grow min-h-0 ">
+    <div class="w-full lg:w-96 lg:h-full z-10 lg:min-h-0 lg:overflow-y-auto [scrollbar-width:none]">
       <p-card>
         <p-accordion [(value)]="accordionValue">
           <p-accordion-panel value="0">
@@ -67,7 +67,7 @@
     </div>
 
     <div #scrollContainer
-          class="flex flex-row flex-wrap gap-4 w-full lg:max-w-96 lg:h-full lg:min-h-0 lg:overflow-y-auto [scrollbar-width:none]">
+          class="flex flex-col gap-4 w-full lg:max-w-96 lg:h-full lg:min-h-0 lg:overflow-y-auto [scrollbar-width:none] z-10">
       @if (isLoading()) {
         @for (i of [1, 2, 3]; track i) {
           <p-card class="w-full ">
