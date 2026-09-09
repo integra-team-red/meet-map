@@ -1,0 +1,37 @@
+<p-card>
+  <ng-template #title>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-base font-semibold">
+                Submit a review
+              </span>
+      <p-rating [(ngModel)]="reviewRating" [stars]="5"/>
+    </div>
+  </ng-template>
+  <ng-template #content>
+    <div class="flex flex-col gap-2">
+              <textarea [(ngModel)]="reviewComment"
+                        [maxlength]="commentMaxLength"
+                        fluid
+                        pTextarea
+                        placeholder="Comment (optional)"
+                        rows="3">
+              </textarea>
+      <span>
+                {{ reviewComment().length }}/{{ commentMaxLength }}
+              </span>
+      @if (reviewError(); as error) {
+        <small class="text-red-600">
+          {{ error }}
+        </small>
+      }
+      <p-button (onClick)="submitReview()"
+                [disabled]="reviewRating() === 0"
+                [fluid]="true"
+                [loading]="reviewSubmitting()"
+                icon="pi pi-pencil"
+                label="Leave review"
+                rounded
+      />
+    </div>
+  </ng-template>
+</p-card>

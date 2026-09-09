@@ -15,10 +15,11 @@ import {UserDto} from '@app/api/model/userDto';
 import {UserControllerService} from '@app/api/api/userController.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Message} from 'primeng/message';
+import {SubmitReview} from '../../../shared/ui/submit-review/submit-review';
 
 @Component({
   selector: 'app-event-details-page',
-  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message],
+  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message, SubmitReview],
   templateUrl: './event-details-page.html',
 })
 export class EventDetailsPage {
@@ -32,7 +33,7 @@ export class EventDetailsPage {
 
   currentUser = signal<UserDto | undefined>(undefined);
 
-  currentUserId = computed (() => this.currentUser()?.id);
+  currentUserId = computed(() => this.currentUser()?.id);
   isParticipating = computed(() => {
     const participants = this.participants();
     const currentUserId = this.currentUserId();
@@ -45,16 +46,12 @@ export class EventDetailsPage {
     return max != null && count != null && count >= max;
   });
 
-  canJoinStatus = computed (() => {
+  canJoinStatus = computed(() => {
     const status = this.event()?.status;
     return status !== EventDto.StatusEnum.Cancelled && status != EventDto.StatusEnum.Completed;
   })
 
-  joinButtonDisabled = computed(() =>
-    this.joinLoading() ||
-    !this.canJoinStatus() ||
-    (!this.isParticipating() && this.isFull())
-  );
+  joinButtonDisabled = computed(() => this.joinLoading() || !this.canJoinStatus() || (!this.isParticipating() && this.isFull()));
 
   joinButtonLabel = computed(() => {
     if (this.joinLoading()) return this.isParticipating() ? 'Leaving...' : 'Joining...';
@@ -64,11 +61,21 @@ export class EventDetailsPage {
     return 'Join Event';
   })
 
-  joinButtonIcon = computed (() => this.isParticipating() ? 'pi pi-sign-out' : 'pi pi-calendar-plus');
-  joinButtonSeverity = computed<'success' | 'danger'> (() => this.isParticipating() ? 'danger' : 'success');
+  joinButtonIcon = computed(() => this.isParticipating() ? 'pi pi-sign-out' : 'pi pi-calendar-plus');
+  joinButtonSeverity = computed<'success' | 'danger'>(() => this.isParticipating() ? 'danger' : 'success');
 
+
+  alreadyReviewed = signal(false);
+
+  isCompleted = computed(() => this.event()?.status === EventDto.StatusEnum.Completed);
+  canReview = computed(() => this.isCompleted() && this.isParticipating() && !this.hasReviewed());
   reviewPage = signal<PageReviewDto | undefined>(undefined);
   reviews = computed(() => this.reviewPage()?.content ?? []);
+  hasReviewed = computed(() => {
+    if (this.alreadyReviewed()) return true;
+    const currentUserId = this.currentUserId();
+    return currentUserId != null && this.reviews().some(r => r.userId === currentUserId);
+  });
   ageRestriction = computed(() => {
     const {minAge, maxAge} = this.event() ?? {};
     if (minAge && maxAge) return `${minAge} - ${maxAge}`;
@@ -97,6 +104,7 @@ export class EventDetailsPage {
     });
     effect(() => {
       const id = this.id();
+      this.alreadyReviewed.set(false);
       this.eventService.getEvent(this.id()).subscribe(e => this.event.set(e));
       this.participationService.getAllParticipants(id, {page: 0, size: 20})
         .subscribe(p => this.participantsPage.set(p));
@@ -112,27 +120,37 @@ export class EventDetailsPage {
     this.joinError.set(undefined);
     this.joinLoading.set(true);
 
-    const action$ = this.isParticipating()
-      ? this.participationService.leaveEvent(eventId)
-      : this.participationService.joinEvent(eventId);
+    const action$ = this.isParticipating() ? this.participationService.leaveEvent(eventId) : this.participationService.joinEvent(eventId);
 
-    action$.subscribe( {
+    action$.subscribe({
       next: () => {
         this.joinLoading.set(false);
         this.refreshParticipants();
-      },
-      error: (err: HttpErrorResponse) => {
+      }, error: (err: HttpErrorResponse) => {
         this.joinLoading.set(false);
         this.joinError.set(this.extractErrorMessage(err));
       },
     });
   }
+
+  protected onReviewSubmitted(): void {
+    this.alreadyReviewed.set(true);
+    this.refreshReviews();
+  }
+
+  private refreshReviews() {
+    this.reviewService.getAllReviewsForEvent(this.id(), {page: 0, size: 20})
+      .subscribe(p => this.reviewPage.set(p));
+    this.eventService.getEvent(this.id()).subscribe(e => this.event.set(e));
+  }
+
   private refreshParticipants() {
     this.participationService.getAllParticipants(this.id(), {page: 0, size: 20})
       .subscribe(p => this.participantsPage.set(p));
   }
+
   private extractErrorMessage(err: HttpErrorResponse): string {
-    return  err?.error?.message ?? 'Something went wrong. Please try again.';
+    return err?.error?.message ?? 'Something went wrong. Please try again.';
   }
 
 
