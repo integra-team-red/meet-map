@@ -47,10 +47,14 @@ public class EventController {
         @RequestParam(defaultValue = "1900-01-01") LocalDate dateFrom,
         @RequestParam(defaultValue = "2999-12-31") LocalDate dateTo,
         @RequestParam(required = false) Long creatorId,
-        @RequestParam(required = false) EventStatus status
+        @RequestParam(required = false) EventStatus status,
+        @RequestParam(required = false) Double longitude,
+        @RequestParam(required = false) Double latitude
     ) {
         Page<Event> events = service.getAll(
-            pageable, searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId, status);
+            pageable,
+            searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId, status,
+            longitude, latitude);
         Map<Long, EventAverageRating> ratings = reviewService.getAverageRatings(
             events.getContent().stream().map(Event::getId).toList());
         return events.map(event -> mapper.toDto(event, ratings.get(event.getId())));
