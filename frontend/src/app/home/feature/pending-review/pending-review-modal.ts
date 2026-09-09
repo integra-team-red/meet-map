@@ -33,11 +33,10 @@ export class PendingReviewModal {
 
     this.submitting.set(true);
 
-    this.reviewService.createReview({
-      eventId: pending.event!.id!,
+    this.reviewService.createReview(pending.event!.id!, {
       rating: this.rating(),
       comment: this.comment(),
-    } as any).subscribe({
+    }).subscribe({
       next: () => {
         this.submitting.set(false);
         this.pendingReviewSource.set(undefined);

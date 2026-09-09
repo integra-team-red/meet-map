@@ -53,14 +53,20 @@ public class ReviewController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping(path = "/events/reviews", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/events/{eventId}/reviews", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
         summary = "Create a new review for an event",
         operationId = "createReview"
     )
-    public ResponseEntity<ReviewDto> create(@Valid @RequestBody CreateReviewDto dto, Authentication authentication) {
+    public ResponseEntity<ReviewDto> create(
+        @PathVariable Long eventId,
+        @Valid @RequestBody CreateReviewDto dto,
+        Authentication authentication
+    ) {
         User user = userService.getByEmail(authentication.getName());
-        Review review = mapper.toEntity(dto).setUser(user);
+        Review review = mapper.toEntity(dto)
+            .setEvent(mapper.eventFromId(eventId))
+            .setUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(service.create(review)));
     }
 }
