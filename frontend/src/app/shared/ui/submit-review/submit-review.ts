@@ -38,8 +38,7 @@ export class SubmitReview {
     this.reviewError.set(undefined);
     this.reviewSubmitting.set(true);
 
-    this.reviewService.createReview({
-      eventId: this.eventId(),
+    this.reviewService.createReview(this.eventId(), {
       rating: this.reviewRating(),
       comment: comment || undefined
     }).subscribe({
