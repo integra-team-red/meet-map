@@ -6,8 +6,10 @@ import cloudflight.integra.backend.user.UserRepository;
 import cloudflight.integra.backend.user.model.Role;
 import cloudflight.integra.backend.user.model.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -38,12 +40,30 @@ public class EventService {
         LocalDate dateFrom,
         LocalDate dateTo,
         Long creatorId,
-        EventStatus status
+        EventStatus status,
+        Double longitude,
+        Double latitude
     ) {
         boolean noTags = tagIds == null || tagIds.isEmpty();
         List<Long> tags = noTags ? List.of(-1L) : tagIds;
         LocalDateTime from = dateFrom.atStartOfDay();
         LocalDateTime to = dateTo.atTime(LocalTime.MAX);
+
+        if(latitude != null && longitude != null) {
+            Specification<Event> spec = Specification.allOf(
+                    EventRepository.search(searchTerm),
+                    EventRepository.hasCity(city),
+                    EventRepository.inAgeRange(minAge, maxAge),
+                    EventRepository.inDateRange(from, to),
+                    EventRepository.hasCreator(creatorId),
+                    EventRepository.hasStatus(status),
+                    EventRepository.hasTags(noTags ? List.of() : tagIds),
+                    EventRepository.orderByNearest(latitude, longitude)
+                );
+            return repository.findAll(
+                spec, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        }
+
         return repository.findFiltered(searchTerm, city, tags, noTags, minAge,
             maxAge, from, to, creatorId, status, pageable);
     }
