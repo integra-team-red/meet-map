@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, computed, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild} from '@angular/core';
 import {EventDto} from '@app/api/model/eventDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {PageEventDto} from '@app/api/model/pageEventDto';
@@ -20,6 +20,8 @@ import {TagControllerService} from '@app/api/api/tagController.service';
 import {PendingReviewModal} from '../pending-review/pending-review-modal';
 import {Skeleton} from 'primeng/skeleton';
 import {EventMap} from '../../../shared/ui/event-map/event-map';
+import {ToastModule} from 'primeng/toast';
+import {MessageService} from 'primeng/api';
 
 const PAGE_SIZE = 20;
 
@@ -45,12 +47,15 @@ const PAGE_SIZE = 20;
     PendingReviewModal,
     Skeleton,
     EventMap,
+    ToastModule
   ],
+  providers: [MessageService],
   templateUrl: './home-page.html',
 })
 export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   eventService: EventControllerService = inject(EventControllerService);
   tagService: TagControllerService = inject(TagControllerService);
+  messageService = inject(MessageService);
   router = inject(Router);
   protected fromLogin = signal(false);
 
@@ -72,11 +77,19 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   accordionValue = signal<string | null>('0'); //so I can hide the calendar properly
 
-  protected options = [
-    {name: 'Newest', value: 'createdAt,desc'},
-    {name: 'Oldest', value: 'createdAt,asc'},
-  ];
-  sortOrder: { name: string, value: string } = this.options[0]
+
+
+  private latitude = signal<number|undefined>(undefined);
+  private longitude = signal<number|undefined>(undefined);
+  private nearestEnabled = computed(() => {
+    return this.latitude() != undefined && this.longitude() != undefined
+  })
+  protected options = computed(() => [
+    { name: 'Newest', value: 'createdAt,desc' },
+    { name: 'Oldest', value: 'createdAt,asc' },
+    { name: 'Nearest', value: 'nearest', disabled: !this.nearestEnabled() }
+  ]);
+  sortOrder = signal<{ name: string, value: string, disabled?: boolean }>(this.options()[0]);
 
   events = signal<EventDto[]>([])
   cities = signal<string[]>([])
@@ -89,6 +102,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.fromLogin.set(this.route.snapshot.queryParamMap.has('from-login'));
   }
 
+
   ngAfterViewInit(): void {
     this.observer = new IntersectionObserver(
       (entries) => {
@@ -99,6 +113,18 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       {root: this.scrollContainerRef.nativeElement, rootMargin: '200px'}
     );
     this.observer.observe(this.sentinelRef.nativeElement);
+
+    navigator.geolocation.getCurrentPosition((pos) => {
+      this.setLocation(pos.coords.latitude, pos.coords.longitude);
+    }, (error) => {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Could not get location',
+        detail: '\'Nearest\' sorting option is disabled. Check your browser location settings, then refresh the page.',
+        life: 10000
+      })
+      this.resetLocation();
+    })
   }
 
   ngOnDestroy() {
@@ -128,6 +154,10 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected searchEvents(reset: boolean = true) {
+    if (!this.nearestEnabled() && this.sortOrder().name === 'Nearest') {
+      this.sortOrder.set(this.options()[0]);
+      this.searchEvents();
+    }
     if (reset) {
       this.currentPage.set(0);
       this.isLastPage.set(false);
@@ -148,7 +178,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     const f = this.filters.value;
 
     this.eventService.getAllEvents(
-      {page, size: PAGE_SIZE, sort: [this.sortOrder.value]},
+      {
+        page,
+        size: PAGE_SIZE,
+        sort: this.sortOrder().name != "Nearest" ? [this.sortOrder().value] : undefined
+      },
       this.searchQuery() || undefined,
       f.city ?? undefined,
       f.tags?.length ? f.tags : undefined,
@@ -157,7 +191,9 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       f.dateRange?.[0] ? this.toLocalDate(f.dateRange[0]) : undefined,
       f.dateRange?.[1] ? this.toLocalDate(f.dateRange[1]) : undefined,
       undefined,
-      'ACTIVE'
+      'ACTIVE',
+      this.sortOrder().name == 'Nearest' ? this.longitude() : undefined,
+      this.sortOrder().name == 'Nearest' ? this.latitude() : undefined
     ).subscribe({
       next: (response: PageEventDto) => {
         const newContent = response.content ?? [];
@@ -188,6 +224,15 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
   private toLocalDate(d: Date): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  private setLocation(lat: number, lng: number) {
+    this.latitude.set(lat);
+    this.longitude.set(lng);
+  }
+  private resetLocation(): void {
+    this.latitude.set(undefined);
+    this.longitude.set(undefined);
   }
 
 }
