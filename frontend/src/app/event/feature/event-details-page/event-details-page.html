@@ -91,6 +91,10 @@
           No reviews yet
         </p>
       }
+
+      @if (canReview()) {
+        <app-submit-review [eventId]="id()" (submitted)="onReviewSubmitted()" />
+      }
     </section>
   </div>
 } @else {
