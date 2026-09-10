@@ -123,10 +123,11 @@ public class DatabaseSeedService {
             System.out.println("Failed to register user: " + e.getMessage());
         }
         for (int i = 0; i < 5; i++) {
+            String email = faker.internet().safeEmailAddress();
             RegisterRequest userReq = new RegisterRequest(
                 faker.name().firstName(),
                 faker.name().lastName(),
-                faker.internet().safeEmailAddress(),
+                email,
                 "Password123",
                 LocalDate.ofInstant(faker.date().birthday().toInstant(), ZoneId.systemDefault()),
                 faker.lorem().paragraph()
@@ -178,6 +179,7 @@ public class DatabaseSeedService {
             return;
         }
         List<Tag> allTags = tagService.getAll();
+        List<User> allUsers = userRepository.findAll();
         if (allTags.isEmpty()) {
             return;
         }
@@ -196,7 +198,9 @@ public class DatabaseSeedService {
             event.setMinAge(faker.number().numberBetween(0, 18));
             event.setMaxAge(faker.number().numberBetween(event.getMinAge(), 19));
             event.setStatus(faker.options().option(EventStatus.class));
-            event.setCreatorId((long) faker.number().numberBetween(0, 100));
+            User user = allUsers.get(faker.number().numberBetween(0, allUsers.size()));
+            event.setCreatorId(user.getId());
+            //
             Set<Tag> randomEventTags = new HashSet<>();
             int numberOfTags = faker.number().numberBetween(1, 4);
             for (int j = 0; j < numberOfTags; j++) {
@@ -205,7 +209,7 @@ public class DatabaseSeedService {
             }
             event.setTags(randomEventTags);
             try {
-                eventService.create(event, faker.internet().emailAddress());
+                eventService.create(event, user.getEmail());
             } catch (Exception e) {
                 System.out.println("Failed to save event: " + e.getMessage());
             }
@@ -238,17 +242,19 @@ public class DatabaseSeedService {
             return;
         }
         List<Event> allEvents = eventService.getAll(Pageable.unpaged()).getContent();
+        List<User> allUsers = userRepository.findAll();
         if (allEvents.isEmpty()) {
             return;
         }
         for (int i = 0; i < 25; i++) {
             Flag flag = new Flag();
-            flag.setUserId((long) faker.number().numberBetween(0, 100));
+            User user = allUsers.get(faker.number().numberBetween(0, allUsers.size()));
+            flag.setUserId(user.getId());
             flag.setEvent(allEvents.get(faker.number().numberBetween(0, allEvents.size())));
             flag.setCreatedAt(LocalDateTime.of(2026, 7, faker.number().numberBetween(1, 30), 12, 0));
             flag.setReason(faker.harryPotter().quote());
             try {
-                flagService.create(flag, faker.internet().emailAddress());
+                flagService.create(flag, user.getEmail());
             } catch (Exception e) {
                 System.out.println("Failed to save Flag: " + e.getMessage());
             }
@@ -266,7 +272,8 @@ public class DatabaseSeedService {
         }
         for (int i = 0; i < 25; i++) {
             Review review = new Review();
-            review.setUser(allUsers.get(faker.number().numberBetween(0, allUsers.size())));
+            User user = allUsers.get(faker.number().numberBetween(0, allUsers.size()));
+            review.setUser(user);
             review.setEvent(allEvents.get(faker.number().numberBetween(0, allEvents.size())));
             review.setCreatedAt(LocalDateTime.of(2026, 7, faker.number().numberBetween(1, 30), 12, 0));
             review.setRating(faker.number().numberBetween(1, 6));
@@ -275,7 +282,7 @@ public class DatabaseSeedService {
                 quote = quote.substring(0, 99);
             review.setComment(quote);
             try {
-                reviewService.create(review, faker.internet().emailAddress());
+                reviewService.create(review, user.getEmail());
             } catch (Exception e) {
                 System.out.println("Failed to save Review: " + e.getMessage());
             }
