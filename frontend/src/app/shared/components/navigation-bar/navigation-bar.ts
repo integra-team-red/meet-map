@@ -35,9 +35,10 @@ export class NavigationBar implements OnInit {
         label: 'Home',
         routerLink: '/home'
       },
-/*      {
+     {
         label: 'Map',
-      },*/
+       routerLink: '/map'
+      },
       {
         label: 'Create Event',
         routerLink: '/events/create'
