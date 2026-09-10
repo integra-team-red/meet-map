@@ -7,6 +7,7 @@ import {ScrollPanel} from 'primeng/scrollpanel';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 
 import {Router} from '@angular/router';
+import {AuthService} from '../../../core/auth/auth-service';
 import {UserControllerService} from '@app/api/api/userController.service';
 import {UserDto} from '@app/api/model/userDto';
 import {TagDto} from '@app/api/model/tagDto';
@@ -16,6 +17,7 @@ import {EventControllerService} from '@app/api/api/eventController.service';
 import {EventDto} from '@app/api/model/eventDto';
 import {EventCard} from '../../../shared/ui/event-card/event-card';
 import {IconField} from 'primeng/iconfield';
+
 
 @Component({
   selector: 'app-profile-page',
@@ -36,6 +38,7 @@ export class ProfilePage implements OnInit {
   private readonly tagApi = inject(TagControllerService);
   private readonly eventApi = inject(EventControllerService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   protected readonly user = signal<UserDto | null>(null);
   protected readonly loading = signal(true);
@@ -201,5 +204,10 @@ export class ProfilePage implements OnInit {
 
   protected toggleMatrixPasswordVisibility() {
     this.matrixPasswordVisible.update((e) => !e);
+  }
+
+  protected logout(): void {
+    this.authService.clearToken();
+    this.router.navigate(['/']);
   }
 }
