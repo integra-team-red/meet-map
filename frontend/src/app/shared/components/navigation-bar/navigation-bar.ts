@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import { MenubarModule } from 'primeng/menubar';
-import { MenuItem } from 'primeng/api';
+import {MenubarModule} from 'primeng/menubar';
+import {MenuItem} from 'primeng/api';
 import {Avatar} from 'primeng/avatar';
 import {FormsModule} from '@angular/forms';
 import {RouterLink, RouterLinkActive} from '@angular/router';
@@ -35,9 +35,9 @@ export class NavigationBar implements OnInit {
         label: 'Home',
         routerLink: '/home'
       },
-     {
+      {
         label: 'Map',
-       routerLink: '/map'
+        routerLink: '/map'
       },
       {
         label: 'Create Event',
@@ -48,5 +48,5 @@ export class NavigationBar implements OnInit {
         routerLink: '/admin'
       }
     ];
-    }
+  }
 }
