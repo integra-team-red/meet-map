@@ -1,11 +1,15 @@
 ### GET request to example server
-@id =2
-GET http://localhost:8080/api/events/{{id}}/participants
+@eventId = 1
+GET http://localhost:8080/api/events/{{eventId}}/participants
+Authorization: Bearer {{token}}
 
 ###
-@userId =104
-POST http://localhost:8080/api/events/{{id}}/join/{{userId}}
+@userId = 1
+@eventToJoin = 1
+POST http://localhost:8080/api/events/{{id}}/join
+Authorization: Bearer {{token}}
 
 ###
-@eventIdToDelete = 4
-DELETE http://localhost:8080/api/events/{{eventIdToDelete}}/leave
+@eventToLeave = 1
+DELETE http://localhost:8080/api/events/{{eventToLeave}}/leave
+Authorization: Bearer {{token}}
