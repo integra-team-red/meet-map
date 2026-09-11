@@ -3,8 +3,8 @@
   @if (fromLogin()) {
     <app-pending-review-modal/>
   }
-  <div>
-    <p-iconfield class="z-10">
+  <div class="w-full lg:w-196">
+    <p-iconfield class="z-10 w-full">
       <p-inputicon class="pi pi-search"/>
       <input type="text" pInputText #filter placeholder="Search" fluid (input)="onSearchUpdated(filter.value)"/>
     </p-iconfield>
