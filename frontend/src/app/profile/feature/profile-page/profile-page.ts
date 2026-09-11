@@ -7,6 +7,7 @@ import {ScrollPanel} from 'primeng/scrollpanel';
 import {Paginator, PaginatorState} from 'primeng/paginator';
 
 import {Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
 import {UserControllerService} from '@app/api/api/userController.service';
 import {UserDto} from '@app/api/model/userDto';
 import {TagDto} from '@app/api/model/tagDto';
@@ -16,6 +17,7 @@ import {EventControllerService} from '@app/api/api/eventController.service';
 import {EventDto} from '@app/api/model/eventDto';
 import {EventCard} from '../../../shared/ui/event-card/event-card';
 import {IconField} from 'primeng/iconfield';
+
 
 @Component({
   selector: 'app-profile-page',
@@ -36,6 +38,7 @@ export class ProfilePage implements OnInit {
   private readonly tagApi = inject(TagControllerService);
   private readonly eventApi = inject(EventControllerService);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
 
   protected readonly user = signal<UserDto | null>(null);
   protected readonly loading = signal(true);
@@ -201,5 +204,24 @@ export class ProfilePage implements OnInit {
 
   protected toggleMatrixPasswordVisibility() {
     this.matrixPasswordVisible.update((e) => !e);
+  }
+
+  protected logout(): void {
+    this.http.post('api/users/me/logout', {}).subscribe({
+      next: () => {
+        this.clearSessionAndRedirect();
+      },
+      error: (err) => {
+        console.error('Logout API failed', err);
+        this.clearSessionAndRedirect();
+      }
+    });
+  }
+
+  private clearSessionAndRedirect(): void {
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+
+    this.router.navigate(['/']);
   }
 }
