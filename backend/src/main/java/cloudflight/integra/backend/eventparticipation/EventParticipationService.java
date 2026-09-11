@@ -97,7 +97,8 @@ public class EventParticipationService {
 
         EventParticipation participation = participationRepository
             .findByEventIdAndUserId(eventId, user.getId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Participation not found"));
+            .orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "User did not join this event."));
 
         participationRepository.deleteById(participation.getId());
     }
