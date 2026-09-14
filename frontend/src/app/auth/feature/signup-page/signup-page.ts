@@ -36,9 +36,6 @@ export class SignupPage {
 
   protected readonly error = signal<string | null>(null);
   protected readonly loading = signal(false);
-
-  private readonly clearErrorOnEdit = this.form.valueChanges.subscribe(() => this.error.set(null));
-
   protected submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

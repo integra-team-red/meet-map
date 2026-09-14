@@ -26,8 +26,4 @@ export class AuthService {
     localStorage.removeItem(this.tokenKey);
     sessionStorage.removeItem(this.tokenKey);
   }
-
-  isLoggedIn(): boolean {
-    return this.getToken() !== null;
-  }
 }

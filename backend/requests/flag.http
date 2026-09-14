@@ -17,6 +17,7 @@ Content-Type: application/json
 }
 
 > {%
+    // noinspection JSUnresolvedReference
     client.global.set("token", response.body.token);
 %}
 
