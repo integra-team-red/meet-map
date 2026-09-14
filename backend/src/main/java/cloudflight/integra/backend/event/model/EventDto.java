@@ -24,5 +24,6 @@ public record EventDto (Long id,
                         List<TagDto> tags,
                         List<FlagDto> flags,
                         Double averageRating,
-                        Long reviewsCount) {
+                        Long reviewsCount,
+                        String matrixRoomId) {
 }

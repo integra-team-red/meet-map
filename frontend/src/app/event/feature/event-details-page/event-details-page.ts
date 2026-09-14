@@ -15,10 +15,11 @@ import {UserDto} from '@app/api/model/userDto';
 import {UserControllerService} from '@app/api/api/userController.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Message} from 'primeng/message';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-event-details-page',
-  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message],
+  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message, RouterLink],
   templateUrl: './event-details-page.html',
 })
 export class EventDetailsPage {

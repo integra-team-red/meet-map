@@ -1,0 +1,33 @@
+package cloudflight.integra.backend.matrix.model.api;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClient;
+
+@Configuration
+public class MatrixRestClientConfig {
+
+    @Bean
+    RestClient restClient(RestClient.Builder builder,
+                          @Value("${synapse.url}")String serverUrl) {
+        return builder
+            .baseUrl(serverUrl)
+            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .build();
+    }
+
+    @Bean
+    RestClient matrixAdminRestClient(
+        RestClient.Builder builder,
+        @Value("${synapse.url}") String serverUrl,
+        @Value("${synapse.admin.token}") String adminToken
+        ){
+        return builder
+            .baseUrl(serverUrl)
+            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader("Authorization", "Bearer " + adminToken)
+            .build();
+    }
+}
