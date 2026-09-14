@@ -9,6 +9,7 @@ import {LandingPage} from './landing/feature/landing-page/landing-page';
 import {authGuard} from './core/guards/auth-guard/auth-guard';
 import {EventDetailsPage} from './event/feature/event-details-page/event-details-page';
 import {MobileMapPage} from './home/feature/mobile-map-page/mobile-map-page';
+import {EventChat} from './features/event-chat/event-chat';
 
 export const routes: Routes = [
   {
@@ -49,5 +50,9 @@ export const routes: Routes = [
   {
     path: 'map',
     component: MobileMapPage,
+  },
+  {
+    path: 'events/:id/chat',
+    component: EventChat,
   },
 ];
