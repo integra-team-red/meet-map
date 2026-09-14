@@ -28,8 +28,6 @@ public record CreateEventDto(
     Integer minAge,
     @Min(value = 0, message = "The age cannot be negative.")
     Integer maxAge,
-    @NotNull(message = "Must provide a creator.")
-    Long creatorId,
     Set<Long> tagIds
 ) {
     @AssertTrue(message = "The minimum age must be less than the maximum age.")
