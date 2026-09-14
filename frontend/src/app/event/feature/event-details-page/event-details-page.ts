@@ -61,9 +61,7 @@ export class EventDetailsPage {
     return 'Join Event';
   })
 
-  joinButtonIcon = computed(() => this.isParticipating() ? 'pi pi-sign-out' : 'pi pi-calendar-plus');
   joinButtonSeverity = computed<'success' | 'danger'>(() => this.isParticipating() ? 'danger' : 'success');
-
 
   alreadyReviewed = signal(false);
 

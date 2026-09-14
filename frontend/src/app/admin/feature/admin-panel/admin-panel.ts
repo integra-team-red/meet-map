@@ -43,15 +43,6 @@ export class AdminPanel {
       });
   }
 
-  protected backendGetEvent(id: number) {
-    this.eventService.getEvent(id)
-      .subscribe((response: EventDto)=> {
-        console.log(response);
-        this.replaceEvent(response)
-        this.detailsEvent.set(structuredClone(response));
-      })
-  }
-
   protected backendUpdateEvent(e: EventDto) {
     this.eventService.updateEvent(e.id!, e as CreateEventDto).subscribe((response) => {
       this.replaceEvent(response);
