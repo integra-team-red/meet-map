@@ -116,7 +116,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
 
     navigator.geolocation.getCurrentPosition((pos) => {
       this.setLocation(pos.coords.latitude, pos.coords.longitude);
-    }, (error) => {
+    }, () => {
       this.messageService.add({
         severity: 'warn',
         summary: 'Could not get location',
