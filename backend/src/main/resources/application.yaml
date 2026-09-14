@@ -34,3 +34,5 @@ app:
 synapse:
   url: ${SYNAPSE_URL}
   secret: ${SYNAPSE_REGISTRATION_SHARED_SECRET}
+  admin:
+    token: ${SYNAPSE_ADMIN_TOKEN}

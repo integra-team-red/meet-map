@@ -42,6 +42,17 @@ public class Event {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "matrix_room_id")
+    private String matrixRoomId;
+
+    public String getMatrixRoomId() {
+        return matrixRoomId;
+    }
+
+    public void setMatrixRoomId(String matrixRoomId) {
+        this.matrixRoomId = matrixRoomId;
+    }
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable
     (
