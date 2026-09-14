@@ -9,25 +9,27 @@ import {LandingPage} from './landing/feature/landing-page/landing-page';
 import {authGuard} from './core/guards/auth-guard/auth-guard';
 import {EventDetailsPage} from './event/feature/event-details-page/event-details-page';
 import {MobileMapPage} from './home/feature/mobile-map-page/mobile-map-page';
+import {guestGuard} from './core/guards/guest-guard/guest-guard';
 
 export const routes: Routes = [
   {
     path: '',
-    canActivate: [authGuard],
+    canActivate: [guestGuard],
     component: LandingPage,
   },
   {
     path: 'home',
+    canActivate: [authGuard],
     component: HomePage,
   },
   {
     path: 'login',
-    canActivate: [authGuard],
+    canActivate: [guestGuard],
     component: LoginPage,
   },
   {
     path: 'signup',
-    canActivate: [authGuard],
+    canActivate: [guestGuard],
     component: SignupPage,
   },
   {
@@ -36,18 +38,22 @@ export const routes: Routes = [
   },
   {
     path: 'events/create',
+    canActivate: [authGuard],
     component: EventCreateComponent,
   },
   {
     path: 'profile',
+    canActivate: [authGuard],
     component: ProfilePage,
   },
   {
     path: 'events/:id',
+    canActivate: [authGuard],
     component: EventDetailsPage,
   },
   {
     path: 'map',
+    canActivate: [authGuard],
     component: MobileMapPage,
   },
 ];
