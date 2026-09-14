@@ -72,8 +72,6 @@ export class EventCreateComponent implements OnInit {
       maxParticipants: form.maxParticipants ?? undefined,
       minAge: form.minAge ?? undefined,
       maxAge: form.maxAge ?? undefined,
-      // TODO: put the actual user's id who creates the event
-      creatorId: 1,
       tagIds: (tagIds.length ? tagIds : undefined) as unknown as Set<number> | undefined,
     };
 
