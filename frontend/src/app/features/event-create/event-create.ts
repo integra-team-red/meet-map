@@ -7,7 +7,10 @@ import {TextareaModule} from 'primeng/textarea';
 import {DatePickerModule} from 'primeng/datepicker';
 import {InputNumberModule} from 'primeng/inputnumber';
 import {MultiSelectModule} from 'primeng/multiselect';
-import {CreateEventDto, EventControllerService, TagControllerService, TagDto} from '../../../../typescript-client';
+import {CreateEventDto} from '@app/api/model/createEventDto';
+import {EventControllerService} from '@app/api/api/eventController.service';
+import {TagControllerService} from '@app/api/api/tagController.service';
+import {TagDto} from '@app/api/model/tagDto';
 
 
 @Component({
