@@ -1,0 +1,5 @@
+synapse:
+  url: http://localhost:8080
+  secret: dummy-secret
+  admin:
+    token: dymmy-admin-token

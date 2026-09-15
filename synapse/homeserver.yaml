@@ -35,5 +35,14 @@ signing_key_path: "/data/meetmap.ro.signing.key"
 trusted_key_servers:
   - server_name: "matrix.org"
 
-
+rc_login:
+  address:
+    per_second: 1000
+    burst_count: 1000
+  account:
+    per_second: 1000
+    burst_count: 1000
+  failed_attempts:
+    per_second: 1000
+    burst_count: 1000
 # vim:ft=yaml

@@ -28,3 +28,6 @@ app:
 synapse:
   url: abcd
   secret: ghijkl
+  admin:
+    token: dummy-admin-token
+
