@@ -67,6 +67,15 @@
           [maxParticipants]="event.maxParticipants"
         />
       </div>
+
+      @if (event.matrixRoomId && isParticipating()) {
+        <div class="mt-6">
+          <a [href]="'https://matrix.to/#/' + event.matrixRoomId" target="_blank" rel="noopener noreferrer">
+            <p-button label="Open Event Chat" icon="pi pi-comments" severity="secondary" [rounded]="true" [fluid]="true" />
+          </a>
+        </div>
+      }
+
     </section>
 
     <section class="min-w-0 flex flex-col gap-4 md:col-start-1 md:row-start-2">
