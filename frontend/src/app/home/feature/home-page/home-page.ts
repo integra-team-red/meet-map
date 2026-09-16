@@ -22,6 +22,7 @@ import {Skeleton} from 'primeng/skeleton';
 import {EventMap} from '../../../shared/ui/event-map/event-map';
 import {ToastModule} from 'primeng/toast';
 import {MessageService} from 'primeng/api';
+import * as L from 'leaflet';
 
 const PAGE_SIZE = 20;
 
@@ -164,6 +165,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       this.events.set([]);
     }
     this.fetchPage(this.currentPage());
+    if (this.latestBounds) this.fetchMapEvents(this.latestBounds);
   }
 
   protected loadNextPage() {
@@ -235,4 +237,38 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.longitude.set(undefined);
   }
 
+  protected mapEvents = signal<EventDto[]>([]);
+  private latestBounds?: L.LatLngBounds;
+  private latestMapRequest = 0;
+
+  protected onBoundsChanged(bounds: L.LatLngBounds): void{
+    this.latestBounds= bounds;
+    this.fetchMapEvents(bounds);
+  }
+
+  private fetchMapEvents(b: L.LatLngBounds): void {
+    const id = ++this.latestMapRequest;
+    const f = this.filters.value;
+
+    this.eventService.getAllEvents(
+      {page: 0, size: 200},
+      this.searchQuery() || undefined,
+      f.city ?? undefined,
+      f.tags?.length ? f.tags : undefined,
+      f.age?.[0],
+      f.age?.[1],
+      f.dateRange?.[0] ? this.toLocalDate(f.dateRange[0]) : undefined,
+      f.dateRange?.[1] ? this.toLocalDate(f.dateRange[1]) : undefined,
+      undefined,
+      'ACTIVE',
+      b.getCenter().lng, b.getCenter().lat,
+      b.getSouth(), b.getNorth(), b.getWest(), b.getEast(),
+    ).subscribe({
+      next: (r: PageEventDto) => {
+        if (id !== this.latestMapRequest) return;
+        this.mapEvents.set(r.content ?? []);
+      },
+      error: () => {},
+    });
+  }
 }

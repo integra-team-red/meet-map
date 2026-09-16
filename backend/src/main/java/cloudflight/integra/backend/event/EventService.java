@@ -53,7 +53,11 @@ public class EventService {
         Long creatorId,
         EventStatus status,
         Double longitude,
-        Double latitude
+        Double latitude,
+        Double minLat,
+        Double maxLat,
+        Double minLon,
+        Double maxLon
     ) {
         boolean noTags = tagIds == null || tagIds.isEmpty();
         List<Long> tags = noTags ? List.of(-1L) : tagIds;
@@ -69,6 +73,7 @@ public class EventService {
                     EventRepository.hasCreator(creatorId),
                     EventRepository.hasStatus(status),
                     EventRepository.hasTags(noTags ? List.of() : tagIds),
+                    EventRepository.withinBounds(minLat, maxLat, minLon, maxLon),
                     EventRepository.orderByNearest(latitude, longitude)
                 );
             return repository.findAll(

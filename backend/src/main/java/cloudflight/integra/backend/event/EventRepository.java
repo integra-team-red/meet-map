@@ -104,8 +104,10 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     static Specification<Event> inAgeRange(Integer minAge, Integer maxAge) {
         return (root, _, builder) ->
             builder.and(
-                minAge == null ? builder.conjunction() : builder.greaterThanOrEqualTo(root.get("minAge"), minAge),
-                maxAge == null ? builder.conjunction() : builder.lessThanOrEqualTo(root.get("maxAge"), maxAge)
+                minAge == null ? builder.conjunction() :
+                    builder.greaterThanOrEqualTo(builder.coalesce(root.get("maxAge"), 200), minAge),
+                maxAge == null ? builder.conjunction() :
+                    builder.lessThanOrEqualTo(builder.coalesce(root.get("minAge"), 0), maxAge)
             );
     }
 
@@ -127,6 +129,19 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
         return (root, _, builder) -> status == null
             ? builder.conjunction()
             : builder.equal(root.get("status"), status);
+    }
+
+    static Specification<Event> withinBounds(Double minLat, Double maxLat, Double minLon, Double maxLon) {
+        return(root ,_, builder)->
+        {
+            if (minLat == null || maxLat == null || minLon == null || maxLon == null){
+                return builder.conjunction();
+            }
+            return builder.and(
+                builder.between(root.get("latitude"), minLat, maxLat),
+                builder.between(root.get("longitude"), minLon, maxLon)
+            );
+        };
     }
 
 }
