@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, effect, ElementRef, inject, input, OnDestroy, viewChild} from '@angular/core';
+import {AfterViewInit, Component, effect, ElementRef, inject, input, OnDestroy, output, viewChild} from '@angular/core';
 import * as L from 'leaflet';
 import {EventDto} from '@app/api/model/eventDto';
 import {Router} from '@angular/router';
@@ -11,6 +11,7 @@ export class EventMap implements AfterViewInit, OnDestroy {
   readonly events = input<EventDto[]>([]);
   private readonly mapContainer = viewChild.required<ElementRef<HTMLDivElement>>('mapContainer');
   private readonly router = inject(Router);
+  readonly boundsChanged = output<L.LatLngBounds>();
 
   private map?: L.Map;
   private markers?: L.LayerGroup;
@@ -45,6 +46,9 @@ export class EventMap implements AfterViewInit, OnDestroy {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(this.map);
+
+    this.map.on('moveend', ()=> this.boundsChanged.emit((this.map!.getBounds())));
+    this.boundsChanged.emit(this.map.getBounds());
   }
 
   ngOnDestroy(): void {

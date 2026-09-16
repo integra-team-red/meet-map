@@ -49,12 +49,17 @@ public class EventController {
         @RequestParam(required = false) Long creatorId,
         @RequestParam(required = false) EventStatus status,
         @RequestParam(required = false) Double longitude,
-        @RequestParam(required = false) Double latitude
+        @RequestParam(required = false) Double latitude,
+        @RequestParam(required = false) Double minLat,
+        @RequestParam(required = false) Double maxLat,
+        @RequestParam(required = false) Double minLon,
+        @RequestParam(required = false) Double maxLon
+
     ) {
         Page<Event> events = service.getAll(
             pageable,
             searchTerm, city, tagIds, minAge, maxAge, dateFrom, dateTo, creatorId, status,
-            longitude, latitude);
+            longitude, latitude, minLat, maxLat, minLon, maxLon);
         Map<Long, EventAverageRating> ratings = reviewService.getAverageRatings(
             events.getContent().stream().map(Event::getId).toList());
         return events.map(event -> mapper.toDto(event, ratings.get(event.getId())));
