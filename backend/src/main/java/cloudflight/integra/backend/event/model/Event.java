@@ -53,7 +53,7 @@ public class Event {
         this.matrixRoomId = matrixRoomId;
     }
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable
     (
         name = "event_tags",
@@ -62,7 +62,7 @@ public class Event {
     )
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "event")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     private Set<Flag> flags = new HashSet<>();
 
     public Event(){ }
