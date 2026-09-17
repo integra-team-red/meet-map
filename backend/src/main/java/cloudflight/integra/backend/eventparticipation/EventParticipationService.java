@@ -29,6 +29,7 @@ public class EventParticipationService {
 
     private final Logger logger = LogManager.getLogger();
 
+
     public EventParticipationService(
         EventParticipationRepository participationRepository,
         UserRepository userRepository,
@@ -117,12 +118,27 @@ public class EventParticipationService {
         User user = userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
+        Event event = eventRepository.findById(eventId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+
         EventParticipation participation = participationRepository
             .findByEventIdAndUserId(eventId, user.getId())
             .orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User did not join this event."));
 
         participationRepository.deleteById(participation.getId());
+
+        removeFromMatrixRoomIfPossible(event, user);
+    }
+
+    private void removeFromMatrixRoomIfPossible(Event event, User user) {
+        if (event.getMatrixRoomId() == null || user.getMxId() == null) return;
+        try {
+            matrixRoomCreationRestClientService.removeUserFromRoom(event.getMatrixRoomId(), user.getMxId());
+        } catch (Exception e) {
+            logger.warn("Failed to remove user {} from Matrix room {} for event {}",
+                user.getMxId(), event.getMatrixRoomId(), event.getId(), e);
+        }
     }
 
     public EventParticipation create(EventParticipation eventParticipation) {
