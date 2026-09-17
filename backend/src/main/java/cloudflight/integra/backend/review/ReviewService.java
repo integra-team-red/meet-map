@@ -1,6 +1,9 @@
 package cloudflight.integra.backend.review;
 
 import cloudflight.integra.backend.event.EventService;
+import cloudflight.integra.backend.event.model.Event;
+import cloudflight.integra.backend.event.model.EventStatus;
+import cloudflight.integra.backend.eventparticipation.EventParticipationRepository;
 import cloudflight.integra.backend.review.model.EventAverageRating;
 import cloudflight.integra.backend.review.model.Review;
 import cloudflight.integra.backend.user.UserRepository;
@@ -23,11 +26,16 @@ public class ReviewService {
     private final ReviewRepository repository;
     private final EventService eventService;
     private final UserRepository userRepository;
+    private final EventParticipationRepository eventParticipationRepository;
 
-    public ReviewService(ReviewRepository repository, EventService eventService, UserRepository userRepository) {
+    public ReviewService(
+        ReviewRepository repository, EventService eventService, UserRepository userRepository,
+        EventParticipationRepository eventParticipationRepository
+    ) {
         this.repository = repository;
         this.eventService = eventService;
         this.userRepository = userRepository;
+        this.eventParticipationRepository = eventParticipationRepository;
     }
 
     public List<Review> getAll() {
@@ -45,8 +53,13 @@ public class ReviewService {
     public Review create(Review review, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
-        if (eventService.getById(review.getEvent().getId()).isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event does not exist");
+        Event event = eventService.getById(review.getEvent().getId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+        if (event.getStatus() != EventStatus.COMPLETED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Event must be completed.");
+        }
+        if (!eventParticipationRepository.existsByEventIdAndUserId(event.getId(), user.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User did not participate in this event.");
         }
         if (review.getRating() < 1 || review.getRating() > 5) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rating must be between 1 and 5.");
