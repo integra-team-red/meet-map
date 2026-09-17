@@ -3,8 +3,11 @@ package cloudflight.integra.backend.eventparticipation;
 import cloudflight.integra.backend.event.EventRepository;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
+import cloudflight.integra.backend.matrix.model.api.MatrixRoomCreationRestClientService;
 import cloudflight.integra.backend.user.UserRepository;
 import cloudflight.integra.backend.user.model.User;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,16 +25,21 @@ public class EventParticipationService {
     private final EventParticipationRepository participationRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final MatrixRoomCreationRestClientService matrixRoomCreationRestClientService;
 
+
+    private final Logger logger = LogManager.getLogger();
     public EventParticipationService(
         EventParticipationRepository participationRepository,
         UserRepository userRepository,
-        EventRepository eventRepository
+        EventRepository eventRepository,
+        MatrixRoomCreationRestClientService matrixRoomCreationRestClientService
     ) {
 
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
+        this.matrixRoomCreationRestClientService = matrixRoomCreationRestClientService;
     }
 
     public List<EventParticipation> getAll() {
@@ -95,12 +103,27 @@ public class EventParticipationService {
         User user = userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
+        Event event = eventRepository.findById(eventId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+
         EventParticipation participation = participationRepository
             .findByEventIdAndUserId(eventId, user.getId())
             .orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "User did not join this event."));
 
         participationRepository.deleteById(participation.getId());
+
+        removeFromMatrixRoomIfPossible(event, user);
+    }
+
+    private void removeFromMatrixRoomIfPossible(Event event, User user) {
+        if (event.getMatrixRoomId() == null || user.getMxId() == null) return;
+        try {
+            matrixRoomCreationRestClientService.removeUserFromRoom(event.getMatrixRoomId(), user.getMxId());
+        } catch (Exception e) {
+            logger.warn("Failed to remove user {} from Matrix room {} for event {}",
+                user.getMxId(), event.getMatrixRoomId(), event.getId(), e);
+        }
     }
 
     public EventParticipation create(EventParticipation eventParticipation) {
