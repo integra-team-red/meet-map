@@ -2,6 +2,8 @@ package cloudflight.integra.backend.event;
 
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
+import cloudflight.integra.backend.geocoding.GeocodingService;
+import cloudflight.integra.backend.geocoding.model.Coordinate;
 import cloudflight.integra.backend.matrix.model.api.MatrixRoomCreationRestClientService;
 import cloudflight.integra.backend.user.UserRepository;
 import cloudflight.integra.backend.user.model.Role;
@@ -27,17 +29,19 @@ public class EventService {
     private final EventRepository repository;
     private final UserRepository userRepository;
     private final MatrixRoomCreationRestClientService matrixRoomCreationRestClientService;
+    private final GeocodingService geocodingService;
 
     private static final Logger logger = LogManager.getLogger();
 
     public EventService(
         EventRepository repository,
         UserRepository userRepository,
-        MatrixRoomCreationRestClientService matrixRoomCreationRestClientService
+        MatrixRoomCreationRestClientService matrixRoomCreationRestClientService, GeocodingService geocodingService
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.matrixRoomCreationRestClientService = matrixRoomCreationRestClientService;
+        this.geocodingService = geocodingService;
     }
 
     // TODO: might want to filter out the soft deleted events in the future
@@ -97,7 +101,11 @@ public class EventService {
         if (event.getStatus() == null) {
             event.setStatus(EventStatus.ACTIVE);
         }
-
+        if(event.getLatitude()==null || event.getLongitude()==null){
+            Coordinate coordinate = geocodingService.getCoordinates(event.getCity(), event.getAddress());
+            event.setLongitude(coordinate.getLongitude());
+            event.setLatitude(coordinate.getLatitude());
+        }
         Event savedEvent = repository.save(event);
 
         try {
