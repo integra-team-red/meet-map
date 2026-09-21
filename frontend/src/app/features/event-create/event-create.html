@@ -36,7 +36,7 @@
             Address
           </label>
           <input class="w-full" formControlName="address" id="address" pInputText
-            placeholder="Street and number"
+            placeholder="Street and number" (blur)="updateLocationPreview()"
             type="text"/>
           @if (eventForm.controls.address.touched && eventForm.controls.address.invalid) {
             <small>
@@ -50,7 +50,7 @@
             City
           </label>
           <input class="w-full" formControlName="city" id="city" pInputText placeholder="Enter city"
-            type="text"/>
+            type="text" (blur)="updateLocationPreview()"/>
           @if (eventForm.controls.city.touched && eventForm.controls.city.invalid) {
             <small>
               A city is required.
@@ -150,7 +150,15 @@
     </div>
 
   </div>
-    <div class="hidden lg:flex lg:sticky lg:top-10 aspect-video items-center bg-surface-200 rounded-lg shadow-md justify-center">
-      <p class="text-center text-gray-500">placeholder for image</p>
+  <div class="hidden lg:flex lg:flex-col lg:sticky lg:top-10 gap-2">
+    <div class="aspect-video rounded-lg shadow-md overflow-hidden">
+      <app-location-preview-map
+        [latitude]="previewCoordinate()?.latitude ?? null"
+        [longitude]="previewCoordinate()?.longitude ?? null"
+        class="block h-full w-full"/>
     </div>
+    @if (geocodeError()) {
+      <small class="text-center">{{ geocodeError() }}</small>
+    }
+  </div>
 </div>
