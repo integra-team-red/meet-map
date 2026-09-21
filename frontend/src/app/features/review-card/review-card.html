@@ -1,9 +1,23 @@
 <p-card>
   <ng-template #title>
-    <div>
-      <div class="flex justify-end shrink-0">
-        <p-rating [ngModel]="rating()" [readonly]="true"/>
-      </div>
+    <div class="flex items-center gap-1">
+      @if (canModify()) {
+        <p-button (onClick)="edit.emit()"
+                  ariaLabel="Edit your review"
+                  [icon]="'pi pi-pencil'"
+                  rounded
+                  size="small"
+                  variant="text"
+        />
+        <p-button (onClick)="remove.emit()"
+                  ariaLabel="Delete your review"
+                  [icon]="'pi pi-trash'"
+                  rounded
+                  size="small"
+                  variant="text"
+        />
+      }
+      <p-rating [ngModel]="rating()" [readonly]="true"/>
     </div>
   </ng-template>
 

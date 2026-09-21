@@ -1,9 +1,9 @@
 <p-card>
   <ng-template #title>
     <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="text-base font-semibold">
-                Submit a review
-              </span>
+      <span class="text-base font-semibold">
+        {{ isEdit() ? 'Edit your review' : 'Submit a review' }}
+      </span>
       <p-rating [(ngModel)]="reviewRating" [stars]="5"/>
     </div>
   </ng-template>
@@ -28,10 +28,19 @@
                 [disabled]="reviewRating() === 0"
                 [fluid]="true"
                 [loading]="reviewSubmitting()"
-                icon="pi pi-pencil"
-                label="Leave review"
+                [icon]="isEdit() ? 'pi pi-check' : 'pi pi-pencil'"
+                [label]="isEdit() ? 'Save changes' : 'Leave review'"
                 rounded
       />
+      @if (isEdit()){
+        <p-button (onClick)="cancelled.emit()"
+                  [disabled]="reviewSubmitting()"
+                  [fluid]="true"
+                  label="Cancel"
+                  rounded
+                  icon="pi pi-trash"
+        />
+      }
     </div>
   </ng-template>
 </p-card>
