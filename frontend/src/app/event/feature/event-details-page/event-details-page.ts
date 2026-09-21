@@ -16,11 +16,13 @@ import {UserControllerService} from '@app/api/api/userController.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Message} from 'primeng/message';
 import {SubmitReview} from '../../../shared/ui/submit-review/submit-review';
+import {ReportEvent} from '../../../shared/ui/report-event/report-event';
 import {ToastNotificationService} from '../../../shared/ui/toast-notification-service/toast-notification-service';
 
 @Component({
   selector: 'app-event-details-page',
-  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message, SubmitReview],
+  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message, SubmitReview,
+    ReportEvent],
   templateUrl: './event-details-page.html',
 })
 export class EventDetailsPage {

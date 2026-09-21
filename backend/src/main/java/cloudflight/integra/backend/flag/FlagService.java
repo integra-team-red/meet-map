@@ -41,6 +41,8 @@ public class FlagService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
         Event event = eventService.getById(flag.getEvent().getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+        flag.setEvent(event);
+        flag.setUserId(user.getId());
         return repository.save(flag);
     }
 

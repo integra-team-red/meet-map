@@ -60,6 +60,11 @@
         @if (joinError(); as error) {
           <p-message severity="error" styleClass="w-full mt-2">{{ error }}</p-message>}
       </div>
+
+      <div class="mt-4">
+        <app-report-event [eventId]="id()"/>
+      </div>
+
       <div class="mt-4">
         <app-participants-card
           [participants]="participants()"

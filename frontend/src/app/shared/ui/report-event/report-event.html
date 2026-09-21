@@ -1,0 +1,61 @@
+@if (reported()) {
+  <p-message severity="success" styleClass="w-full">
+    Your report was completed successfully. We are currently reviewing the event.
+  </p-message>
+} @else {
+  <p-button
+    (onClick)="openDialog()"
+    [fluid]="true"
+    [outlined]="true"
+    icon="pi pi-flag"
+    label="Report event"
+    rounded
+    severity="danger"
+  />
+}
+
+<p-dialog
+  [(visible)]="dialogVisible"
+  [draggable]="false"
+  [modal]="true"
+  [resizable]="false"
+  [style]="{ width: '30rem', maxWidth: '90vw' }"
+  header="Report this event"
+>
+  <div class="flex flex-col gap-2">
+    <label for="report-reason">Why are you reporting this event?</label>
+    <textarea
+      [(ngModel)]="reason"
+      [maxlength]="reasonMaxLength"
+      fluid
+      id="report-reason"
+      pTextarea
+      placeholder="Tell us what seems wrong with this event"
+      rows="4">
+    </textarea>
+    <span class="text-sm text-surface-500">
+      {{ reason().length }}/{{ reasonMaxLength }}
+    </span>
+    @if (error(); as message) {
+      <p-message severity="error" styleClass="w-full">{{ message }}</p-message>
+    }
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      (onClick)="dialogVisible.set(false)"
+      [disabled]="submitting()"
+      [outlined]="true"
+      label="Cancel"
+      severity="secondary"
+    />
+    <p-button
+      (onClick)="submitReport()"
+      [disabled]="!reason().trim()"
+      [loading]="submitting()"
+      icon="pi pi-flag"
+      label="Send report"
+      severity="danger"
+    />
+  </ng-template>
+</p-dialog>

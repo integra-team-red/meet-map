@@ -14,6 +14,8 @@ public interface FlagMapper {
     @Mapping(target = "eventId", source = "event.id")
     FlagDto toDto(Flag flag);
 
+    @Mapping(target = "event", source = "eventId")
+    @Mapping(target = "userId", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     Flag toEntity(CreateFlagDto dto);
