@@ -97,4 +97,31 @@ public class ReviewService {
         return repository.findAverageRatingByEventIds(eventIds).stream()
             .collect(Collectors.toMap(EventAverageRating::eventId, r -> r));
     }
+
+    public Optional<Review> update(Long eventId, Long reviewId, Review changes, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        return repository.findById(reviewId)
+            .filter(existing -> existing.getEvent().getId().equals(eventId))
+            .map(existing -> {
+                if (!existing.getUser().getId().equals(user.getId()))
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to update.");
+                existing.setRating(changes.getRating());
+                existing.setComment(changes.getComment());
+                return repository.save(existing);
+            });
+    }
+
+    public boolean delete(Long eventId, Long reviewId, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        return repository.findById(reviewId)
+            .filter(existing -> existing.getEvent().getId().equals(eventId))
+            .map(existing -> {
+                if (!existing.getUser().getId().equals(user.getId()))
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to delete.");
+                repository.delete(existing);
+                return true;
+            }).orElse(false);
+    }
 }

@@ -70,4 +70,30 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(mapper.toDto(service.create(review, authentication.getName())));
     }
+
+    @Operation(summary = "Update a review", operationId = "updateReview")
+    @PutMapping(path = "/events/{eventId}/reviews/{reviewId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ReviewDto update(
+        @PathVariable Long eventId,
+        @PathVariable Long reviewId,
+        @Valid @RequestBody CreateReviewDto dto,
+        Authentication authentication
+    ) {
+        return service.update(eventId, reviewId, mapper.toEntity(dto), authentication.getName())
+            .map(mapper::toDto)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @Operation(summary = "Delete a review", operationId = "deleteReview")
+    @DeleteMapping(path = "/events/{eventId}/reviews/{reviewId}")
+    public ResponseEntity<Void> delete(
+        @PathVariable Long eventId,
+        @PathVariable Long reviewId,
+        Authentication authentication
+    ) {
+        return service.delete(eventId, reviewId, authentication.getName())
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.notFound().build();
+    }
+
 }
