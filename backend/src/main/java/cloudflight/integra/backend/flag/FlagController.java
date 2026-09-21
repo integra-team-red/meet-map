@@ -27,7 +27,11 @@ public class FlagController {
         this.mapper = mapper;
     }
 
-    @PostMapping(value = "/flags")
+    @PostMapping(value = "/flags", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Create a new flag",
+        operationId = "createFlag"
+    )
     public ResponseEntity<FlagDto> create (
         @Valid
         @RequestBody CreateFlagDto dto,
@@ -54,7 +58,11 @@ public class FlagController {
         return service.getAll(pageable).map(mapper::toDto);
     }
 
-    @DeleteMapping(value = "/admin/flags/{id}")
+    @DeleteMapping(value = "/admin/flags/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Delete a flag",
+        operationId = "deleteFlag"
+    )
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
