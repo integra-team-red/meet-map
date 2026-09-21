@@ -11,6 +11,10 @@ import {CreateEventDto} from '@app/api/model/createEventDto';
 import {EventControllerService} from '@app/api/api/eventController.service';
 import {TagControllerService} from '@app/api/api/tagController.service';
 import {TagDto} from '@app/api/model/tagDto';
+import {CoordinateDto} from '@app/api/model/coordinateDto';
+import {GeocodingControllerService} from '@app/api/api/geocodingController.service';
+import {LocationPreviewMap} from '../../shared/ui/location-preview-map/location-preview-map';
+
 import {ToastNotificationService} from '../../shared/ui/toast-notification-service/toast-notification-service';
 
 @Component({
@@ -24,6 +28,7 @@ import {ToastNotificationService} from '../../shared/ui/toast-notification-servi
     DatePickerModule,
     InputNumberModule,
     MultiSelectModule,
+    LocationPreviewMap,
   ],
   templateUrl: './event-create.html',
 })
@@ -33,6 +38,10 @@ export class EventCreateComponent implements OnInit {
   readonly tags = signal<TagDto[]>([]);
   readonly submitting = signal(false);
   private fb = inject(FormBuilder);
+  readonly  previewCoordinate = signal<CoordinateDto | null>(null);
+  readonly geocodeError = signal<string | null>(null);
+  private geocodingApi = inject(GeocodingControllerService);
+
   eventForm = this.fb.group(
     {
       title: ['', [Validators.required, Validators.maxLength(255)]],
@@ -74,6 +83,8 @@ export class EventCreateComponent implements OnInit {
       maxParticipants: form.maxParticipants ?? undefined,
       minAge: form.minAge ?? undefined,
       maxAge: form.maxAge ?? undefined,
+      latitude: this.previewCoordinate()?.latitude,
+      longitude: this.previewCoordinate()?.longitude,
       tagIds: (tagIds.length ? tagIds : undefined) as unknown as Set<number> | undefined,
     };
 
@@ -117,5 +128,19 @@ export class EventCreateComponent implements OnInit {
       }
     }
     this.serverErrors.set(formErrors);
+  }
+
+  updateLocationPreview(){
+    const city = this.eventForm.controls.city.value?.trim();
+    const address = this.eventForm.controls.address.value?.trim();
+    if (!city || !address) return;
+
+    this.geocodingApi.getCoordinates(city, address).subscribe({
+      next: (coordinate) => this.previewCoordinate.set(coordinate),
+      error: ()=>{
+        this.previewCoordinate.set(null);
+        this.geocodeError.set('Could not find that address on the map.');
+      }
+    })
   }
 }
