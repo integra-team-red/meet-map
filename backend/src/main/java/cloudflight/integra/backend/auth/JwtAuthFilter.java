@@ -1,5 +1,7 @@
 package cloudflight.integra.backend.auth;
 
+import cloudflight.integra.backend.user.model.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
@@ -7,14 +9,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.time.LocalDate;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -41,22 +42,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
         try {
-            if (jwtService.isTokenValid(token) &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
-                String email = jwtService.extractEmail(token);
-                String role = jwtService.extractRole(token);
 
-                var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
-                var authToken = new UsernamePasswordAuthenticationToken(email, null, authorities);
+            Claims c = jwtService.parse(token);
+            String birthDate = c.get("birthDate", String.class);
 
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            CustomUserDetails userDetails = new CustomUserDetails(
+                c.get("userId", Long.class),
+                c.getSubject(),
+                Role.valueOf(c.get("role", String.class)),
+                c.get("mxId", String.class),
+                birthDate == null ? null : LocalDate.parse(birthDate)
+            );
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        } catch (JwtException ex) {
+            UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (JwtException | IllegalArgumentException ex) {
             SecurityContextHolder.clearContext();
         }
-
         filterChain.doFilter(request, response);
     }
 }

@@ -1,6 +1,9 @@
 package cloudflight.integra.backend.matrix;
 
-import cloudflight.integra.backend.matrix.model.*;
+import cloudflight.integra.backend.matrix.model.MatrixErrorResponse;
+import cloudflight.integra.backend.matrix.model.MatrixNonce;
+import cloudflight.integra.backend.matrix.model.MatrixRegisterRequest;
+import cloudflight.integra.backend.matrix.model.MatrixRegisterResponse;
 import cloudflight.integra.backend.user.UserRepository;
 import cloudflight.integra.backend.user.model.User;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -9,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 import javax.crypto.Mac;
@@ -74,12 +78,12 @@ public class MatrixService {
         }
     }
 
-    public void registerAccount(User user, boolean admin) {
+    public User registerAccount(User user, boolean admin) {
         try {
             MatrixNonce mxNonce = matrixClient.get()
                 .uri("/_synapse/admin/v1/register")
                 .retrieve().body(MatrixNonce.class);
-            if (mxNonce == null) return;
+            if (mxNonce == null) return user;
 
             String nonce = mxNonce.nonce();
             String username = getLocalpart(user);
@@ -93,21 +97,24 @@ public class MatrixService {
                 .body(registerRequest)
                 .retrieve()
                 .body(MatrixRegisterResponse.class);
-            if (registerResponse == null) return;
+            if (registerResponse == null) return user;
 
             logger.debug("Created matrix user {}", registerResponse.user_id());
-            userRepository.save(user.setMxId(registerResponse.user_id())
+            return userRepository.save(user.setMxId(registerResponse.user_id())
                 .setMxPassword(Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8)))
             );
 
-        } catch (RestClientResponseException e) {
+        } catch (RestClientResponseException e ) {
             MatrixErrorResponse resp = e.getResponseBodyAs(MatrixErrorResponse.class);
             if (resp != null) logger.warn("{}: {}", resp.errcode(), resp.error());
+        } catch (RestClientException e) {
+            logger.warn("Matrix registration failed for user {}", user.getId(), e);
         }
+        return user;
     }
 
-    public void registerAccount(User user) {
-        registerAccount(user, false);
+    public User registerAccount(User user) {
+        return registerAccount(user, false);
     }
 
 }

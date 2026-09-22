@@ -1,12 +1,12 @@
 package cloudflight.integra.backend.user;
 
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.event.EventMapper;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventDto;
 import cloudflight.integra.backend.event.model.PendingReviewDto;
 import cloudflight.integra.backend.eventparticipation.EventParticipationMapper;
 import cloudflight.integra.backend.eventparticipation.EventParticipationService;
-import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
 import cloudflight.integra.backend.review.ReviewService;
 import cloudflight.integra.backend.review.model.EventAverageRating;
 import cloudflight.integra.backend.tag.TagMapper;
@@ -20,9 +20,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -87,25 +91,19 @@ public class UserController {
     }
 
     @GetMapping(value = "/me/pending-review", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PendingReviewDto> getPendingReviews(Authentication authentication) {
-        Long userId = service.getByEmail(authentication.getName()).getId();
-
-        Optional<EventParticipation> pending = epService.getLastPendingReview(userId);
-
-        if (pending.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        PendingReviewDto dto = epMapper.toPendingReviewDto(pending.get());
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<PendingReviewDto> getPendingReviews(@AuthenticationPrincipal CustomUserDetails user) {
+        return epService.getLastPendingReview(user.id())
+            .map(epMapper::toPendingReviewDto)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @PatchMapping(value = "/me/pending-review/{eventId}/dismiss")
     public ResponseEntity<Void> dismissPendingReview(
         @PathVariable Long eventId,
-        Authentication authentication
+        @AuthenticationPrincipal CustomUserDetails user
     ) {
-        Long userId = service.getByEmail(authentication.getName()).getId();
-        epService.dismissReview(eventId, userId);
-        return ResponseEntity.noContent().build();
+        epService.dismissReview(eventId, user.id());
+       return ResponseEntity.noContent().build();
     }
 }

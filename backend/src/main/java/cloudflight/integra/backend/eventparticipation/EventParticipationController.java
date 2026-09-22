@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.eventparticipation;
 
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipationDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,8 +40,11 @@ public class EventParticipationController {
 
     @Operation(operationId = "joinEvent", summary = "Join an event")
     @PostMapping(value = "/events/{id}/join", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventParticipationDto> create(@PathVariable Long id, Authentication authentication) {
-        EventParticipation participation = service.joinEvent(id, authentication.getName());
+    public ResponseEntity<EventParticipationDto> create(@PathVariable Long id, @AuthenticationPrincipal
+                                                        CustomUserDetails user
+                                                        ) {
+
+        EventParticipation participation = service.joinEvent(id, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toDto(participation));
     }

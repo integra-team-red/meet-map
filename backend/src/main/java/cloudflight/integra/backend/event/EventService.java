@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.event;
 
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
 import cloudflight.integra.backend.geocoding.GeocodingService;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -92,11 +94,9 @@ public class EventService {
         return repository.findById(id);
     }
 
-    public Event create(Event event, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+    public Event create(Event event, CustomUserDetails user) {
         event.setId(null);
-        event.setCreatorId(user.getId());
+        event.setCreatorId(user.id());
         event.setCreatedAt(LocalDateTime.now());
         if (event.getStatus() == null) {
             event.setStatus(EventStatus.ACTIVE);
@@ -109,13 +109,13 @@ public class EventService {
         Event savedEvent = repository.save(event);
 
         try {
-            if (user.getMxId() == null) {
+            if (user.mxId() == null) {
                 throw new IllegalStateException("User does not have a Matrix account");
             }
 
             String roomId = matrixRoomCreationRestClientService.createRoom(savedEvent.getTitle());
 
-            matrixRoomCreationRestClientService.addUserToRoom(roomId, user.getMxId());
+            matrixRoomCreationRestClientService.addUserToRoom(roomId, user.mxId());
 
             savedEvent.setMatrixRoomId(roomId);
             savedEvent = repository.save(savedEvent);
@@ -135,11 +135,9 @@ public class EventService {
         return savedEvent;
     }
 
-    public Optional<Event> update(Long id, Event event, String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found."));
+    public Optional<Event> update(Long id, Event event, CustomUserDetails user) {
         return repository.findById(id).map(existing -> {
-            if(!existing.getCreatorId().equals(user.getId()) && user.getRole() != Role.ADMIN)
+            if(!existing.getCreatorId().equals(user.id()) && user.role() != Role.ADMIN)
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to take this action.");
             event.setId(id);
             event.setCreatedAt(existing.getCreatedAt());
@@ -151,11 +149,9 @@ public class EventService {
         });
     }
 
-    public boolean delete(Long id, String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+    public boolean delete(Long id, CustomUserDetails user) {
         return repository.findById(id).map(existing -> {
-            if(!existing.getCreatorId().equals(user.getId()) && user.getRole() != Role.ADMIN)
+            if(!existing.getCreatorId().equals(user.id()) && user.role() != Role.ADMIN)
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to take this action.");
             existing.setStatus(EventStatus.CANCELLED);
             repository.save(existing);

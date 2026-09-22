@@ -65,12 +65,12 @@ public class AuthService {
         }
 
         if(user.getMxId() == null) {
-            matrixService.registerAccount(user);
+            user = matrixService.registerAccount(user);
         } else {
             logger.info("User already has a matrix account: {}, skipping creation", user.getMxId());
         }
 
-        return new AuthResponse(jwtService.generateToken(user.getEmail(), user.getRole()));
+        return new AuthResponse(jwtService.generateToken(user));
     }
 
     private static String normalizeEmail(String email) {

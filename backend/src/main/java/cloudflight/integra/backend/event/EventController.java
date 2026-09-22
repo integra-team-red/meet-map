@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.event;
 
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.event.model.CreateEventDto;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventDto;
@@ -14,7 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -81,9 +82,12 @@ public class EventController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create Event", operationId = "createEvent")
-    public ResponseEntity<EventDto> create(@Valid @RequestBody CreateEventDto event, Authentication authentication) {
+    public ResponseEntity<EventDto> create(
+        @Valid @RequestBody CreateEventDto event,
+        @AuthenticationPrincipal CustomUserDetails user
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(mapper.toDto(service.create(mapper.toEntity(event), authentication.getName())));
+            .body(mapper.toDto(service.create(mapper.toEntity(event), user)));
     }
 
     @Operation(summary = "Update an event", operationId = "updateEvent")
@@ -91,16 +95,16 @@ public class EventController {
     public EventDto update(
         @PathVariable Long id,
         @Valid @RequestBody CreateEventDto event,
-        Authentication authentication
+        @AuthenticationPrincipal CustomUserDetails user
     ) {
-        return service.update(id, mapper.toEntity(event), authentication.getName()).map(mapper::toDto)
+        return service.update(id, mapper.toEntity(event), user).map(mapper::toDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Delete Event by Id", operationId = "deleteEvent")
-    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
-        if (service.delete(id, authentication.getName())) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
+        if (service.delete(id, user)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

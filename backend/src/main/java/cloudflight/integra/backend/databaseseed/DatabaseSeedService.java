@@ -1,6 +1,7 @@
 package cloudflight.integra.backend.databaseseed;
 
 import cloudflight.integra.backend.auth.AuthService;
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.auth.model.RegisterRequest;
 import cloudflight.integra.backend.event.EventRepository;
 import cloudflight.integra.backend.event.EventService;
@@ -209,11 +210,20 @@ public class DatabaseSeedService {
             }
             event.setTags(randomEventTags);
             try {
-                eventService.create(event, user.getEmail());
+                eventService.create(event, toUserDetails(user));
             } catch (Exception e) {
                 System.out.println("Failed to save event: " + e.getMessage());
             }
         }
+    }
+    private CustomUserDetails toUserDetails(User user) {
+        return new CustomUserDetails(
+            user.getId(),
+            user.getEmail(),
+            user.getRole(),
+            user.getMxId(),
+            user.getBirthDate()
+        );
     }
 
     public void seedEventParticipationTable() {
@@ -282,8 +292,9 @@ public class DatabaseSeedService {
                 quote = quote.substring(0, 99);
             review.setComment(quote);
             try {
-                reviewService.create(review, user.getEmail());
+                reviewService.create(review);
             } catch (Exception e) {
+
                 System.out.println("Failed to save Review: " + e.getMessage());
             }
         }
