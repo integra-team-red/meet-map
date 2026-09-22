@@ -1,4 +1,4 @@
-import {Component, input, linkedSignal, output} from '@angular/core';
+import {Component, computed, input, linkedSignal, output} from '@angular/core';
 import {Button} from 'primeng/button';
 import {Card} from 'primeng/card';
 import {FloatLabel} from 'primeng/floatlabel';
@@ -12,6 +12,7 @@ import {DatePicker} from 'primeng/datepicker';
 import {ScrollPanel} from 'primeng/scrollpanel';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {ConfirmationService} from 'primeng/api';
+import {EventFlagList} from '../../../shared/ui/event-flag-list/event-flag-list';
 
 @Component({
   selector: 'app-admin-event-details',
@@ -28,6 +29,7 @@ import {ConfirmationService} from 'primeng/api';
     DatePicker,
     ScrollPanel,
     ConfirmDialogModule,
+    EventFlagList,
   ],
   providers: [ConfirmationService],
   templateUrl: './admin-event-details.html',
@@ -99,4 +101,6 @@ export class AdminEventDetails{
   protected deselectEvent() {
     this.onEventDeselect.emit();
   }
+
+  flags = computed(() => this.event()?.flags || []);
 }
