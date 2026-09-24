@@ -87,13 +87,32 @@
       <h2 class="text-xl">
         Reviews
       </h2>
+
+      @if (reviewActionError(); as error) {
+        <p-message severity="error" styleClass="w-full">{{ error }}</p-message>
+      }
+
       @for (review of reviews(); track review.id) {
-        <app-review-card
-          [rating]="review.rating ?? 0"
-          [comment]="review.comment"
-          [date]="review.createdAt"
-          [authorName]="review.authorName || 'Anonymous Reviewer'"
-        />
+        @if (editingReviewId() != null && editingReviewId() === review.id) {
+          <app-submit-review
+            [eventId]="id()"
+            [reviewId]="review.id"
+            [initialRating]="review.rating ?? 0"
+            [initialComment]="review.comment ?? ''"
+            (submitted)="onReviewUpdated()"
+            (cancelled)="cancelEdit()"
+          />
+        } @else {
+          <app-review-card
+            [rating]="review.rating ?? 0"
+            [comment]="review.comment"
+            [date]="review.createdAt"
+            [authorName]="review.authorName || 'Anonymous Reviewer'"
+            [canModify]="review.id === ownReviewId()"
+            (edit)="startEdit(review)"
+            (remove)="confirmDelete(review)"
+          />
+        }
       } @empty {
         <p class="text-gray-500">
           No reviews yet
@@ -103,6 +122,7 @@
       @if (canReview()) {
         <app-submit-review [eventId]="id()" (submitted)="onReviewSubmitted()" />
       }
+      <p-confirm-dialog/>
     </section>
   </div>
 } @else {

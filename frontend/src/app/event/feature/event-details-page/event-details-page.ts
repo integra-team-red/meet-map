@@ -16,11 +16,15 @@ import {UserControllerService} from '@app/api/api/userController.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Message} from 'primeng/message';
 import {SubmitReview} from '../../../shared/ui/submit-review/submit-review';
+import {ReviewDto} from '@app/api/model/reviewDto';
+import {ConfirmationService} from 'primeng/api';
+import {ConfirmDialog} from 'primeng/confirmdialog';
 import {ToastNotificationService} from '../../../shared/ui/toast-notification-service/toast-notification-service';
 
 @Component({
   selector: 'app-event-details-page',
-  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message, SubmitReview],
+  imports: [DatePipe, ReviewCard, Tag, ParticipantsCard, Button, TitleCasePipe, StarRating, Message, SubmitReview, ConfirmDialog],
+  providers: [ConfirmationService],
   templateUrl: './event-details-page.html',
 })
 export class EventDetailsPage {
@@ -31,10 +35,9 @@ export class EventDetailsPage {
   participants = computed(() => (this.participantsPage()?.content ?? []));
   joinLoading = signal(false);
   joinError = signal<string | undefined>(undefined);
-
   currentUser = signal<UserDto | undefined>(undefined);
-
   currentUserId = computed(() => this.currentUser()?.id);
+
   isParticipating = computed(() => {
     const participants = this.participants();
     const currentUserId = this.currentUserId();
@@ -66,6 +69,14 @@ export class EventDetailsPage {
 
   alreadyReviewed = signal(false);
 
+  protected editingReviewId = signal<number | undefined>(undefined);
+  protected reviewActionError = signal<string | undefined>(undefined);
+  protected readonly ownReviewId = computed(() => {
+    const currentUserId = this.currentUserId();
+    if (currentUserId == null) return undefined;
+    return this.reviews().find(r => r.userId === currentUserId)?.id;
+  });
+
   isCompleted = computed(() => this.event()?.status === EventDto.StatusEnum.Completed);
   canReview = computed(() => this.isCompleted() && this.isParticipating() && !this.hasReviewed());
   reviewPage = signal<PageReviewDto | undefined>(undefined);
@@ -96,6 +107,7 @@ export class EventDetailsPage {
   private participationService = inject(EventParticipationControllerService);
   private reviewService = inject(ReviewControllerService);
   private userService = inject(UserControllerService);
+  private confirmationService = inject(ConfirmationService);
 
   constructor(private toastNotificationService: ToastNotificationService) {
     this.userService.getCurrentUser().subscribe(user => {
@@ -109,6 +121,8 @@ export class EventDetailsPage {
         .subscribe(p => this.participantsPage.set(p));
       this.reviewService.getAllReviewsForEvent(id, {page: 0, size: 20})
         .subscribe(p => this.reviewPage.set(p));
+      this.editingReviewId.set(undefined);
+      this.reviewActionError.set(undefined);
     });
   }
 
@@ -159,6 +173,46 @@ export class EventDetailsPage {
 
   private extractErrorMessage(err: HttpErrorResponse): string {
     return err?.error?.message ?? 'Something went wrong. Please try again.';
+  }
+
+  protected startEdit(review: ReviewDto) {
+    this.reviewActionError.set(undefined);
+    this.editingReviewId.set(review.id);
+  }
+
+  protected cancelEdit() {
+    this.editingReviewId.set(undefined);
+  }
+
+  protected onReviewUpdated() {
+    this.editingReviewId.set(undefined);
+    this.refreshReviews();
+  }
+
+  protected confirmDelete(review: ReviewDto) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete your review?',
+      header: 'Delete review',
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {label: 'Go back', severity: 'primary', outlined: true},
+      acceptButtonProps: {label: 'Delete', severity: 'danger', outlined: true},
+      accept: () => this.deleteReview(review),
+    });
+  }
+
+  private deleteReview(review: ReviewDto) {
+    const reviewId = review.id;
+    if (reviewId == null) return;
+
+    this.reviewActionError.set(undefined);
+    this.reviewService.deleteReview(this.id(), reviewId).subscribe({
+      next: () => {
+        this.editingReviewId.set(undefined);
+        this.alreadyReviewed.set(false);
+        this.refreshReviews();
+      },
+      error: (err: HttpErrorResponse) => this.reviewActionError.set(this.extractErrorMessage(err)),
+    });
   }
 
 
