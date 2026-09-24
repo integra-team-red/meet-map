@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.user;
 
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.event.EventMapper;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventDto;
@@ -88,7 +89,9 @@ public class UserController {
 
     @GetMapping(value = "/me/pending-review", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PendingReviewDto> getPendingReviews(Authentication authentication) {
-        Long userId = service.getByEmail(authentication.getName()).getId();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        Long userId = userDetails.id();
 
         Optional<EventParticipation> pending = epService.getLastPendingReview(userId);
 
@@ -104,7 +107,8 @@ public class UserController {
         @PathVariable Long eventId,
         Authentication authentication
     ) {
-        Long userId = service.getByEmail(authentication.getName()).getId();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.id();
         epService.dismissReview(eventId, userId);
         return ResponseEntity.noContent().build();
     }
