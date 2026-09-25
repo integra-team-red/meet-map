@@ -108,4 +108,11 @@ public class UserController {
         epService.dismissReview(eventId, userId);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping(value = "/me/delete-rofile")
+    public ResponseEntity<Void> deleteProfile(Authentication authentication) {
+        service.deleteProfile(authentication.getName());
+        return ResponseEntity.noContent().build();
+
+    }
 }

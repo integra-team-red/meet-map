@@ -20,6 +20,9 @@ public class MatrixRoomCreationRestClientService {
 
     private final RestClient restClient;
 
+    public record DeactivateAccountRequest(boolean erase) {
+    }
+
     public MatrixRoomCreationRestClientService(
         @Qualifier("matrixAdminRestClient") RestClient restClient
     ) {
@@ -80,4 +83,11 @@ public class MatrixRoomCreationRestClientService {
         }
     }
 
+    public void deactivateAccount(String mxUserId) {
+        restClient.post()
+            .uri("/_synapse/admin/v1/deactivate/{userId}", mxUserId)
+            .body(new DeactivateAccountRequest(true))
+            .retrieve()
+            .toBodilessEntity();
+    }
 }
