@@ -1,8 +1,8 @@
-package cloudflight.integra.backend.matrix.model;
+package cloudflight.integra.backend.matrix.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record MatrixRoomCreationResponseContent(
+public record MatrixCreateRoomResponse(
     @JsonProperty("room_id")
     String roomId
 ) {

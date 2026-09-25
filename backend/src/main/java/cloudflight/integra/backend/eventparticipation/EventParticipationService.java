@@ -1,13 +1,13 @@
 package cloudflight.integra.backend.eventparticipation;
 
+import cloudflight.integra.backend.appevents.EventJoinedEvent;
+import cloudflight.integra.backend.appevents.EventLeftEvent;
 import cloudflight.integra.backend.event.EventRepository;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
-import cloudflight.integra.backend.matrix.model.api.MatrixRoomCreationRestClientService;
 import cloudflight.integra.backend.user.UserRepository;
 import cloudflight.integra.backend.user.model.User;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,22 +25,20 @@ public class EventParticipationService {
     private final EventParticipationRepository participationRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
-    private final MatrixRoomCreationRestClientService matrixRoomCreationRestClientService;
-
-    private final Logger logger = LogManager.getLogger();
+    private final ApplicationEventPublisher eventPublisher;
 
 
     public EventParticipationService(
         EventParticipationRepository participationRepository,
         UserRepository userRepository,
         EventRepository eventRepository,
-        MatrixRoomCreationRestClientService matrixRoomCreationRestClientService
+        ApplicationEventPublisher eventPublisher
     ) {
 
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
-        this.matrixRoomCreationRestClientService = matrixRoomCreationRestClientService;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<EventParticipation> getAll() {
@@ -90,21 +88,11 @@ public class EventParticipationService {
 
         participation =  participationRepository.save(participation);
 
-        addToMatrixRoomIfPossible(event,user);
+        eventPublisher.publishEvent(new EventJoinedEvent(this, event, user));
 
         return participation;
     }
 
-    private void addToMatrixRoomIfPossible(Event event, User user) {
-        if (event.getMatrixRoomId() == null || user.getMxId() == null) return;
-
-        try {
-            matrixRoomCreationRestClientService.addUserToRoom(event.getMatrixRoomId(), user.getMxId());
-        } catch (Exception e) {
-            logger.warn("Failed to add user {} to Matrix room {} for event {}",
-                user.getMxId(), event.getMatrixRoomId(), event.getId(), e);
-        }
-    }
 
     public Page<EventParticipation> getParticipants(Long eventId, Pageable pageable) {
         return participationRepository.findByEventId(eventId, pageable);
@@ -128,18 +116,9 @@ public class EventParticipationService {
 
         participationRepository.deleteById(participation.getId());
 
-        removeFromMatrixRoomIfPossible(event, user);
+        eventPublisher.publishEvent(new EventLeftEvent(this, event, user));
     }
 
-    private void removeFromMatrixRoomIfPossible(Event event, User user) {
-        if (event.getMatrixRoomId() == null || user.getMxId() == null) return;
-        try {
-            matrixRoomCreationRestClientService.removeUserFromRoom(event.getMatrixRoomId(), user.getMxId());
-        } catch (Exception e) {
-            logger.warn("Failed to remove user {} from Matrix room {} for event {}",
-                user.getMxId(), event.getMatrixRoomId(), event.getId(), e);
-        }
-    }
 
     public EventParticipation create(EventParticipation eventParticipation) {
         return participationRepository.save(eventParticipation);

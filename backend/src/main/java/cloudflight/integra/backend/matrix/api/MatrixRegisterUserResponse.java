@@ -1,6 +1,6 @@
-package cloudflight.integra.backend.matrix.model;
+package cloudflight.integra.backend.matrix.api;
 
-public record MatrixRegisterResponse(
+public record MatrixRegisterUserResponse(
     String access_token,
     String user_id,
     String home_server,
