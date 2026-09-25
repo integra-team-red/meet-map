@@ -1,4 +1,4 @@
-package cloudflight.integra.backend.matrix.model.api;
+package cloudflight.integra.backend.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,7 @@ import org.springframework.web.client.RestClient;
 public class MatrixRestClientConfig {
 
     @Bean
-    RestClient restClient(RestClient.Builder builder, @Value("${synapse.url}")String serverUrl) {
+    RestClient matrixRestClient(RestClient.Builder builder, @Value("${synapse.url}")String serverUrl) {
         return builder
             .baseUrl(serverUrl)
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)

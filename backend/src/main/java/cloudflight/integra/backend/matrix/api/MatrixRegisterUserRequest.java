@@ -1,6 +1,6 @@
-package cloudflight.integra.backend.matrix.model;
+package cloudflight.integra.backend.matrix.api;
 
-public record MatrixRegisterRequest(
+public record MatrixRegisterUserRequest(
     String nonce,
     String username,
     String password,

@@ -1,10 +1,10 @@
-package cloudflight.integra.backend.matrix.model;
+package cloudflight.integra.backend.matrix.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record CreateRoomRequest(
+public record MatrixCreateRoomRequest(
     @JsonProperty("creation_content")
-    RoomCreationContent creationContent,
+    CreationContent creationContent,
     String name,
     String preset
 ) {

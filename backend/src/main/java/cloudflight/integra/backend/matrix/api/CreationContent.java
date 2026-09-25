@@ -1,8 +1,8 @@
-package cloudflight.integra.backend.matrix.model;
+package cloudflight.integra.backend.matrix.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record RoomCreationContent(
+public record CreationContent(
     @JsonProperty("is_direct")
     boolean isDirect
 ) {
