@@ -1,4 +1,4 @@
-package cloudflight.integra.backend.matrix.model;
+package cloudflight.integra.backend.matrix.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

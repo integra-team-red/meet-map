@@ -1,15 +1,16 @@
 package cloudflight.integra.backend.event;
 
+import cloudflight.integra.backend.appevents.EventCreatedEvent;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
 import cloudflight.integra.backend.geocoding.GeocodingService;
 import cloudflight.integra.backend.geocoding.model.Coordinate;
-import cloudflight.integra.backend.matrix.model.api.MatrixRoomCreationRestClientService;
 import cloudflight.integra.backend.user.UserRepository;
 import cloudflight.integra.backend.user.model.Role;
 import cloudflight.integra.backend.user.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,20 +29,21 @@ import java.util.Optional;
 public class EventService {
     private final EventRepository repository;
     private final UserRepository userRepository;
-    private final MatrixRoomCreationRestClientService matrixRoomCreationRestClientService;
     private final GeocodingService geocodingService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final Logger logger = LogManager.getLogger();
 
     public EventService(
         EventRepository repository,
         UserRepository userRepository,
-        MatrixRoomCreationRestClientService matrixRoomCreationRestClientService, GeocodingService geocodingService
+        GeocodingService geocodingService,
+        ApplicationEventPublisher eventPublisher
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
-        this.matrixRoomCreationRestClientService = matrixRoomCreationRestClientService;
         this.geocodingService = geocodingService;
+        this.eventPublisher = eventPublisher;
     }
 
     // TODO: might want to filter out the soft deleted events in the future
@@ -113,18 +115,7 @@ public class EventService {
                 throw new IllegalStateException("User does not have a Matrix account");
             }
 
-            String roomId = matrixRoomCreationRestClientService.createRoom(savedEvent.getTitle());
-
-            matrixRoomCreationRestClientService.addUserToRoom(roomId, user.getMxId());
-
-            savedEvent.setMatrixRoomId(roomId);
-            savedEvent = repository.save(savedEvent);
-
-            logger.debug(
-                "Created matrix room {} for event {}",
-                roomId,
-                savedEvent.getId()
-            );
+            eventPublisher.publishEvent(new EventCreatedEvent(this, savedEvent, user));
         } catch (Exception e) {
             logger.warn(
                 "Failed to create matrix room for event {}",
