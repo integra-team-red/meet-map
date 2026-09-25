@@ -3,7 +3,9 @@ package cloudflight.integra.backend.event;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.event.model.EventStatus;
 import cloudflight.integra.backend.tag.model.Tag;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,11 +76,11 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     static Specification<Event> search(String searchTerm) {
         return (root, _, b) -> searchTerm == null || searchTerm.isBlank()
-                ? b.conjunction()
-                : b.like(
-                    b.lower(root.get("title")),
-                    b.lower(b.literal("%" + searchTerm + "%")
-                    ));
+            ? b.conjunction()
+            : b.like(
+            b.lower(root.get("title")),
+            b.lower(b.literal("%" + searchTerm + "%")
+            ));
     }
 
     static Specification<Event> hasCity(String city) {
@@ -88,7 +90,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
 
     static Specification<Event> hasTags(List<Long> tagIds) {
         return (root, query, builder) -> {
-            if(query == null || tagIds == null || tagIds.isEmpty()) return builder.conjunction();
+            if (query == null || tagIds == null || tagIds.isEmpty()) return builder.conjunction();
 
             query.distinct(false);
             Subquery<Long> sub = query.subquery(Long.class);
@@ -132,9 +134,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     }
 
     static Specification<Event> withinBounds(Double minLat, Double maxLat, Double minLon, Double maxLon) {
-        return(root ,_, builder)->
+        return (root, _, builder) ->
         {
-            if (minLat == null || maxLat == null || minLon == null || maxLon == null){
+            if (minLat == null || maxLat == null || minLon == null || maxLon == null) {
                 return builder.conjunction();
             }
             return builder.and(
@@ -144,4 +146,5 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
         };
     }
 
+    List<Event> findByCreatorIdAndStatus(Long creatorId, EventStatus status);
 }

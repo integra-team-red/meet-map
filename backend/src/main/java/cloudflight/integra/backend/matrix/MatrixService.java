@@ -1,9 +1,6 @@
 package cloudflight.integra.backend.matrix;
 
-import cloudflight.integra.backend.appevents.EventCreatedEvent;
-import cloudflight.integra.backend.appevents.EventJoinedEvent;
-import cloudflight.integra.backend.appevents.EventLeftEvent;
-import cloudflight.integra.backend.appevents.LoginEvent;
+import cloudflight.integra.backend.appevents.*;
 import cloudflight.integra.backend.event.EventRepository;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.matrix.api.*;
@@ -186,6 +183,13 @@ public class MatrixService {
             throw e;
         }
     }
+    public void deactivateAccount(String mxUserId) {
+        adminClient.post()
+            .uri("/_synapse/admin/v1/deactivate/{userId}", mxUserId)
+            .body(new MatrixDeactivateUserRequest(true))
+            .retrieve()
+            .toBodilessEntity();
+    }
 
     @EventListener(LoginEvent.class)
     @Async
@@ -246,4 +250,16 @@ public class MatrixService {
         }
     }
 
+    @EventListener(AccountDeletedEvent.class)
+    @Async
+    public void deactivateAccountIfPossible(AccountDeletedEvent accountDeletedEvent) {
+        User user = accountDeletedEvent.getUser();
+        if (user.getMxId() == null) return;
+        try {
+            deactivateAccount(user.getMxId());
+            logger.info("Deactivated Matrix account {}", user.getMxId());
+        } catch (Exception e) {
+            logger.warn("Failed to deactivate Matrix account {}", user.getMxId(), e);
+        }
+    }
 }

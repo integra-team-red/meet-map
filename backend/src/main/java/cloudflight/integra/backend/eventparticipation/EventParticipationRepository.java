@@ -29,9 +29,10 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
 
     @Query("SELECT ep.userId FROM EventParticipation ep LEFT JOIN Event e ON ep.event.id = e.id WHERE e.id = :eventId")
     Page<Long> findAllUserIdsByEventId(Long eventId, Pageable pageable);
+
     @Query(
         "SELECT e FROM Event e " +
-        "LEFT JOIN EventParticipation ep ON ep.event.id = e.id " +
+            "LEFT JOIN EventParticipation ep ON ep.event.id = e.id " +
             "WHERE ep.userId = :participantId"
     )
     Page<Event> findAllEventsByParticipant(Long participantId, Pageable pageable);
@@ -44,5 +45,8 @@ public interface EventParticipationRepository extends JpaRepository<EventPartici
         "ORDER BY ep.event.dateTime DESC")
     List<EventParticipation> findPendingReviews(@Param("userId") Long userId, Pageable pageable);
 
+    List<EventParticipation> findByUserId(Long userId);
+
+    void deleteByUserId(Long id);
 }
 

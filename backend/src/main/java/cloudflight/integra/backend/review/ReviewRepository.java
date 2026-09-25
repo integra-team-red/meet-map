@@ -28,4 +28,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         where r.event.id in :eventIds
         group by r.event.id""")
     List<EventAverageRating> findAverageRatingByEventIds(@Param("eventIds") Collection<Long> eventIds);
+
+    void deleteByUserId(Long id);
 }
