@@ -21,6 +21,7 @@ import {ReviewDto} from '@app/api/model/reviewDto';
 import {ConfirmationService} from 'primeng/api';
 import {ConfirmDialog} from 'primeng/confirmdialog';
 import {ToastNotificationService} from '../../../shared/ui/toast-notification-service/toast-notification-service';
+import {Meta, Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-event-details-page',
@@ -37,6 +38,8 @@ export class EventDetailsPage {
   participants = computed(() => (this.participantsPage()?.content ?? []));
   joinLoading = signal(false);
   joinError = signal<string | undefined>(undefined);
+
+
   currentUser = signal<UserDto | undefined>(undefined);
   currentUserId = computed(() => this.currentUser()?.id);
 
@@ -110,6 +113,8 @@ export class EventDetailsPage {
   private reviewService = inject(ReviewControllerService);
   private userService = inject(UserControllerService);
   private confirmationService = inject(ConfirmationService);
+  private readonly titleService = inject(Title);
+  private readonly meta = inject(Meta);
 
   constructor(private toastNotificationService: ToastNotificationService) {
     this.userService.getCurrentUser().subscribe(user => {
@@ -118,7 +123,10 @@ export class EventDetailsPage {
     effect(() => {
       const id = this.id();
       this.alreadyReviewed.set(false);
-      this.eventService.getEvent(this.id()).subscribe(e => this.event.set(e));
+      this.eventService.getEvent(this.id()).subscribe(e => {
+        this.event.set(e);
+        this.updatePageMetadata(e);
+      });
       this.participationService.getAllParticipants(id, {page: 0, size: 20})
         .subscribe(p => this.participantsPage.set(p));
       this.reviewService.getAllReviewsForEvent(id, {page: 0, size: 20})
@@ -144,7 +152,7 @@ export class EventDetailsPage {
         this.joinLoading.set(false);
         this.refreshParticipants();
 
-        if(this.isParticipating()) {
+        if (this.isParticipating()) {
           this.toastNotificationService.showSuccess("You have left the event successfully.");
         } else {
           this.toastNotificationService.showSuccess("You have joined the event successfully.");
@@ -177,6 +185,16 @@ export class EventDetailsPage {
     return err?.error?.message ?? 'Something went wrong. Please try again.';
   }
 
+  private updatePageMetadata(event: EventDto): void {
+    const pageTitle = `MeetMap – ${event.title}`;
+    const description = (event.description ?? '').slice(0, 160);
+
+    this.titleService.setTitle(pageTitle);
+    this.meta.updateTag({name: 'description', content: description});
+    this.meta.updateTag({property: 'og:title', content: pageTitle});
+    this.meta.updateTag({property: 'og:description', content: description});
+    this.meta.updateTag({property: 'og:url', content: window.location.href});
+  }
   protected startEdit(review: ReviewDto) {
     this.reviewActionError.set(undefined);
     this.editingReviewId.set(review.id);

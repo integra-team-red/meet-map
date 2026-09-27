@@ -1,5 +1,5 @@
 import {ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners} from '@angular/core';
-import {provideRouter, withComponentInputBinding} from '@angular/router';
+import {provideRouter, TitleStrategy, withComponentInputBinding} from '@angular/router';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 
 import {routes} from './app.routes';
@@ -9,6 +9,7 @@ import {ApiModule, Configuration} from '../../typescript-client';
 import {authInterceptor} from './core/interceptors/auth-interceptor';
 import {storedThemeName, THEMES} from './theme/theme';
 import {MessageService} from 'primeng/api';
+import {PageTitleStrategy} from './core/page-title/page-title-strategy';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,6 +21,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
+    {provide: TitleStrategy, useClass: PageTitleStrategy},
     providePrimeNG({
       theme: {
         preset: THEMES[storedThemeName()].preset,
