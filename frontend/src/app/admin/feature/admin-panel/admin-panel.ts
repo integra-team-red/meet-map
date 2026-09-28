@@ -47,12 +47,29 @@ export class AdminPanel {
   }
 
   protected backendUpdateEvent(e: EventDto) {
-    this.eventService.updateEvent(e.id!, e as CreateEventDto).subscribe((response) => {
+    this.eventService.updateEvent(e.id!, this.toCreateEventDto(e)).subscribe((response) => {
       this.replaceEvent(response);
       this.toastNotificationService.showSuccess("The Event has been updated.");
     });
   }
 
+  private toCreateEventDto(e: EventDto): CreateEventDto{
+    const tagsIds= (e.tags ?? []).map(tag => tag.id!);
+    return{
+      title: e.title!,
+      description: e.description!,
+      address: e.address!,
+      city: e.city!,
+      latitude: e.latitude,
+      longitude: e.longitude,
+      dateTime: e.dateTime!,
+      maxParticipants: e.maxParticipants,
+      minAge: e.minAge,
+      maxAge: e.maxAge,
+      tagIds: (tagsIds.length ? tagsIds : undefined) as unknown as Set<number> | undefined,
+    };
+
+  }
   protected backendDeleteEvent(e: EventDto){
     this.eventService.deleteEvent(e.id!)
       .subscribe(() => {
