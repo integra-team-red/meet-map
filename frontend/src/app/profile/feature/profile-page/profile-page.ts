@@ -17,6 +17,9 @@ import {EventControllerService} from '@app/api/api/eventController.service';
 import {EventDto} from '@app/api/model/eventDto';
 import {EventCard} from '../../../shared/ui/event-card/event-card';
 import {IconField} from 'primeng/iconfield';
+import {ConfirmationService} from 'primeng/api';
+import {ConfirmDialog} from 'primeng/confirmdialog';
+import {ToastNotificationService} from '../../../shared/ui/toast-notification-service/toast-notification-service';
 
 
 @Component({
@@ -31,7 +34,9 @@ import {IconField} from 'primeng/iconfield';
     EventCard,
     Paginator,
     IconField,
+    ConfirmDialog,
   ],
+  providers: [ConfirmationService],
 })
 export class ProfilePage implements OnInit {
   private readonly userApi = inject(UserControllerService);
@@ -39,6 +44,8 @@ export class ProfilePage implements OnInit {
   private readonly eventApi = inject(EventControllerService);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private confirmationService = inject(ConfirmationService);
+  private readonly toast = inject(ToastNotificationService);
 
   protected readonly user = signal<UserDto | null>(null);
   protected readonly loading = signal(true);
@@ -167,7 +174,7 @@ export class ProfilePage implements OnInit {
   protected getJoined(id: number, page = this.joinedPage(), rows = this.joinedRows()) {
     this.joinedPage.set(page)
     this.joinedRows.set(rows)
-    this.userApi.getJoinedEvents({page:page, size:rows}, id)
+    this.userApi.getJoinedEvents({page: page, size: rows}, id)
       .subscribe((page) => {
         this.joinedEvents.set(page.content!);
         this.joinedTotal.set(page.totalElements!);
@@ -209,5 +216,31 @@ export class ProfilePage implements OnInit {
   protected logout(): void {
     this.authService.clearToken();
     this.router.navigate(['/']);
+  }
+
+  protected confirmDelete(): void {
+    const upcoming = this.createdEvents().filter(e => e.status === 'ACTIVE').length;
+
+    this.confirmationService.confirm({
+      message: upcoming > 0
+        ? `You are hosting ${upcoming} upcoming event(s). They will be cancelled. This cannot be undone.`
+        : 'Your account and everything you posted will be permanently deleted. This cannot be undone.',
+      header: 'Delete account',
+      icon: 'pi pi-exclamation triangle',
+      rejectButtonProps: {label: 'Go back', severity: 'primary', outlined: true},
+      acceptButtonProps: {label: 'Delete', severity: 'danger', outlined: true},
+      accept: () => this.deleteAccount(),
+    });
+  }
+
+  private deleteAccount(): void {
+    this.userApi.deleteProfile().subscribe({
+      next: () => {
+        this.authService.clearToken();
+        this.router.navigate(['/']);
+      },
+      error: (err) => this.toast.showError(
+        err?.error?.message ?? 'Could not delete your account. Please try again.')
+    });
   }
 }
