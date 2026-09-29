@@ -110,6 +110,14 @@ public class EventParticipationService {
         return participationRepository.findByEventId(eventId, pageable);
     }
 
+    public boolean isParticipant(Long eventId, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        return participationRepository.existsByEventIdAndUserId(eventId, user.getId());
+    }
+
+
     public Page<Event> getEventsByParticipant(Long userId, Pageable pageable) {
         return participationRepository.findAllEventsByParticipant(userId, pageable);
     }
