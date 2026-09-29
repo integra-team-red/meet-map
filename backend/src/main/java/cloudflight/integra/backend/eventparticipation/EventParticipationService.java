@@ -1,5 +1,6 @@
 package cloudflight.integra.backend.eventparticipation;
 
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.event.EventRepository;
 import cloudflight.integra.backend.event.model.Event;
 import cloudflight.integra.backend.eventparticipation.model.EventParticipation;
@@ -51,13 +52,11 @@ public class EventParticipationService {
         return participationRepository.findById(id);
     }
 
-    public synchronized EventParticipation joinEvent(Long eventId, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+    public synchronized EventParticipation joinEvent(Long eventId, CustomUserDetails user) {
         Event event = eventRepository.findById(eventId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
 
-        boolean alreadyJoined = participationRepository.existsByEventIdAndUserId(eventId, user.getId());
+        boolean alreadyJoined = participationRepository.existsByEventIdAndUserId(eventId, user.id());
 
         if (alreadyJoined) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User already joined this event");
@@ -71,9 +70,9 @@ public class EventParticipationService {
             }
         }
 
-        if (user.getBirthDate() != null && event.getDateTime() != null) {
+        if (user.birthDate() != null && event.getDateTime() != null) {
             int ageAtEvent = Period.between(
-                user.getBirthDate(),
+                user.birthDate(),
                 event.getDateTime().toLocalDate()
             ).getYears();
 
@@ -84,7 +83,7 @@ public class EventParticipationService {
             }
         }
         EventParticipation participation = new EventParticipation();
-        participation.setUserId(user.getId());
+        participation.setUserId(user.id());
         participation.setEvent(event);
         participation.setJoinedAt(LocalDateTime.now());
 
@@ -95,14 +94,14 @@ public class EventParticipationService {
         return participation;
     }
 
-    private void addToMatrixRoomIfPossible(Event event, User user) {
-        if (event.getMatrixRoomId() == null || user.getMxId() == null) return;
+    private void addToMatrixRoomIfPossible(Event event, CustomUserDetails user) {
+        if (event.getMatrixRoomId() == null || user.mxId() == null) return;
 
         try {
-            matrixRoomCreationRestClientService.addUserToRoom(event.getMatrixRoomId(), user.getMxId());
+            matrixRoomCreationRestClientService.addUserToRoom(event.getMatrixRoomId(), user.mxId());
         } catch (Exception e) {
             logger.warn("Failed to add user {} to Matrix room {} for event {}",
-                user.getMxId(), event.getMatrixRoomId(), event.getId(), e);
+                user.mxId(), event.getMatrixRoomId(), event.getId(), e);
         }
     }
 

@@ -1,6 +1,6 @@
 package cloudflight.integra.backend.auth;
 
-import cloudflight.integra.backend.user.model.Role;
+import cloudflight.integra.backend.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.function.Function;
 
 @Service
 public class JwtService {
@@ -25,38 +24,22 @@ public class JwtService {
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(String email, Role role) {
+    public String generateToken(User user) {
         Date now = new Date();
-        return Jwts.builder()
-            .subject(email)
-            .claim("role", role.name())
+        var builder = Jwts.builder()
+            .subject(user.getEmail())
+            .claim("userId",user.getId())
+            .claim("role", user.getRole().name())
             .issuedAt(now)
-            .expiration(new Date(now.getTime() + expirationMs))
-            .signWith(key)
-            .compact();
+            .expiration(new Date(now.getTime() + expirationMs));
+
+            if (user.getMxId() != null) builder.claim("mxId", user.getMxId());
+            if (user.getBirthDate() != null) builder.claim("birthDate", user.getBirthDate().toString());
+
+            return builder.signWith(key).compact();
     }
 
-    public String extractRole(String token) {
-        return extractClaim(token, claims -> claims.get("role", String.class));
-    }
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    public boolean isTokenValid(String token) {
-        return !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
-    }
-
-    private <T> T extractClaim(String token, Function<Claims, T> resolver) {
-        Claims claims = Jwts.parser()
-            .verifyWith(key)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload();
-        return resolver.apply(claims);
+    public Claims parse(String token) {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
     }
 }

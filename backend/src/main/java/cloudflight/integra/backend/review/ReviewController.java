@@ -1,10 +1,9 @@
 package cloudflight.integra.backend.review;
 
+import cloudflight.integra.backend.auth.CustomUserDetails;
 import cloudflight.integra.backend.review.model.CreateReviewDto;
 import cloudflight.integra.backend.review.model.Review;
 import cloudflight.integra.backend.review.model.ReviewDto;
-import cloudflight.integra.backend.user.UserService;
-import cloudflight.integra.backend.user.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -14,7 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,12 +22,10 @@ import org.springframework.web.server.ResponseStatusException;
 public class ReviewController {
     private final ReviewService service;
     private final ReviewMapper mapper;
-    private final UserService userService;
 
-    public ReviewController(ReviewService service, ReviewMapper mapper, UserService userService) {
+    public ReviewController(ReviewService service, ReviewMapper mapper) {
         this.service = service;
         this.mapper = mapper;
-        this.userService = userService;
     }
 
     @GetMapping(value = "/events/{eventId}/reviews", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -61,14 +58,13 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> create(
         @PathVariable Long eventId,
         @Valid @RequestBody CreateReviewDto dto,
-        Authentication authentication
+        @AuthenticationPrincipal CustomUserDetails user
     ) {
-        User user = userService.getByEmail(authentication.getName());
         Review review = mapper.toEntity(dto)
             .setEvent(mapper.eventFromId(eventId))
-            .setUser(user);
+            .setUser(mapper.userFromId(user.id()));
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(mapper.toDto(service.create(review, authentication.getName())));
+            .body(mapper.toDto(service.create(review)));
     }
 
     @Operation(summary = "Update a review", operationId = "updateReview")
@@ -77,9 +73,9 @@ public class ReviewController {
         @PathVariable Long eventId,
         @PathVariable Long reviewId,
         @Valid @RequestBody CreateReviewDto dto,
-        Authentication authentication
+        @AuthenticationPrincipal CustomUserDetails user
     ) {
-        return service.update(eventId, reviewId, mapper.toEntity(dto), authentication.getName())
+        return service.update(eventId, reviewId, mapper.toEntity(dto), user.id())
             .map(mapper::toDto)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
@@ -89,9 +85,9 @@ public class ReviewController {
     public ResponseEntity<Void> delete(
         @PathVariable Long eventId,
         @PathVariable Long reviewId,
-        Authentication authentication
+        @AuthenticationPrincipal CustomUserDetails user
     ) {
-        return service.delete(eventId, reviewId, authentication.getName())
+        return service.delete(eventId, reviewId, user.id())
             ? ResponseEntity.noContent().build()
             : ResponseEntity.notFound().build();
     }

@@ -6,8 +6,6 @@ import cloudflight.integra.backend.event.model.EventStatus;
 import cloudflight.integra.backend.eventparticipation.EventParticipationRepository;
 import cloudflight.integra.backend.review.model.EventAverageRating;
 import cloudflight.integra.backend.review.model.Review;
-import cloudflight.integra.backend.user.UserRepository;
-import cloudflight.integra.backend.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,16 +23,14 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository repository;
     private final EventService eventService;
-    private final UserRepository userRepository;
     private final EventParticipationRepository eventParticipationRepository;
 
     public ReviewService(
-        ReviewRepository repository, EventService eventService, UserRepository userRepository,
+        ReviewRepository repository, EventService eventService,
         EventParticipationRepository eventParticipationRepository
     ) {
         this.repository = repository;
         this.eventService = eventService;
-        this.userRepository = userRepository;
         this.eventParticipationRepository = eventParticipationRepository;
     }
 
@@ -50,15 +46,13 @@ public class ReviewService {
         return repository.findById(id);
     }
 
-    public Review create(Review review, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+    public Review create(Review review) {
         Event event = eventService.getById(review.getEvent().getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
         if (event.getStatus() != EventStatus.COMPLETED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Event must be completed.");
         }
-        if (!eventParticipationRepository.existsByEventIdAndUserId(event.getId(), user.getId())) {
+        if (!eventParticipationRepository.existsByEventIdAndUserId(event.getId(), review.getUser().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User did not participate in this event.");
         }
         if (review.getRating() < 1 || review.getRating() > 5) {
@@ -67,7 +61,6 @@ public class ReviewService {
         if (repository.findReviewsByEventAndUserId(review.getEvent(), review.getUser().getId()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Event already reviewed by this user.");
         }
-        review.setUser(user);
         review.setCreatedAt(LocalDateTime.now());
         return repository.save(review);
     }
@@ -98,13 +91,11 @@ public class ReviewService {
             .collect(Collectors.toMap(EventAverageRating::eventId, r -> r));
     }
 
-    public Optional<Review> update(Long eventId, Long reviewId, Review changes, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+    public Optional<Review> update(Long eventId, Long reviewId, Review changes, Long userId) {
         return repository.findById(reviewId)
             .filter(existing -> existing.getEvent().getId().equals(eventId))
             .map(existing -> {
-                if (!existing.getUser().getId().equals(user.getId()))
+                if (!existing.getUser().getId().equals(userId))
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to update.");
                 existing.setRating(changes.getRating());
                 existing.setComment(changes.getComment());
@@ -112,13 +103,11 @@ public class ReviewService {
             });
     }
 
-    public boolean delete(Long eventId, Long reviewId, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+    public boolean delete(Long eventId, Long reviewId, Long userId) {
         return repository.findById(reviewId)
             .filter(existing -> existing.getEvent().getId().equals(eventId))
             .map(existing -> {
-                if (!existing.getUser().getId().equals(user.getId()))
+                if (!existing.getUser().getId().equals(userId))
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to delete.");
                 repository.delete(existing);
                 return true;
