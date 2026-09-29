@@ -15,6 +15,8 @@ export class ParticipantsCard {
   readonly maxParticipants = input<number>();
   readonly userImagePlaceholderURL = input<string>('https://placehold.net/avatar.png');
   readonly count = computed(() => this.totalParticipants() ?? this.participants().length);
+  readonly hiddenParticipantsCount = computed(() =>
+    Math.max(this.count() - this.participants().length, 0));
 
   participantName(participant: EventParticipationDto): string {
     if (!participant.firstName && !participant.lastName) return 'Anonymous Participant';

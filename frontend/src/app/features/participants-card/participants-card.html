@@ -26,5 +26,10 @@
         No participants yet
       </p>
     }
+    @if (hiddenParticipantsCount() > 0) {
+      <p class="mt-2 text-xs text-gray-500">
+        Only the first {{ participants().length }} participants are displayed.
+      </p>
+    }
   </ng-template>
 </p-card>

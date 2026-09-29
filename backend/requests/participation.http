@@ -13,3 +13,8 @@ Authorization: Bearer {{token}}
 @eventToLeave = 1
 DELETE http://localhost:8080/api/events/{{eventToLeave}}/leave
 Authorization: Bearer {{token}}
+
+###
+@eventToCheck = 1
+GET http://localhost:8080/api/events/{{eventToCheck}}/participants/me
+Authorization: Bearer {{token}}

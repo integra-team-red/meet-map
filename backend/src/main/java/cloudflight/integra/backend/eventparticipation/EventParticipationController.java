@@ -36,6 +36,16 @@ public class EventParticipationController {
         return service.getParticipants(id, pageable).map(mapper::toDto);
     }
 
+    @Operation(
+        operationId = "isCurrentUserParticipant",
+        summary = "Check whether the currently logged in user participates in an event"
+    )
+    @GetMapping(value = "/events/{id}/participants/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean isCurrentUserParticipant(@PathVariable Long id, Authentication authentication) {
+        return service.isParticipant(id, authentication.getName());
+    }
+
+
     @Operation(operationId = "joinEvent", summary = "Join an event")
     @PostMapping(value = "/events/{id}/join", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EventParticipationDto> create(@PathVariable Long id, Authentication authentication) {

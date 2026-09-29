@@ -40,11 +40,13 @@ export class EventDetailsPage {
   currentUser = signal<UserDto | undefined>(undefined);
   currentUserId = computed(() => this.currentUser()?.id);
 
-  isParticipating = computed(() => {
-    const participants = this.participants();
-    const currentUserId = this.currentUserId();
-    return participants.some(p => p.userId === currentUserId);
-  });
+  // isParticipating = computed(() => {
+  //   const participants = this.participants();
+  //   const currentUserId = this.currentUserId();
+  //   return participants.some(p => p.userId === currentUserId);
+  // });
+  isParticipating = signal(false);
+  participationChecked = signal(false);
 
   isFull = computed(() => {
     const max = this.event()?.maxParticipants;
@@ -57,7 +59,8 @@ export class EventDetailsPage {
     return status !== EventDto.StatusEnum.Cancelled && status != EventDto.StatusEnum.Completed;
   })
 
-  joinButtonDisabled = computed(() => this.joinLoading() || !this.canJoinStatus() || (!this.isParticipating() && this.isFull()));
+  joinButtonDisabled = computed(() => this.joinLoading() || !this.participationChecked()
+    || !this.canJoinStatus() || (!this.isParticipating() && this.isFull()));
 
   joinButtonLabel = computed(() => {
     if (this.joinLoading()) return this.isParticipating() ? 'Leaving...' : 'Joining...';
@@ -118,9 +121,15 @@ export class EventDetailsPage {
     effect(() => {
       const id = this.id();
       this.alreadyReviewed.set(false);
-      this.eventService.getEvent(this.id()).subscribe(e => this.event.set(e));
-      this.participationService.getAllParticipants(id, {page: 0, size: 20})
+      this.participationChecked.set(false);
+      this.eventService.getEvent(id).subscribe(e => this.event.set(e));
+      this.participationService.getAllParticipants(id, {page: 0, size: 100})
         .subscribe(p => this.participantsPage.set(p));
+      this.participationService.isCurrentUserParticipant(id)
+        .subscribe(p => {
+          this.isParticipating.set(p);
+          this.participationChecked.set(true);
+        })
       this.reviewService.getAllReviewsForEvent(id, {page: 0, size: 20})
         .subscribe(p => this.reviewPage.set(p));
       this.editingReviewId.set(undefined);
@@ -132,19 +141,22 @@ export class EventDetailsPage {
     const eventId = this.id();
     if (eventId == null || this.joinButtonDisabled()) return;
 
+    const wasParticipating = this.isParticipating();
+
     this.joinError.set(undefined);
     this.joinLoading.set(true);
 
-    const action$ = this.isParticipating()
+    const action$ = wasParticipating
       ? this.participationService.leaveEvent(eventId)
       : this.participationService.joinEvent(eventId);
 
     action$.subscribe({
       next: () => {
         this.joinLoading.set(false);
+        this.isParticipating.set(!wasParticipating);
         this.refreshParticipants();
 
-        if(this.isParticipating()) {
+        if(wasParticipating) {
           this.toastNotificationService.showSuccess("You have left the event successfully.");
         } else {
           this.toastNotificationService.showSuccess("You have joined the event successfully.");
@@ -169,7 +181,7 @@ export class EventDetailsPage {
   }
 
   private refreshParticipants() {
-    this.participationService.getAllParticipants(this.id(), {page: 0, size: 20})
+    this.participationService.getAllParticipants(this.id(), {page: 0, size: 100})
       .subscribe(p => this.participantsPage.set(p));
   }
 
