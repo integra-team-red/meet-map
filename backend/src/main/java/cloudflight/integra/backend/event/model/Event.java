@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "events")
@@ -41,6 +42,9 @@ public class Event {
     private Long creatorId;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "image_id")
+    private UUID imageId;
 
     @Column(name = "matrix_room_id")
     private String matrixRoomId;
@@ -250,6 +254,15 @@ public class Event {
 
     public Event setFlags(Set<Flag> flags) {
         this.flags = flags;
+        return this;
+    }
+
+    public UUID getImageId() {
+        return imageId;
+    }
+
+    public Event setImageId(UUID imageId) {
+        this.imageId = imageId;
         return this;
     }
 }

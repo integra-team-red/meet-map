@@ -7,6 +7,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -56,4 +57,12 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.FORBIDDEN)
             .body(new ExceptionDto(HttpStatus.FORBIDDEN, "Forbidden", null));
     }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ExceptionDto> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        return ResponseEntity
+            .status(HttpStatus.PAYLOAD_TOO_LARGE)
+            .body(new ExceptionDto(HttpStatus.PAYLOAD_TOO_LARGE, "The picture must be at most 20MB.", null));
+    }
+
 }

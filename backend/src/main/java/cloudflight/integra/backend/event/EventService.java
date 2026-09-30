@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EventService {
@@ -30,21 +32,23 @@ public class EventService {
     private final UserRepository userRepository;
     private final MatrixRoomCreationRestClientService matrixRoomCreationRestClientService;
     private final GeocodingService geocodingService;
-
+    private final EventImageService imageService;
     private static final Logger logger = LogManager.getLogger();
 
     public EventService(
         EventRepository repository,
         UserRepository userRepository,
-        MatrixRoomCreationRestClientService matrixRoomCreationRestClientService, GeocodingService geocodingService
+        MatrixRoomCreationRestClientService matrixRoomCreationRestClientService,
+        GeocodingService geocodingService,
+        EventImageService imageService
     ) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.matrixRoomCreationRestClientService = matrixRoomCreationRestClientService;
         this.geocodingService = geocodingService;
+        this.imageService = imageService;
     }
 
-    // TODO: might want to filter out the soft deleted events in the future
     public Page<Event> getAll(
         Pageable pageable,
         String searchTerm,
@@ -136,31 +140,37 @@ public class EventService {
     }
 
     public Optional<Event> update(Long id, Event event, String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found."));
-        return repository.findById(id).map(existing -> {
-            if(!existing.getCreatorId().equals(user.getId()) && user.getRole() != Role.ADMIN)
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to take this action.");
-            event.setId(id);
-            event.setCreatedAt(existing.getCreatedAt());
-            event.setCreatorId(existing.getCreatorId());
-            if (event.getStatus() == null) {
-                event.setStatus(existing.getStatus());
-            }
-            return repository.save(event);
-        });
+        User user = findUser(email);
+        Optional<Event> found = repository.findById(id);
+        if (found.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Event existing = found.get();
+        checkCanModify(existing, user);
+        event.setId(id);
+        event.setCreatedAt(existing.getCreatedAt());
+        event.setCreatorId(existing.getCreatorId());
+        event.setImageId(existing.getImageId());
+        event.setMatrixRoomId(existing.getMatrixRoomId());
+        if (event.getStatus() == null) {
+            event.setStatus(existing.getStatus());
+        }
+        return Optional.of(repository.save(event));
     }
 
     public boolean delete(Long id, String email) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
-        return repository.findById(id).map(existing -> {
-            if(!existing.getCreatorId().equals(user.getId()) && user.getRole() != Role.ADMIN)
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to take this action.");
-            existing.setStatus(EventStatus.CANCELLED);
-            repository.save(existing);
-            return true;
-        }).orElse(false);
+        User user = findUser(email);
+        Optional<Event> found = repository.findById(id);
+        if (found.isEmpty()) {
+            return false;
+        }
+
+        Event existing = found.get();
+        checkCanModify(existing, user);
+        existing.setStatus(EventStatus.CANCELLED);
+        repository.save(existing);
+        return true;
     }
 
     public List<String> getCities() {
@@ -170,4 +180,39 @@ public class EventService {
     public Page<Event> getAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
+
+    public Optional<Event> attachImage(Long id, MultipartFile file, String email) {
+        User user = findUser(email);
+        Optional<Event> found = repository.findById(id);
+        if (found.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Event existing = found.get();
+        checkCanModify(existing, user);
+
+        UUID oldImageId = existing.getImageId();
+        existing.setImageId(imageService.save(file));
+        Event saved = repository.save(existing);
+
+        if (oldImageId != null) {
+            imageService.delete(oldImageId);
+        }
+        return Optional.of(saved);
+    }
+
+
+    private User findUser(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found."));
+    }
+
+    private void checkCanModify(Event event, User user) {
+        boolean isCreator = event.getCreatorId().equals(user.getId());
+        boolean isAdmin = user.getRole() == Role.ADMIN;
+        if (!isCreator && !isAdmin) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to take this action.");
+        }
+    }
+
 }

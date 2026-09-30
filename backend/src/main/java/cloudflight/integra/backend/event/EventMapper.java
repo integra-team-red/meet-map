@@ -26,6 +26,7 @@ public interface EventMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "imageId", ignore = true)
     Event toEntity(CreateEventDto dto);
 
 

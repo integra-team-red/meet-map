@@ -19,3 +19,6 @@ dist/
 synapse/
 !synapse/homeserver.yaml
 postgres/
+
+# Pictures
+uploads/

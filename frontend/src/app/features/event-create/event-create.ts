@@ -16,6 +16,7 @@ import {GeocodingControllerService} from '@app/api/api/geocodingController.servi
 import {LocationPreviewMap} from '../../shared/ui/location-preview-map/location-preview-map';
 
 import {ToastNotificationService} from '../../shared/ui/toast-notification-service/toast-notification-service';
+import {ImagePicker} from '../../shared/ui/image-picker/image-picker';
 
 @Component({
   selector: 'app-event-create',
@@ -29,6 +30,7 @@ import {ToastNotificationService} from '../../shared/ui/toast-notification-servi
     InputNumberModule,
     MultiSelectModule,
     LocationPreviewMap,
+    ImagePicker
   ],
   templateUrl: './event-create.html',
 })
@@ -41,6 +43,7 @@ export class EventCreateComponent implements OnInit {
   readonly  previewCoordinate = signal<CoordinateDto | null>(null);
   readonly geocodeError = signal<string | null>(null);
   private geocodingApi = inject(GeocodingControllerService);
+  readonly selectedImage = signal<File | null>(null);
 
   eventForm = this.fb.group(
     {
@@ -91,11 +94,12 @@ export class EventCreateComponent implements OnInit {
     this.submitting.set(true);
     this.eventApi.createEvent(payload).subscribe({
       next: (created) => {
-        console.log('NEXT fired', created);
-        this.submitting.set(false);
-        console.log('Created event', created);
-        this.eventForm.reset({tagIds: []});
-        this.toastNotification.showSuccess("The Event has been successfully created.")
+        const image = this.selectedImage();
+        if (image && created.id) {
+          this.uploadImage(created.id, image);
+        } else {
+          this.finishCreation();
+        }
       },
       error: (err) => {
         console.log('ERROR fired', err);
@@ -142,5 +146,24 @@ export class EventCreateComponent implements OnInit {
         this.geocodeError.set('Could not find that address on the map.');
       }
     })
+  }
+
+  private uploadImage(eventId: number, image: File) {
+    this.eventApi.uploadEventImage(eventId, image).subscribe({
+      next: () => this.finishCreation(),
+      error: (err) => this.finishCreation(
+        err?.error?.message ?? 'The event was created, but the picture could not be uploaded.'),
+    });
+  }
+
+  private finishCreation(errorMessage?: string) {
+    this.submitting.set(false);
+    this.eventForm.reset({tagIds: []});
+    this.selectedImage.set(null);
+    if (errorMessage) {
+      this.toastNotification.showError(errorMessage);
+    } else {
+      this.toastNotification.showSuccess("The Event has been successfully created.");
+    }
   }
 }

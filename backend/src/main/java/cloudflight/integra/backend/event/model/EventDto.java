@@ -6,6 +6,7 @@ import cloudflight.integra.backend.tag.model.TagDto;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record EventDto (Long id,
                         String title,
@@ -25,5 +26,6 @@ public record EventDto (Long id,
                         List<FlagDto> flags,
                         Double averageRating,
                         Long reviewsCount,
-                        String matrixRoomId) {
+                        String matrixRoomId,
+                        UUID imageId) {
 }

@@ -10,6 +10,10 @@ spring:
       ddl-auto: none
   flyway:
     enabled: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 21MB
 
 springdoc:
   api-docs:

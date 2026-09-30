@@ -130,6 +130,8 @@
             optionLabel="name" optionValue="id" placeholder="Select tags"/>
         </div>
 
+        <app-image-picker [(image)]="selectedImage"/>
+
         @if (serverErrors().length) {
           <div class="rounded p-3">
             @for (error of serverErrors(); track $index) {

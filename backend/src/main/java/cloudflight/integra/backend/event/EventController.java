@@ -7,6 +7,9 @@ import cloudflight.integra.backend.event.model.EventStatus;
 import cloudflight.integra.backend.review.ReviewService;
 import cloudflight.integra.backend.review.model.EventAverageRating;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,11 +19,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/events")
@@ -28,11 +33,13 @@ public class EventController {
     private final EventService service;
     private final EventMapper mapper;
     private final ReviewService reviewService;
+    private final EventImageService imageService;
 
-    public EventController(EventService service, EventMapper mapper, ReviewService reviewService) {
+    public EventController(EventService service, EventMapper mapper, ReviewService reviewService, EventImageService imageService) {
         this.service = service;
         this.mapper = mapper;
         this.reviewService = reviewService;
+        this.imageService = imageService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -105,4 +112,44 @@ public class EventController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping(value = "/{id}/image",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+        summary = "Upload a picture for an Event",
+        operationId = "uploadEventImage"
+    )
+    public EventDto uploadImage(
+        @PathVariable Long id,
+        @RequestParam("file") MultipartFile file,
+        Authentication authentication
+    ) {
+        return service.attachImage(id, file, authentication.getName()).map(mapper::toDto)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/images/{imageId}")
+    @Operation(
+        summary = "Get an Event picture",
+        operationId = "getEventImage"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        content = @Content(
+            mediaType = "image/*",
+            schema = @Schema(
+                type = "string",
+                format = "binary"
+            )
+        )
+    )
+    public ResponseEntity<byte[]> getImage(@PathVariable UUID imageId) {
+        byte[] bytes = imageService.load(imageId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return ResponseEntity.ok()
+            .contentType(imageService.detectContentType(bytes))
+            .body(bytes);
+    }
+
 }

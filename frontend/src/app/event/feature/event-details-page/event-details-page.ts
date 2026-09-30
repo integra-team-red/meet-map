@@ -39,6 +39,8 @@ export class EventDetailsPage {
   joinError = signal<string | undefined>(undefined);
   currentUser = signal<UserDto | undefined>(undefined);
   currentUserId = computed(() => this.currentUser()?.id);
+  imageId = computed(() => this.event()?.imageId);
+  imageUrl = signal<string | null>(null);
 
   isParticipating = computed(() => {
     const participants = this.participants();
@@ -126,6 +128,26 @@ export class EventDetailsPage {
       this.editingReviewId.set(undefined);
       this.reviewActionError.set(undefined);
     });
+    effect((onCleanup) => {
+      const imageId = this.imageId();
+      this.imageUrl.set(null);
+      if (!imageId) return;
+
+      let url: string | null = null;
+      const subscription = this.eventService.getEventImage(imageId).subscribe({
+        next: (blob) => {
+          url = URL.createObjectURL(blob);
+          this.imageUrl.set(url);
+        },
+        error: () => this.imageUrl.set(null),
+      });
+
+      onCleanup(() => {
+        subscription.unsubscribe();
+        if (url) URL.revokeObjectURL(url);
+      });
+    });
+
   }
 
   toggleParticipation() {
